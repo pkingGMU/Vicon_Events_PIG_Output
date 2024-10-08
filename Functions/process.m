@@ -16,7 +16,7 @@ function [subjects] = process(subjects_list)
 
         subjects.(subject).proc_tables = proc_tables;
 
-        subjects.(subject).event_table = event_table;
+        subjects.(subject).proc_tables.event_table = event_table;
 
         
 
