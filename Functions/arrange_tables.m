@@ -28,8 +28,9 @@ function [proc_tables] = arrange_tables(folder)
         file_name = fullfile(folder, files(file).name);
         
         % A shorted file name without the csv extension
-        file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_'); 
-
+        file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_')
+        % Remove any unnecessary numbers
+        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '')
         
         % Debugging
         disp(file_name_short)

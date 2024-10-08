@@ -26,7 +26,7 @@ subjects = process(subjects_list);
 
 %% Test Event Detection
 
-[lhs,lto,rhs,rto] = gait_detection(subjects.sub1.proc_tables.DT_Walk09.trajectory_data_table);
+[lhs,lto,rhs,rto] = gait_detection(subjects.sub002.proc_tables.DTWalk03.trajectory_data_table);
 
 
 
