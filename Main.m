@@ -24,7 +24,7 @@ subjects_list = arrange_subjects(folder);
 
 subjects = process(subjects_list);
 
-%% Test Event Detection
+
 
 
 
