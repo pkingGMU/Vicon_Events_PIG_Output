@@ -10,7 +10,7 @@ This code will allow a user to select a dedicated folder. The code will then det
 
 --------------------------------------------------------------------------------------------------
 
-Preferred folder structure -> Main FOLDER -> Subject FOLDER -> Subject data FILES (1 csv file, 1 force plate file ?)
+Preferred folder structure -> Data FOLDER -> Subject FOLDER -> Subject data FILE (1 csv file export)
 
 
 **Current Build** Run `Main.m` and choose your Main folder
