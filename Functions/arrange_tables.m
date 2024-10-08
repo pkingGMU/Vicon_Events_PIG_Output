@@ -130,6 +130,9 @@ function [proc_tables, event_table] = arrange_tables(folder)
 
         % Convert to table
         event_table = cell2table(output_data, 'VariableNames', {'Subject', 'Context', 'Name', 'Time (s)', 'Description'});
+
+        % Add event table to proc tables
+        proc_tables.(file_name_short).event_data_table = event_table;
         
         %%% Create excel
         

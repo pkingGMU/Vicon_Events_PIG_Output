@@ -8,7 +8,7 @@ function [subjects] = process(subjects_list)
         subject = subjects_list(i);
 
         % Get subject data for subject folder
-        [proc_tables, event_table] = arrange_tables(subject);
+        [proc_tables] = arrange_tables(subject);
     
         % Easy naming convention
         % Display subject for debugging
@@ -16,7 +16,7 @@ function [subjects] = process(subjects_list)
 
         subjects.(subject).proc_tables = proc_tables;
 
-        subjects.(subject).proc_tables.event_table = event_table;
+        
 
         
 
