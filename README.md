@@ -10,6 +10,13 @@ This code will allow a user to select a dedicated folder. The code will then det
 
 --------------------------------------------------------------------------------------------------
 
+Exporting pipeline
+
+MUST BE CSV
+MUST HAVE EXPORT EVENTS CHECKED
+DO NOT EXPORT DUPLICATE MODEL OUTPUT DATA AS ACCELERATIONS
+
+
 Preferred folder structure -> Data FOLDER -> Subject FOLDER -> Subject data FILE (1 csv file export)
 
 
