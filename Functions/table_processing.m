@@ -63,7 +63,17 @@ function [section_data_table] = table_processing(section, data_table)
     
     % Convert label to string array for further manipulation
     string_labels = string(labels.Variables);
+    
     sub_labels = string(sub_labels.Variables);
+
+    % Remove numbers from sub labels
+    sub_labels = cellfun(@(x) regexprep(x, '^[^:]*:', ''), cellstr(sub_labels), 'UniformOutput', false);
+
+    sub_labels = string(sub_labels);
+
+   
+    
+
 
     %%% Creating unique variables by concat labels and sub labels
     
@@ -75,6 +85,7 @@ function [section_data_table] = table_processing(section, data_table)
         % first column variable 
         label_pointer = string_labels(variable);
         sub_pointer = sub_labels(variable);
+
         
         % The first 2 columns are always Frame and Sub Frame
         if variable == 1 || variable == 2

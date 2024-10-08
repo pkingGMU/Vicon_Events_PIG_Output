@@ -64,7 +64,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         % Create new data table for Model Ouputs
         
-        proc_tables.(file_name_short).model_data_table = table_processing('Model Outputs', full_data_table);
+        %proc_tables.(file_name_short).model_data_table = table_processing('Model Outputs', full_data_table);
         
         % Create new data table for Trajectories
         

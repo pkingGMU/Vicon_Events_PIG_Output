@@ -14,9 +14,9 @@ function [flhs,flto,frhs,frto] = gait_detection(trajectory)
     %LASIS=(trajectory(:, {'02:LASI_X', '02:LASI_Y', '02:LASI_Z'}));
     %RASIS=(trajectory(:, {'02:RASI_X', '02:RASI_Y', '02:RASI_Z'}));
     %LPSIS=(trajectory(:, {'02:LPSI_X', '02:LPSI_Y', '02:LPSI_Z'}));
-    y_LPSIS=str2double(trajectory.("02:LPSI_Y"));
+    y_LPSIS=str2double(trajectory.("LPSI_Y"));
     %RPSIS=(trajectory(:, {'02:RPSI_X', '02:RPSI_Y', '02:RPSI_Z'}));
-    y_RPSIS=str2double(trajectory.("02:RPSI_Y"));
+    y_RPSIS=str2double(trajectory.("RPSI_Y"));
     %OPSIS=0.5*(RPSIS+LPSIS); %PSIS center(sacrum)
     y_OPSIS=0.5*(y_LPSIS+y_RPSIS); %PSIS y center(y sacrum)
     %CPSIS=mean([RPSIS;LPSIS],1);
@@ -24,23 +24,23 @@ function [flhs,flto,frhs,frto] = gait_detection(trajectory)
     % foot markers
     %LHE=0.001*data(:,96:98);
     %x_LHE=0.001*data(:,96);
-    y_LHE=str2double(trajectory.("02:LHEE_Y"));
-    z_LHE=str2double(trajectory.("02:LHEE_Z"));
+    y_LHE=str2double(trajectory.("LHEE_Y"));
+    z_LHE=str2double(trajectory.("LHEE_Z"));
     
     %LTO=0.001*data(:,99:101);
     %x_LTO=0.001*data(:,99);
-    y_LTO=str2double(trajectory.("02:LTOE_Y"));
-    z_LTO=str2double(trajectory.("02:LTOE_Z"));
+    y_LTO=str2double(trajectory.("LTOE_Y"));
+    z_LTO=str2double(trajectory.("LTOE_Z"));
     
     %RHE=0.001*data(:,114:116);
     %x_RHE=0.001*data(:,114);
-    y_RHE=str2double(trajectory.("02:RHEE_Y"));
-    z_RHE=str2double(trajectory.("02:RHEE_Z"));
+    y_RHE=str2double(trajectory.("RHEE_Y"));
+    z_RHE=str2double(trajectory.("RHEE_Z"));
     
     %RTO=0.001*data(:,117:119);
     %x_RTO=0.001*data(:,117);
-    y_RTO=str2double(trajectory.("02:RTOE_Y"));
-    z_RTO=str2double(trajectory.("02:RTOE_Z"));
+    y_RTO=str2double(trajectory.("RTOE_Y"));
+    z_RTO=str2double(trajectory.("RTOE_Z"));
     
     z_lfocent= 0.5*(z_LHE+z_LTO); % z left foot centre
     z_rfocent= 0.5*(z_RHE+z_RTO); % z right foot centre
