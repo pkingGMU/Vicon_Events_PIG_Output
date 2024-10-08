@@ -1,25 +1,15 @@
-
-function [cwa_data, cwa_info, cwa_data_tables, total_time, sample_rate] = arrange_tables(folder)
+function [proc_tables] = arrange_tables(folder)
     %%%
-    % Looking at the directory 'folder'. 
     % 
-    % 1. Looking at every file in 'folder'.
-    %
-    % 2. For every file we read the cwa data
-    %
-    % 3. TODO: ADD More comments
-    %
-    %
-    % 3. 
+    %%%
     
-    %%% Make an array of the file names. Normally it is one file but this
-    %%% ensure we capture any extra files.
+    %%% Make an array of the file names
     
 
-    folder = fullfile(folder.folder, folder.name);
+    folder = fullfile(folder.folder, folder.name)
     
     % File pattern is equal to our folder directory + a csv file 
-    filePattern = fullfile(folder, '*.cwa');
+    filePattern = fullfile(folder, '*.csv');
     % files is an array of all the files in our chosen directory with the csv extension
     files = dir(filePattern);
     
@@ -36,107 +26,51 @@ function [cwa_data, cwa_info, cwa_data_tables, total_time, sample_rate] = arrang
         
         % Set temp variable to the nth file in our list of files
         file_name = fullfile(folder, files(file).name);
+        
         % A shorted file name without the csv extension
-        file_name_short = strrep(erase(files(file).name, ".cwa"), ' ', '_'); 
+        file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_'); 
 
+        
         % Debugging
         disp(file_name_short)
 
-        % Get raw data info. This gives us start and stop times so it can
-        % accuratly give us our time
-        cwa_info = read_CWA(file_name,'info', 1);
+        % Make a full data table with the file name we'er on
         
-        % Get raw data
-        cwa_data = read_CWA(file_name, ...
-            'packetInfo', cwa_info.packetInfo, ...
-            'verbose', 1);
-
-        %%% Get total time for file
-
-        % Define start and end time
-        start_time = datetime(cwa_info.start.str, "InputFormat", 'dd-MMM-yyyy HH:mm:ss');
-        end_time = datetime(cwa_info.stop.str, "InputFormat", 'dd-MMM-yyyy HH:mm:ss');
-        total_time = seconds(end_time-start_time);
-
-        % SAMPLE RATE
-        sample_rate = length(cwa_data.AXES)/total_time;
-
-        % COMPARISON RAW TABLES
-        cwa_data_tables.AXESnoprocessing = array2table(cwa_data.AXES, 'VariableNames', {'UNIX TIME', 'Ax', 'Ay', 'Az', 'Gx', 'Gy', 'Gz'});
-
-
-        %%% Interpolation %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        inter_axes = interpolation(total_time, cwa_data.AXES(:, 2:7));
-        inter_acc = interpolation(total_time, cwa_data.ACC(:, 2:4));
-        %inter_temp = interpolation(total_time, cwa_data.TEMP);
-        
-        % Create time vector
-        time_stamps = start_time + seconds(0:(total_time-1)); % 0, 1, 2, ..., num_rows-1 seconds
-
-        % Repeat time stamps
-        timestamps_repeated = repelem(time_stamps, 50);
-
-        %%% ENMO To Find Inactivity %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        zero_frames = ENMO(inter_axes);
-
-        %%% Zeroing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        inter_zero_axes = zero_func(inter_axes, zero_frames);
-        
-        % Does not work because of size atm
-        %inter_zero_acc = zero_func(inter_acc, zero_frames);
-
-
-        %%% Tables %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        %%% New table for AXES
-        cwa_data_tables.AXES = array2table(inter_zero_axes, 'VariableNames', {'Ax', 'Ay', 'Az', 'Gx', 'Gy', 'Gz'});
-
-        % Convert column 1 timestamps to datetime
-        %converted_time_stamps = datetime(cwa_data.AXES(:,1), 'ConvertFrom', 'datenum');
-
-
-        % Add the converted timestamps to the table as a new colum
-        %cwa_data_tables.AXES.CovertedTime = converted_time_stamps;
-
-        cwa_data_tables.AXES.Time = timestamps_repeated';
-        
-        % Debugging
+        % All of these options are to ensure every csv is imported
+        % correctly and every variable is type char
+        opts = detectImportOptions(file_name);
+        opts = setvartype(opts, 'char');
+        opts.VariableNamingRule = 'preserve';
+        opts = setvaropts(opts, 'Type', 'char');
+        opts.DataLines = [1 Inf];
         
 
-        
-        %%% New table for ACC
-        %cwa_data_tables.ACC = array2table(inter_acc, 'VariableNames', {'Var1', 'Var2', 'Var3'});
+        full_data_table = readtable(file_name, opts);
 
-        % Convert column 1 timestamps to datetime
-        %%%converted_time_stamps = datetime(cwa_data.ACC(:,1), 'ConvertFrom', 'datenum');
-
-        % Add the converted timestamps to the table as a new colum
-        %%%%cwa_data_tables.ACC.CovertedTime = converted_time_stamps;
-        
-        % Add column for timestamps
-        %cwa_data_tables.ACC.Time = timestamps_repeated';
-
-        %%% New table for TEMP
-        %cwa_data_tables.TEMP = array2table(cwa_data.TEMP, 'VariableNames', {'TIME (UNIX)', 'TEMP'});
-
-        % Add the converted timestamps to the table as a new colum
-
-        % TODO: Implement later as the sizes don't match right now
-        % Convert column 1 timestamps to datetime
-        %converted_time_stamps = datetime(cwa_data.TEMP(:,1), 'ConvertFrom', 'datenum');
-        %cwa_data_tables.TEMP.CovertedTime = converted_time_stamps;
-        
-
-        
-
+        full_data_table.Properties.VariableNames{3} = 'Var3';
         
         
+        %%% Create new tables for each section (Note this uses a custom function table_processing.m
+        % The tables will be added to the struct proc_tables at the file
+        % name we'er on at the table we'er trying to create. Structs are
+        % great for organizing a lot of data into folder like structures
+        % that reduce our variables!
 
+
+        % Create new data table for devices
+        
+        proc_tables.(file_name_short).devices_data_table = table_processing('Devices', full_data_table);
+        
+        % Create new data table for Model Ouputs
+        
+        proc_tables.(file_name_short).model_data_table = table_processing('Model Outputs', full_data_table);
+        
+        % Create new data table for Trajectories
+        
+        proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
+        
+       
         
      
     end
 end
-

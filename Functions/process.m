@@ -8,13 +8,12 @@ function [subjects] = process(subjects_list)
         subject = subjects_list(i);
 
         % Get subject data for subject folder
-        [] = arrange_tables(subject);
+        [proc_tables] = arrange_tables(subject);
     
         % Easy naming convention
-        subject =  'sub' + string(subject.name);
-
-        % Struct setup data
-        %subjects.(subject).cwa_data = cwa_data;
+        % Display subject for debugging
+        subject =  'sub' + string(subject.name)
+        subjects.(subject).proc_tables = proc_tables;
 
         
 
