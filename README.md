@@ -25,9 +25,9 @@ Preferred folder structure -> Data FOLDER -> Subject FOLDER -> Subject data FILE
 
 **Outpus:** 
 
-TBD
+A .xlsx file will appear in the subject folder alongside its previous csv file.
 
-Ignore all other variables still working those out
+There should be no reason to interact with the code or the variables in the workspace.
 
 
 
