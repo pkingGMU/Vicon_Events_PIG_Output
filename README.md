@@ -10,10 +10,11 @@ This code will allow a user to select a dedicated folder. The code will then det
 
 --------------------------------------------------------------------------------------------------
 
-Exporting pipeline
+Exporting from Vicon
 
-MUST BE CSV
-MUST HAVE EXPORT EVENTS CHECKED
+Must export as CSV
+Must have `EXPORT EVENTS` checked
+TRIAL NAME NAME SHOULD NOT INCLUDE NUMBERS OR SPECIAL CHARACTERS FIRST (Ex. Right -> DTWALK02, Wrong -> 02DTWALK)
 DO NOT EXPORT DUPLICATE MODEL OUTPUT DATA AS ACCELERATIONS
 
 
