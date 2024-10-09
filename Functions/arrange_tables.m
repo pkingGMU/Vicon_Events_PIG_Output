@@ -189,6 +189,17 @@ function [proc_tables, event_table] = arrange_tables(folder)
             
             % Add 'events' data to the top
             combined_data = [events_data; combined_data];
+        else 
+             % If 'events' row is not found, create a custom 'events_data'
+             events_data = {'Events', [], [], [], []; 100, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};  % Creating a 2x1 cell array
+            
+             % Pad out new events data
+             % Step 3: Get the size of the existing data
+             
+             events_data_padded = [events_data, repmat({''}, size(events_data, 1), existing_cols - size(events_data, 2))];
+
+             % Add 'events_data' to the top
+             combined_data = [events_data_padded; combined_data];
         end
 
         % Replace missing values with a specific value, e.g., empty string or NaN
