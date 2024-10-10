@@ -26,7 +26,7 @@ function [varargout] = OvergroundJointAngs(subID,frames,text,data,all_events,APc
 for i = 1:length(text)
     nam = append(subID, ':LAnkleAngles');
 
-    if strcmp(text{i},nam)==1
+    if contains(text{i},':LAnkleAngles')==1
         if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
             pfc = i+1;
         elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -39,7 +39,7 @@ LAnk_PF = data(:,pfc);
 for i = 1:length(text)
     nam = append(subID, ':RAnkleAngles');
 
-    if strcmp(text{i},nam)==1
+    if contains(text{i},':RAnkleAngles')==1
         if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
             pfc = i+1;
         elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -54,7 +54,7 @@ RAnk_PF = data(:,pfc);
 for i = 1:length(text)
     nam = append(subID, ':LHipAngles');
 
-    if strcmp(text{i},nam)==1
+    if contains(text{i},':LHipAngles')==1
         if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
             hipc = i+1;
             hipad = i;
@@ -70,7 +70,7 @@ LHip_Abd = data(:,hipad);
 for i = 1:length(text)
     nam = append(subID, ':RHipAngles');
 
-    if strcmp(text{i},nam)==1
+    if contains(text{i}, ':RHipAngles')==1
         if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
             hipc = i+1;
             hipad = i;
@@ -87,7 +87,7 @@ RHip_Abd = data(:,hipad);
 for i = 1:length(text)
     nam = append(subID, ':LKneeAngles');
 
-    if strcmp(text{i},nam)==1
+    if contains(text{i},':LKneeAngles')==1
         if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
             kneec = i+1;
             kneead = i;
@@ -103,7 +103,7 @@ LKnee_Abd = data(:,kneead);
 for i = 1:length(text)
     nam = append(subID, ':RKneeAngles');
 
-    if strcmp(text{i},nam)==1
+    if contains(text{i},':RKneeAngles')==1
         if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
             kneec = i+1;
             kneead = i;
