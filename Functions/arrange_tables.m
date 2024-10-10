@@ -99,14 +99,14 @@ function [proc_tables, event_table] = arrange_tables(folder)
             % Left heel strike
             output_data{row_counter, 1} = subject_id;
             output_data{row_counter, 2} = 'Left';
-            output_data{row_counter, 3} = 'Heel Strike';
+            output_data{row_counter, 3} = 'Foot Strike';
             output_data{row_counter, 4} = lhs(i);
             row_counter = row_counter + 1;
             
             % Left toe off
             output_data{row_counter, 1} = subject_id;
             output_data{row_counter, 2} = 'Left';
-            output_data{row_counter, 3} = 'Toe Off';
+            output_data{row_counter, 3} = 'Foot Off';
             output_data{row_counter, 4} = lto(i);
             row_counter = row_counter + 1;
         end
@@ -116,14 +116,14 @@ function [proc_tables, event_table] = arrange_tables(folder)
             % Right heel strike
             output_data{row_counter, 1} = subject_id;
             output_data{row_counter, 2} = 'Right';
-            output_data{row_counter, 3} = 'Heel Strike';
+            output_data{row_counter, 3} = 'Foot Strike';
             output_data{row_counter, 4} = rhs(i);
             row_counter = row_counter + 1;
             
             % Right toe off
             output_data{row_counter, 1} = subject_id;
             output_data{row_counter, 2} = 'Right';
-            output_data{row_counter, 3} = 'Toe Off';
+            output_data{row_counter, 3} = 'Foot Off';
             output_data{row_counter, 4} = rto(i);
             row_counter = row_counter + 1;
         end
