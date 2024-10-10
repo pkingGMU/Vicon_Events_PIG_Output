@@ -164,10 +164,10 @@ function [flhs,flto,frhs,frto] = gait_detection(trajectory)
     
     end
 
-    flhs = (flhs + frame_start)/FR;
-    flto = (flto + frame_start)/FR;
-    frhs = (frhs + frame_start)/FR;
-    frto = (frto + frame_start)/FR;
+    flhs = (flhs + frame_start-1)/FR;
+    flto = (flto + frame_start-1)/FR;
+    frhs = (frhs + frame_start-1)/FR;
+    frto = (frto + frame_start-1)/FR;
 
 
 
