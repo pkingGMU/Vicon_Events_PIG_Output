@@ -64,6 +64,7 @@ function [section_data_table] = table_processing(section, data_table)
     % Convert label to string array for further manipulation
     string_labels = string(labels.Variables);
     
+    
     sub_labels = string(sub_labels.Variables);
 
     % Remove numbers from sub labels
@@ -115,6 +116,21 @@ function [section_data_table] = table_processing(section, data_table)
         end
         
     end
+
+    % Check for duplicates in the string_labels array
+
+    unique_labels = string_labels;  % Create a copy to modify
+    
+    % Check for duplicates in the unique_labels array
+    for i = 1:length(unique_labels)
+        % If a label already exists earlier in the list, add a suffix to make it unique
+        while sum(unique_labels(1:i-1) == unique_labels(i)) > 0
+            unique_labels(i) = unique_labels(i) + "_dup"; % Add a "_dup" suffix to make the name unique
+        end
+    end
+
+    string_labels = unique_labels;
+
 
     
     % Creating the new table

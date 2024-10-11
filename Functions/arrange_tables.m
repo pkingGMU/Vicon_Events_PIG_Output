@@ -64,7 +64,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         % Create new data table for Model Ouputs
         
-        %proc_tables.(file_name_short).model_data_table = table_processing('Model Outputs', full_data_table);
+        proc_tables.(file_name_short).model_data_table = table_processing('Model Outputs', full_data_table);
         
         % Create new data table for Trajectories
         
@@ -72,7 +72,12 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         %%% GAIT EVENTS
 
-        [lhs,lto,rhs,rto] = gait_detection(proc_tables.(file_name_short).trajectory_data_table);
+        [lhs,lto,rhs,rto, frame_start, FR] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table);
+
+
+       
+
+        
 
         % Define the subject
         [~,subject_id, ~] = fileparts(folder);
@@ -133,6 +138,42 @@ function [proc_tables, event_table] = arrange_tables(folder)
 
         % Add event table to proc tables
         proc_tables.(file_name_short).event_data_table = event_table;
+
+
+
+        %%% GEN DETECTION
+
+        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table);
+
+          
+        proc_tables.(file_name_short).gen_events = gen;
+
+
+        %%% Appending gen_frames vertically %%%
+        % Number of gen_frames
+        num_gen_frames = length(gen_frames);
+        
+        % Create new rows for gen_frames
+        gen_data = cell(num_gen_frames, 5);
+        for i = 1:num_gen_frames
+            gen_data{i, 1} = subject_id;          % Subject
+            gen_data{i, 2} = 'General';           % Context
+            gen_data{i, 3} = 'General';           % Name
+            gen_data{i, 4} = gen_frames(i);       % Time (s)
+            gen_data{i, 5} = '';                  % Description (empty)
+        end
+        
+        % Convert gen_data to table
+        gen_table = cell2table(gen_data, 'VariableNames', {'Subject', 'Context', 'Name', 'Time (s)', 'Description'});
+        
+        % Append gen_table to event_table
+        event_table = [event_table; gen_table];
+        
+        % Save the updated event table in proc_tables
+        proc_tables.(file_name_short).event_data_table = event_table;
+
+
+
         
         %%% Create excel
         
