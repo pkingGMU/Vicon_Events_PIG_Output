@@ -64,7 +64,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         % Create new data table for Model Ouputs
         
-        %proc_tables.(file_name_short).model_data_table = table_processing('Model Outputs', full_data_table);
+        proc_tables.(file_name_short).model_data_table = table_processing('Model Outputs', full_data_table);
         
         % Create new data table for Trajectories
         
@@ -72,7 +72,12 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         %%% GAIT EVENTS
 
-        [lhs,lto,rhs,rto] = gait_detection(proc_tables.(file_name_short).trajectory_data_table);
+        [lhs,lto,rhs,rto] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table);
+
+
+        %%% GEN DETECTION
+
+        
 
         % Define the subject
         [~,subject_id, ~] = fileparts(folder);
@@ -210,9 +215,9 @@ function [proc_tables, event_table] = arrange_tables(folder)
         combined_data(mask) = {[]};
                 
         % Write the modified data to a new Excel file
-        new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
-        new_full_file_path = fullfile(folder, new_excel_filename);
-        writecell(combined_data, new_full_file_path);
+        % new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
+        % new_full_file_path = fullfile(folder, new_excel_filename);
+        % writecell(combined_data, new_full_file_path);
 
         % Step 7: Write the combined data to a new Excel file
         % new_excel_filename = 'updated_file.xlsx';
