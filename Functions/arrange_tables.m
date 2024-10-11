@@ -72,10 +72,10 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         %%% GAIT EVENTS
 
-        [lhs,lto,rhs,rto] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table);
+        [lhs,lto,rhs,rto, frame_start, FR] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table);
 
 
-        %%% GEN DETECTION
+       
 
         
 
@@ -138,6 +138,21 @@ function [proc_tables, event_table] = arrange_tables(folder)
 
         % Add event table to proc tables
         proc_tables.(file_name_short).event_data_table = event_table;
+
+
+
+        %%% GEN DETECTION
+
+        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table);
+
+          
+        proc_tables.(file_name_short).gen_events = gen;
+
+
+        
+
+
+
         
         %%% Create excel
         
