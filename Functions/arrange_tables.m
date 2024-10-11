@@ -149,7 +149,28 @@ function [proc_tables, event_table] = arrange_tables(folder)
         proc_tables.(file_name_short).gen_events = gen;
 
 
+        %%% Appending gen_frames vertically %%%
+        % Number of gen_frames
+        num_gen_frames = length(gen_frames);
         
+        % Create new rows for gen_frames
+        gen_data = cell(num_gen_frames, 5);
+        for i = 1:num_gen_frames
+            gen_data{i, 1} = subject_id;          % Subject
+            gen_data{i, 2} = 'General';           % Context
+            gen_data{i, 3} = 'General';           % Name
+            gen_data{i, 4} = gen_frames(i);       % Time (s)
+            gen_data{i, 5} = '';                  % Description (empty)
+        end
+        
+        % Convert gen_data to table
+        gen_table = cell2table(gen_data, 'VariableNames', {'Subject', 'Context', 'Name', 'Time (s)', 'Description'});
+        
+        % Append gen_table to event_table
+        event_table = [event_table; gen_table];
+        
+        % Save the updated event table in proc_tables
+        proc_tables.(file_name_short).event_data_table = event_table;
 
 
 
@@ -230,9 +251,9 @@ function [proc_tables, event_table] = arrange_tables(folder)
         combined_data(mask) = {[]};
                 
         % Write the modified data to a new Excel file
-        % new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
-        % new_full_file_path = fullfile(folder, new_excel_filename);
-        % writecell(combined_data, new_full_file_path);
+        new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
+        new_full_file_path = fullfile(folder, new_excel_filename);
+        writecell(combined_data, new_full_file_path);
 
         % Step 7: Write the combined data to a new Excel file
         % new_excel_filename = 'updated_file.xlsx';
