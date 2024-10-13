@@ -77,12 +77,19 @@ end
 if ~any(~isnan(rto(:,1)))==0
     rto(:,1) = sort(round(rto(:,1)*camrate));%right toe off event times
 end
-if strcmp(type{:},'Overground')==1 && exist('gen', 'var')
-    if exist('gen', 'var')
-        if  ~any(~isnan(gen(:,1)))==0
+if strcmp(type{:},'Overground')==1
+    try
+        if ~any(~isnan(gen(:,1)))==0
             gen(:,1) = sort(round(gen(:,1)*camrate));% General event times
+            
+
         end
+    catch
+         gen = zeros(n_rto, 2); % Set gen to a 1x1 array with a 0 in it
+         gen(:, 2) = 5; % Set all values in column 2 to 5
+         gen(:, 1) = Inf;
     end
+
     all_events = sortrows([rhs;rto;lhs;lto;gen],1);
 else
     all_events = sortrows([rhs;rto;lhs;lto],1);
@@ -95,11 +102,11 @@ if nargout == 5
     varargout{4} = lto;
     varargout{5} = all_events;
 elseif nargout == 6
-        varargout{1} = rhs;
+    varargout{1} = rhs;
     varargout{2} = rto;
     varargout{3} = lhs;
     varargout{4} = lto;
-    %varargout{5} = gen;
+    varargout{5} = gen;
     varargout{6} = all_events;
     
 end
