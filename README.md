@@ -4,7 +4,9 @@
 
 ## Description
 
-This code will allow a user to select a data folder. The code will then determine GAIT events from both PIG parameters as well as force plate parameters. It will then return an excel file with GAIT events, PIG outputs, and trajectories.
+This project is split into two parts. 
+* The first is running Main.m to calculate both gen, foot strike, and foot off events from Vicon's csv export. This will create an xlsx file with the events listed as well as the devices, model output, and trajectory data.
+* The second part is running R01_GaitAnalysis.m located in the `Gait_Analysis_Code` Folder to get a full analysis on the data. 
 
 **ISSUES**: see issues tab
 
@@ -16,16 +18,20 @@ Exporting from Vicon
 * DO NOT EXPORT DUPLICATE MODEL OUTPUT DATA AS ACCELERATIONS
 
 
-Preferred folder structure -> Data FOLDER -> Subject FOLDER -> Subject data FILE (1 csv file export)
+## Setting Up and Running This Project
 
+* Download this repo by either cloning it using GitHub or clicking `<> Code` -> `Download ZIP`
+* Take your Vicon export csvs and put them in the `Data` folder provided. The structure should look like `Data` Folder -> `SubjectID` Folder -> `Trial` Files .csv
+* Run Main.m (Will take n files * 45 seconds amount of time so be patient)
+* All completed .xlsx files will appear in the provided `Gait_Analysis_Data` Folder
+* Run R01_GaitAnalysis.m and follow the instructions
+* When it asks for project folder select .../Vicon_Events_PIG_Output
+* When it asks for data folder select .../Vicon_Events_PIG_Output/Gait_Analysis_Data
+* When it asks for code folder select .../Vicon_Events_PIG_Output/Gait_Analysis_Code
+* When it asks for Overground folder select .../Vicon_Events_PIG_Output/Gait_Analysis_Data/Overground
+* When it asks for directional XX or YY select `XX`
+* Ouput will appear in .../Vicon_Events_PIG_Output/Gait_Analysis_Data/Processed Data
 
-**Current Build** Run `Main.m` and choose the data folder
-
-**Outpus:** 
-
-A .xlsx file will appear in the subject folder alongside its previous csv file.
-
-There should be no reason to interact with the code or the variables in the workspace.
 
 
 
