@@ -249,10 +249,22 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         mask = cellfun(@(x) any(isa(x,'missing')), combined_data); % using isa instead of ismissing allows white space through
         combined_data(mask) = {[]};
+        
+        %%% Define folder to save excel
+        % Root folder
+        root_folder = pwd;
+        
+        % Construct the full path to the subject's folder
+        excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', 'Overground', subject_id);
+
+        % Check if the folder exists, if not, create it
+        if ~exist(excel_folder, 'dir')
+            mkdir(excel_folder);
+        end
                 
         % Write the modified data to a new Excel file
         new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
-        new_full_file_path = fullfile(folder, new_excel_filename);
+        new_full_file_path = fullfile(excel_folder, new_excel_filename);
         writecell(combined_data, new_full_file_path);
 
         % Step 7: Write the combined data to a new Excel file
