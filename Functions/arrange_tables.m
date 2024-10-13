@@ -171,6 +171,12 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         % Save the updated event table in proc_tables
         proc_tables.(file_name_short).event_data_table = event_table;
+        
+
+        %%% Sorting for R01 Analyis
+
+        % Sort the event_table by Context and then by Name
+        event_table = sortrows(event_table, {'Context', 'Name'}, {'ascend', 'ascend'});
 
 
 

@@ -180,6 +180,19 @@ function [flhs,flto,frhs,frto, frame_start, FR] = gait_detection(trajectory, mod
     
     end
 
+    %% After detecting events, ensure first event is a heel strike
+    % Left leg: if the first event in the left leg is not a heel strike, rearrange
+    if flhs(1) > flto(1)  % First event is a toe-off
+        disp('Rearranging left leg events to start with heel strike');
+        flto = flto(2:end);  % Skip first toe-off
+    end
+
+    % Right leg: if the first event in the right leg is not a heel strike, rearrange
+    if frhs(1) > frto(1)  % First event is a toe-off
+        disp('Rearranging right leg events to start with heel strike');
+        frto = frto(2:end);  % Skip first toe-off
+    end
+
     flhs = (flhs + frame_start-1)/FR;
     flto = (flto + frame_start-1)/FR;
     frhs = (frhs + frame_start-1)/FR;

@@ -9,7 +9,7 @@ function [gaitcycles] = getGaitCycles(data,all_events,lhs,rhs)
        elseif all_events(1,2) == 3
            startleg = 2; % right
            numcycles = length(rhs)-1;
-       end
+end
 
 if startleg == 1 % left
 
