@@ -46,57 +46,6 @@ function [flhs,flto,frhs,frto, frame_start, FR] = gait_detection(trajectory, mod
     z_rfocent= 0.5*(z_RHE+z_RTO); % z right foot centre
     
     
-    
-    %% load force data
-    
-     
-    % LFx=str2double(model_output.("LGroundReactionForce_Z")); 
-    % LFy=str2double(model_output.("LGroundReactionForce_Y")); 
-    % LFz=str2double(model_output.("LGroundReactionForce_Z"));
-    % 
-    % RFx=str2double(model_output.("RGroundReactionForce_X")); 
-    % RFy=str2double(model_output.("RGroundReactionForce_Y")); 
-    % RFz=str2double(model_output.("RGroundReactionForce_Z"));
-    % 
-    % LMx=str2double(model_output.("LGroundReactionMoment_X")); 
-    % LMy=str2double(model_output.("LGroundReactionMoment_Y")); 
-    % LMz=str2double(model_output.("LGroundReactionMoment_Z"));
-    % 
-    % RMx=str2double(model_output.("RGroundReactionMoment_X")); 
-    % RMy=str2double(model_output.("RGroundReactionMoment_Y")); 
-    % RMz=str2double(model_output.("RGroundReactionMoment_Z"));
-
-
-    % Threshold for detecting strikes (to be adjusted based on the data)
-    % threshold = .1;  % Define a threshold in Newtons to identify contact
-    % 
-    % % Find initial contact (heel strike) and toe-off using GRFz for both feet
-    % left_strikes = find(diff(LFz > threshold) == 1);   % Heel strike when force goes above threshold
-    % left_toeoff = find(diff(LFz > threshold) == -1);   % Toe-off when force goes below threshold
-    % 
-    % right_strikes = find(diff(RFz > threshold) == 1);  % Same for right foot
-    % right_toeoff = find(diff(RFz > threshold) == -1);
-    % 
-    % % Combine left and right foot strikes
-    % all_strikes = [left_strikes; right_strikes];
-    % 
-    % % Sort the strikes by time/frame if necessary
-    % all_strikes = sort(all_strikes);
-
-
-
-    % for p= 1:length(LFz)
-    % LCOPx(p)=-0.01*(LMy(p)/LFz(p)); LCOPy(p)=0.01*(LMx(p)/LFz(p));
-    % RCOPx(p)=-0.01*(RMy(p)/RFz(p)); RCOPy(p)=0.01*(RMx(p)/RFz(p));
-    % end
-    % 
-    % 
-    % one_COP=0.1*Fdata(:,9:11); one_COPx=one_COP(:,1); one_COPy=one_COP(:,2);
-    % two_COP=0.1*Fdata(:,18:20); two_COPx=two_COP(:,1); two_COPy=two_COP(:,2);
-    % three_COP=0.1*Fdata(:,27:29); three_COPx=three_COP(:,1); three_COPy=three_COP(:,2);
-    % 
-    % G=[0 0 -9.81];
-    
     %% Coordinate-Based Treadmill Algorithm_ EVENTS
     if y_RHE(1,1)<0 && y_LHE(1,1)<0
     
