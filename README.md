@@ -15,7 +15,7 @@ This project is split into two parts.
 Exporting from Vicon
 
 * Must export as CSV
-* DO NOT EXPORT DUPLICATE MODEL OUTPUT DATA AS ACCELERATIONS
+
 
 
 ## Setting Up and Running This Project
