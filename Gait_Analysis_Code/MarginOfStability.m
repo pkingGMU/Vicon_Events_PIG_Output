@@ -20,7 +20,7 @@ function [mos] = MarginOfStability(subID,frames,camrate,text,data,coordata,coort
 for i = 1:length(text)
     nam = append(subID,':CentreOfMass');
 
-    if strcmp(text{i},nam)==1
+    if contains(text{i},':CentreOfMass')==1
         if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
             ap = i+1;
             ml = i;
@@ -31,7 +31,10 @@ for i = 1:length(text)
             ml = i+1;
             up = i+2;
             
-       end
+        end
+        
+        break % First instance is found
+
     end
 end
 
@@ -42,7 +45,7 @@ end
 for i = 1:length(coortext)
     nam = [':RANK'];
     if length(coortext{i}) > 4
-        if strcmp(coortext{i}(end-4:end),nam)==1
+        if contains(coortext{i}(end-4:end),':RANK')==1
             if APcol == 1
                 rank_AP_col = i;
                 rank_ML_col = i+1;

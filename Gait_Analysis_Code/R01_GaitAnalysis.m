@@ -268,8 +268,8 @@ for each_subject = 1:length(sub_list_num)
             frames = gaitcycles{g};
             [rowMatch,~]=ismember(coordata(:,1),frames,'rows');
             traj_rows = find(rowMatch);
-[modrowMatch,~]=ismember(model_data(:,1),frames,'rows');
-mod_rows = find(modrowMatch);
+            [modrowMatch,~]=ismember(model_data(:,1),frames,'rows');
+            mod_rows = find(modrowMatch);
             if strcmp(type{:},'Treadmill')==1
                 spatiotemps(g,:) = TreadmillSpatiotemporals(frames,lheeAP(traj_rows),lheeML(traj_rows),rheeAP(traj_rows),rheeML(traj_rows),all_events,camrate,direction);
                 % spatiotemporals structure:
@@ -370,7 +370,16 @@ mod_rows = find(modrowMatch);
                 end
             end
 
+            %%% MoS - Added by Patrick
+            mos(g,:) = MarginOfStability(subID, frames, camrate, model_text,model_data(mod_rows, :), coordata, coortext, all_events, APcol);
+
         end
+        
+        %%% Mos Table - Added by Patrick
+        mos_table = array2table(mos);
+        mos_vars = {'L_MoS_AP_hs', 'R_MoS_AP_hs', 'L_MoS_ML_hs', 'R_MoS_ML_hs', 'L_MoS_AP_to', 'R_MoS_AP_to', 'L_MoS_ML_to', 'R_MoS_ML_to'};
+        mos_table.Properties.VariableNames = mos_vars;
+        
 
         % average across legs and save averages in a big subject
         [sub_LRsteps,sub_avs] = averages(spatiotemps,jointAngs,kinetics);
@@ -412,7 +421,7 @@ mod_rows = find(modrowMatch);
             code_dir core_dir data_dir each_subject each_trial sub_folder...
             sub_list_num sub_loc sub_varTypes subID subject_path trial_file...
             trial_list_num trials type sub_varNames av_varNames processed_data...
-            trial_nam
+            trial_nam mos
 
     end % end trial loop
 
