@@ -114,7 +114,7 @@ function [flhs,flto,frhs,frto, frame_start, FR] = gait_detection(trajectory, mod
     % ylabel('left toe off');
     % Ltofftimes=(flto-1)/FR; % left toe off times
     
-    %findpeaks- right leg Events
+    % findpeaks- right leg Events
     [Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
     % figure; findpeaks(Rheel);
     % xlabel('frame');
@@ -129,18 +129,96 @@ function [flhs,flto,frhs,frto, frame_start, FR] = gait_detection(trajectory, mod
     
     end
 
-    %% After detecting events, ensure first event is a heel strike
+    %%% After detecting events, ensure first event is a heel strike
     % Left leg: if the first event in the left leg is not a heel strike, rearrange
-    if flhs(1) > flto(1)  % First event is a toe-off
-        disp('Rearranging left leg events to start with heel strike');
-        flto = flto(2:end);  % Skip first toe-off
+    % if flhs(1) > flto(1)  % First event is a toe-off
+    %     disp('Rearranging left leg events to start with heel strike');
+    %     flto = flto(2:end);  % Skip first toe-off
+    %     toe_off_cut = 1;
+    % end
+    % 
+    % % Right leg: if the first event in the right leg is not a heel strike, rearrange
+    % if toe_off_cut ~= 1
+    %     if frhs(1) > frto(1)  % First event is a toe-off
+    %         disp('Rearranging right leg events to start with heel strike');
+    %         frto = frto(2:end);  % Skip first toe-off
+    %     end
+    % end
+
+    % Combine all events into a single array with identifiers for event type and side
+    
+    % Combine all events into a single array with identifiers for event type and side
+    events = [
+        num2cell(flhs(:)), repmat({"flhs"}, numel(flhs), 1);
+        num2cell(flto(:)), repmat({"flto"}, numel(flto), 1);
+        num2cell(frhs(:)), repmat({"frhs"}, numel(frhs), 1);
+        num2cell(frto(:)), repmat({"frto"}, numel(frto), 1)
+    ];
+    
+    % Extract the first column (event times) and convert to numeric array
+    event_times = cell2mat(events(:,1));  % Convert the first column to numeric array
+
+    % Sort the event times and get the sorted indices
+    [~, sorted_indices] = sort(event_times);
+
+    % Reorder the entire events cell array based on the sorted indices
+    events = events(sorted_indices, :);
+
+    
+    
+    % Initialize arrays to store the corrected sequence
+    new_flhs = [];
+    new_flto = [];
+    new_frhs = [];
+    new_frto = [];
+
+    % Iterate through the sorted events and enforce the sequence
+    i = 1;
+    while i <= size(events, 1) - 3
+        % Check for foot strike first (either left or right)
+        if strcmp(events{i, 2}, 'flhs') || strcmp(events{i, 2}, 'frhs')
+            % Check for opposite toe-off, opposite heel strike, and same toe-off
+            if strcmp(events{i+1, 2}, 'frto') && strcmp(events{i+2, 2}, 'frhs') && strcmp(events{i+3, 2}, 'flto') || ...
+               strcmp(events{i+1, 2}, 'flto') && strcmp(events{i+2, 2}, 'flhs') && strcmp(events{i+3, 2}, 'frto')
+
+                % Add the correct sequence to the new arrays
+                if strcmp(events{i, 2}, 'flhs')
+                    new_flhs(end+1) = events{i, 1};  % Left heel strike
+                    new_frto(end+1) = events{i+1, 1};  % Right toe off
+                    new_frhs(end+1) = events{i+2, 1};  % Right heel strike
+                    new_flto(end+1) = events{i+3, 1};  % Left toe off
+                else
+                    new_frhs(end+1) = events{i, 1};  % Right heel strike
+                    new_flto(end+1) = events{i+1, 1};  % Left toe off
+                    new_flhs(end+1) = events{i+2, 1};  % Left heel strike
+                    new_frto(end+1) = events{i+3, 1};  % Right toe off
+                end
+                
+                % Move to the next set of events
+                i = i + 4;
+            else
+                % Sequence is incorrect, move to the next event
+                i = i + 1;
+            end
+        else
+            % If the first event is not a heel strike, move to the next event
+            i = i + 1;
+        end
     end
 
-    % Right leg: if the first event in the right leg is not a heel strike, rearrange
-    if frhs(1) > frto(1)  % First event is a toe-off
-        disp('Rearranging right leg events to start with heel strike');
-        frto = frto(2:end);  % Skip first toe-off
-    end
+    % Update the original arrays with the validated sequence
+    flhs = new_flhs;
+    flto = new_flto;
+    frhs = new_frhs;
+    frto = new_frto;
+    
+    % Ensure equal number of elements in each array
+    min_len = min([length(flhs), length(flto), length(frhs), length(frto)]);
+    flhs = flhs(1:min_len);
+    flto = flto(1:min_len);
+    frhs = frhs(1:min_len);
+    frto = frto(1:min_len);
+
 
     flhs = (flhs + frame_start-1)/FR;
     flto = (flto + frame_start-1)/FR;

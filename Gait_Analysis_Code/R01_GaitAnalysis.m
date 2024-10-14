@@ -322,7 +322,7 @@ mod_rows = find(modrowMatch);
                 % col 12 & 13 =  peak hip power (L&R) in last 50% gait cycle in W/kg
 
             elseif strcmp(type{:},'Overground')==1
-
+                
                 spatiotemps(g,:) = OvergroundSpatiotemporals(frames,lheeAP(traj_rows),lheeML(traj_rows),rheeAP(traj_rows),rheeML(traj_rows),all_events,camrate,direction);
                 % spatiotemporals structure:
                 % col 1: speed
