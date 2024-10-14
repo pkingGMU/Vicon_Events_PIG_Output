@@ -6,7 +6,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
     %%% Make an array of the file names
     
 
-    folder = fullfile(folder.folder, folder.name)
+    folder = fullfile(folder.folder, folder.name);
     
     % File pattern is equal to our folder directory + a csv file 
     filePattern = fullfile(folder, '*.csv');
@@ -25,10 +25,10 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         
         % Set temp variable to the nth file in our list of files
-        file_name = fullfile(folder, files(file).name)
+        file_name = fullfile(folder, files(file).name);
         
         % A shorted file name without the csv extension
-        file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_')
+        file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_');
         % Remove any unnecessary numbers
         file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '')
         
@@ -190,9 +190,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
         % Add empty row
         empty_row = repmat({''}, 1, size(existing_data, 2));  % Empty row with the same number of columns
 
-        size(existing_data)
-        size(new_data)
-        size(empty_row)
+        
 
         % Step 3: Get the size of the existing data
         [~, existing_cols] = size(existing_data);
