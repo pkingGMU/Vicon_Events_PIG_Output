@@ -2,13 +2,13 @@ function [section_data_table] = table_processing(section, data_table)
 %%% Creates a table for each section of each file
    
     disp(section)
-    disp(section)
+    
     % Finding the section in the first column of the full data table
     section_index = find(strcmp(data_table.Var1, section));
     
     % Getting the size of the full data table
     % We'll need this later
-    [numRows, numCols] = size(data_table);
+    [numRows, ~] = size(data_table);
 
     % Get the row index of where the labels we want are
     labelIdx = section_index + 3;
