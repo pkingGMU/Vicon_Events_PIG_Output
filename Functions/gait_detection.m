@@ -126,7 +126,7 @@ function [flhs,flto,frhs,frto, frame_start, FR] = gait_detection(trajectory, mod
     % xlabel('frame');
     % ylabel('right toe off');
     % Rtofftimes=(frto-1)/FR; % right toe off times
-    
+    % 
     end
 
     %%% After detecting events, ensure first event is a heel strike
@@ -211,6 +211,11 @@ function [flhs,flto,frhs,frto, frame_start, FR] = gait_detection(trajectory, mod
     flto = new_flto;
     frhs = new_frhs;
     frto = new_frto;
+
+    if isempty(flhs)
+        disp('Gait_Detection order is not correct')
+    end
+
     
     % Ensure equal number of elements in each array
     min_len = min([length(flhs), length(flto), length(frhs), length(frto)]);
