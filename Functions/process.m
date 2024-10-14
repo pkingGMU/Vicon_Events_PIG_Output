@@ -12,7 +12,7 @@ function [subjects] = process(subjects_list)
     
         % Easy naming convention
         % Display subject for debugging
-        subject =  'sub' + string(subject.name)
+        subject =  'sub' + string(subject.name);
 
         subjects.(subject).proc_tables = proc_tables;
 
