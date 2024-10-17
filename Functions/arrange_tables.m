@@ -265,11 +265,12 @@ function [proc_tables, event_table] = arrange_tables(folder)
         if ~exist(excel_folder, 'dir')
             mkdir(excel_folder);
         end
-                
+        
+        %%% WORKING EXCEL
         % Write the modified data to a new Excel file
-        new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
-        new_full_file_path = fullfile(excel_folder, new_excel_filename);
-        writecell(combined_data, new_full_file_path);
+        % new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
+        % new_full_file_path = fullfile(excel_folder, new_excel_filename);
+        % writecell(combined_data, new_full_file_path);
 
         % Step 7: Write the combined data to a new Excel file
         % new_excel_filename = 'updated_file.xlsx';
