@@ -34,7 +34,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     % Loop through each Foot Strike frame
     for i = 1:length(foot_strike_frames)
 
-        fprintf('Cycle: %d\n', i);
+        fprintf('Foot Strike/Toe Off Pair: %d\n', i);
         
         % Find the index of the first occurrence of the frame in the devices data
         foot_strike_idx = find(frames == foot_strike_frames(i), 1, 'first');  % Numeric comparison
@@ -44,7 +44,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
             % Find the index of the first occurrence of the frame in the devices data
             toe_off_idx = find(frames == toe_off_frames(i+1), 1, 'first');  % Numeric comparison
         catch
-            fprintf('Out of Cycles')
+            fprintf('Out of Pair')
             break
         end
         
