@@ -33,6 +33,8 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
     % Loop through each Foot Strike frame
     for i = 1:length(foot_strike_frames)
+
+        fprintf('Cycle: %d\n', i);
         
         % Find the index of the first occurrence of the frame in the devices data
         foot_strike_idx = find(frames == foot_strike_frames(i), 1, 'first');  % Numeric comparison
@@ -50,138 +52,34 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
         %%% 100 frame tolerance
         % Initialize variables for searching
         found = false;
-        foot_nonzero_idx = foot_strike_idx;
-        count = 0;
-        % Check all values +- 1/10 of a second
-        while count < 100 && found == false
+        
+        [found, foot_strike_idx, plate] = gen_frame_search(foot_strike_idx, found, 'forward', z1,z2,z3,z4);
 
-            if z1(foot_nonzero_idx) == 0 && z2(foot_nonzero_idx) == 0 && z3(foot_nonzero_idx) == 0 && z4(foot_nonzero_idx) == 0
-                foot_nonzero_idx = foot_nonzero_idx + 1;
-                count = count + 1;
-            else 
-                foot_strike_idx = foot_nonzero_idx;
-                found = true;
-
-                % Check which variable(s) triggered the else condition
-                if z1(foot_nonzero_idx) ~= 0
-                    disp(['z1 triggered the else condition at index: ', num2str(foot_nonzero_idx)]);
-                end
-                if z2(foot_nonzero_idx) ~= 0
-                    disp(['z2 triggered the else condition at index: ', num2str(foot_nonzero_idx)]);
-                end
-                if z3(foot_nonzero_idx) ~= 0
-                    disp(['z3 triggered the else condition at index: ', num2str(foot_nonzero_idx)]);
-                end
-                if z4(foot_nonzero_idx) ~= 0
-                    disp(['z4 triggered the else condition at index: ', num2str(foot_nonzero_idx)]);
-                end
-            end
-            
-        end
-
-        foot_nonzero_idx = foot_strike_idx;
-        count = 0;
-        while count < 100 && found == false
-
-            if z1(foot_nonzero_idx) == 0 && z2(foot_nonzero_idx) == 0 && z3(foot_nonzero_idx) == 0 && z4(foot_nonzero_idx) == 0
-                foot_nonzero_idx = foot_nonzero_idx - 1;
-                count = count + 1;
-            else 
-                foot_strike_idx = foot_nonzero_idx;
-                found = true;
-
-                % Check which variable(s) triggered the else condition
-                if z1(foot_nonzero_idx) ~= 0
-                    disp(['z1 triggered the else condition at index: ', num2str(foot_nonzero_idx)]);
-                end
-                if z2(foot_nonzero_idx) ~= 0
-                    disp(['z2 triggered the else condition at index: ', num2str(foot_nonzero_idx)]);
-                end
-                if z3(foot_nonzero_idx) ~= 0
-                    disp(['z3 triggered the else condition at index: ', num2str(foot_nonzero_idx)]);
-                end
-                if z4(foot_nonzero_idx) ~= 0
-                    disp(['z4 triggered the else condition at index: ', num2str(foot_nonzero_idx)]);
-                end
-            end
-            
+        % Only check backward if nothings been found yet
+        if found == false
+            [found, foot_strike_idx, plate] = gen_frame_search(foot_strike_idx, found, 'backward', z1,z2,z3,z4);
         end
 
         if found == false
-            fprintf('No Force Plate data found \n')
+            fprintf('No Foot Strike Force Plate data found \n')
             continue
         end
 
         %%% Searching for toe off frames
         % Initialize variables for searching
         found = false;
-        toe_nonzero_idx = toe_off_idx;
-        count = 0;
-        % Check all values +- 1/10 of a second
-        while count < 100 && found == false
+        
+        [found, toe_off_idx, plate] = gen_frame_search(toe_off_idx, found, 'forward', z1,z2,z3,z4);
 
-            if z1(toe_nonzero_idx) == 0 && z2(toe_nonzero_idx) == 0 && z3(toe_nonzero_idx) == 0 && z4(toe_nonzero_idx) == 0
-                toe_nonzero_idx = toe_nonzero_idx + 1;
-                count = count + 1;
-            else 
-                toe_off_idx = toe_nonzero_idx;
-                found = true;
-
-                % Check which variable(s) triggered the else condition
-                if z1(toe_nonzero_idx) ~= 0
-                    disp(['z1 triggered the else condition at index: ', num2str(toe_nonzero_idx)]);
-                end
-                if z2(toe_nonzero_idx) ~= 0
-                    disp(['z2 triggered the else condition at index: ', num2str(toe_nonzero_idx)]);
-                end
-                if z3(toe_nonzero_idx) ~= 0
-                    disp(['z3 triggered the else condition at index: ', num2str(toe_nonzero_idx)]);
-                end
-                if z4(toe_nonzero_idx) ~= 0
-                    disp(['z4 triggered the else condition at index: ', num2str(toe_nonzero_idx)]);
-                end
-                
-                toe_off_idx = toe_nonzero_idx;
-                found = true;
-            end
-            
+        % Only check backward if nothings been found yet
+        if found == false
+            [found, toe_off_idx, plate] = gen_frame_search(toe_off_idx, found, 'backward', z1,z2,z3,z4);
         end
-
-        toe_nonzero_idx = toe_off_idx;
-        count = 0;
-        while count < 100 && found == false
-
-            if z1(toe_nonzero_idx) == 0 && z2(toe_nonzero_idx) == 0 && z3(toe_nonzero_idx) == 0 && z4(toe_nonzero_idx) == 0
-                toe_nonzero_idx = toe_nonzero_idx - 1;
-                count = count + 1;
-            else 
-                toe_off_idx = toe_nonzero_idx;
-                found = true;
-
-                % Check which variable(s) triggered the else condition
-                if z1(toe_nonzero_idx) ~= 0
-                    disp(['z1 triggered the else condition at index: ', num2str(toe_nonzero_idx)]);
-                end
-                if z2(toe_nonzero_idx) ~= 0
-                    disp(['z2 triggered the else condition at index: ', num2str(toe_nonzero_idx)]);
-                end
-                if z3(toe_nonzero_idx) ~= 0
-                    disp(['z3 triggered the else condition at index: ', num2str(toe_nonzero_idx)]);
-                end
-                if z4(toe_nonzero_idx) ~= 0
-                    disp(['z4 triggered the else condition at index: ', num2str(toe_nonzero_idx)]);
-                end
-            end
-            
-        end
-
 
         if found == false
-            fprintf('No Force Plate data found \n')
+            fprintf('No Toe Off Force Plate data found \n')
             continue
         end
-        
-        
         
 
         % Ensure the frame index is valid
@@ -197,8 +95,8 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
 
         % Initialize arrays to store data before and after the clean foot strike
-        force_start_idx = foot_strike_idx + 1;
-        force_end_idx = toe_off_idx - 1;
+        force_start_idx = foot_strike_idx;
+        force_end_idx = toe_off_idx;
 
         % Expand the window upwards (before the foot strike)
         while force_start_idx > 1 && (z1(force_start_idx - 1) ~= 0 || z2(force_start_idx - 1) ~= 0 || z3(force_start_idx - 1) ~= 0 || z4(force_start_idx - 1) ~= 0)
@@ -223,19 +121,19 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
          % Create a switch-case structure based on which force plate is active
         switch true
-            case (z1(force_start_idx) ~= 0 && z1(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) == 0))  % FP1 has data, FP2 has none
+            case (z1(force_start_idx) ~= 0 && z1(force_end_idx) ~= 0 && all(z2(force_start_idx:force_end_idx) == 0))  % FP1 has data, FP2 has none
                 cleanFlag = true;
                 relevantData.z1 = devices_data_table(force_start_idx:force_end_idx, "FP1Force_Fz");
     
-            case (z2(force_start_idx) ~= 0 && z2(force_end_idx) ~= 0 && all(z4(force_start_idx:force_end_idx) == 0))  % FP2 has data, FP1 has none
+            case (z2(force_start_idx) ~= 0 && z2(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) == 0))  % FP2 has data, FP1 has none
                 cleanFlag = true;
                 relevantData.z2 = devices_data_table(force_start_idx:force_end_idx, "FP2Force_Fz");
     
-            case (z3(force_start_idx) ~= 0 && z3(force_end_idx) ~= 0 && all(z1(force_start_idx:force_end_idx) == 0))  % FP3 has data, FP4 has none
+            case (z3(force_start_idx) ~= 0 && z3(force_end_idx) ~= 0 && all(z2(force_start_idx:force_end_idx) == 0) && all(z4(force_start_idx:force_end_idx) == 0))  % FP3 has data, FP4 has none
                 cleanFlag = true;
                 relevantData.z3 = devices_data_table(force_start_idx:force_end_idx, "FP3Force_Fz");
     
-            case (z4(force_start_idx) ~= 0 && z4(force_end_idx) ~= 0 && all(z2(force_start_idx:force_end_idx) == 0))  % FP4 has data, FP3 has none
+            case (z4(force_start_idx) ~= 0 && z4(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) == 0))  % FP4 has data, FP3 has none
                 cleanFlag = true;
                 relevantData.z4 = devices_data_table(force_start_idx:force_end_idx, "FP4Force_Fz");
     
@@ -256,7 +154,10 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
             % Increment event counter
             eventCounter = eventCounter + 1;
             
-         end
+        end
+
+        fprintf('\n\n')
+
      end
    
 
@@ -264,8 +165,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 gen_frames = gen_frames / 100;  % Convert back from frames to seconds
 
 % Display the clean events structure
-disp('Clean force plate events found:');
-disp(cleanEventsStruct);
+
             
 
 end
