@@ -44,7 +44,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
             % Find the index of the first occurrence of the frame in the devices data
             toe_off_idx = find(frames == toe_off_frames(i+1), 1, 'first');  % Numeric comparison
         catch
-            fprintf('Out of Pair')
+            fprintf('Out of Pairs')
             break
         end
         
