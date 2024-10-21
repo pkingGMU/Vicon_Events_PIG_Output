@@ -265,54 +265,12 @@ function [proc_tables, event_table] = arrange_tables(folder)
         if ~exist(excel_folder, 'dir')
             mkdir(excel_folder);
         end
-                
+        
+        %%% WORKING EXCEL
         % Write the modified data to a new Excel file
         new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
         new_full_file_path = fullfile(excel_folder, new_excel_filename);
         writecell(combined_data, new_full_file_path);
-
-        % Step 7: Write the combined data to a new Excel file
-        % new_excel_filename = 'updated_file.xlsx';
-        % writecell(combined_data, new_excel_filename);
-        
-
-
-        % % Extract variable names
-        % % Step 2: Extract variable names and convert them into rows
-        % header1 = event_table.Properties.VariableNames;
-        % header2 = proc_tables.(file_name_short).devices_data_table.Properties.VariableNames;  % Variable names from table1
-        % header3 = proc_tables.(file_name_short).model_data_table;  % Variable names from table2
-        % header4 = proc_tables.(file_name_short).trajectory_data_table.Properties.VariableNames;  % Variable names from table3
-        % 
-        % % Step 3: Convert tables to cell arrays (to remove variables and keep data)
-        % data1 = table2cell(event_table);  % Skip header row and get data
-        % data2 = table2cell(proc_tables.(file_name_short).devices_data_table);  % Skip header row and get data
-        % data3 = table2cell(proc_tables.(file_name_short).model_data_table);  % Skip header row and get data
-        % data4 = table2cell(proc_tables.(file_name_short).trajectory_data_table);  % Skip header row and get data
-        % 
-        % % Step 4: Add the header (variable names) to the top of each data section
-        % data1_with_header = [header1; data1];  % Add header to table1 data
-        % data2_with_header = [header2; data2];  % Add header to table2 data
-        % data3_with_header = [header3; data3];  % Add header to table3 data
-        % data4_with_header = [header4; data4];  % Add header to table3 data
-        % 
-        % % Step 5: Skip a row between each section (create empty row)
-        % empty_row = repmat({''}, 1, size(data3_with_header, 2));  % Empty row with the same number of columns
-        % 
-        % % Step 6: Combine all sections into a single cell array
-        % combined_data = [data1_with_header; empty_row; data2_with_header; empty_row; data3_with_header];
-        % 
-        % % Step 7: Write the combined data to a new CSV file
-        % new_csv_filename = 'combined_data.csv';
-        % writecell(combined_data, new_csv_filename);
-
-
-
-
-     
-
-
-
         
      
      end
