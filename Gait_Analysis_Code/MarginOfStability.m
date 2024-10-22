@@ -126,8 +126,8 @@ ltoe_ml = coordata(:,ltoe_ML_col)/1000;
 ltoe_up = coordata(:,ltoe_up_col)/1000;
 
 % Gait Events
-hs_row = find(all_events(:,1)==frames(1,1));
-hs_foot = all_events(hs_row,2);
+hs_row = find(all_events(:,1)==frames(1,1), 1, 'last');
+hs_foot = all_events((find(all_events(:,1) == frames(1,1), 1, 'first')) ,2);
 hs = 1;
 
 % next gait event is opposite foot off

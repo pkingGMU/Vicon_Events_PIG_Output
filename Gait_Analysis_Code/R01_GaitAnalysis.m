@@ -342,10 +342,15 @@ for each_subject = 1:length(sub_list_num)
                 % col 15: right stance time (as a percentage of gait cycle)
                 % col 16: left swing time (as a percentage of gait cycle)
                 % col 17: right swing time (as a percentage of gait cycle)
+                
+                kinetics_data_provided = false;
 
                 jointAngs(g,:) = OvergroundJointAngs(subID,frames,model_text,model_data(mod_rows,:),all_events,APcol,direction);
 
                 if gen(:,1)~=0
+                    
+                    kinetics_data_provided = true;
+
                     all_events_nogen = all_events(all_events(:, 2) ~= 5, :);
 
                     % Find if a general event matches any frames for this gait cycle
@@ -360,18 +365,26 @@ for each_subject = 1:length(sub_list_num)
                             force_event(ev,1) = all_events_nogen(find(all_events_nogen(:,1)==ev_frame),2);
                         end
 
-                        [kinetics] = OvergroundKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,force_event,APcol);
-
+                        [kinetic] = OvergroundKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,force_event,APcol);
+                        kinetics(g,:) = kinetic;
                     else
                         kinetics(g,:) = NaN(1,14);
+                        
                     end
                 else
                     kinetics(g,:) = NaN(1,14);
+                    
                 end
+            end
+
+            if kinetics_data_provided == false
+                
             end
 
             %%% MoS - Added by Patrick
             mos(g,:) = MarginOfStability(subID, frames, camrate, model_text,model_data(mod_rows, :), coordata, coortext, all_events, APcol);
+            
+            
 
         end
         
@@ -422,7 +435,7 @@ for each_subject = 1:length(sub_list_num)
             code_dir core_dir data_dir each_subject each_trial sub_folder...
             sub_list_num sub_loc sub_varTypes subID subject_path trial_file...
             trial_list_num trials type sub_varNames av_varNames processed_data...
-            trial_nam mos mos_table
+            trial_nam 
 
     end % end trial loop
 
