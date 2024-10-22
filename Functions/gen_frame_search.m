@@ -8,7 +8,7 @@ function [found, found_idx, plate] = gen_frame_search(idx, found, direction, z1,
         found_idx = 0;
         nonzero_idx = idx;
 
-        while count < 30 && found == false
+        while count < 50 && found == false
             
             if strcmp(direction, 'backward') && z1(nonzero_idx) == 0 && z2(nonzero_idx) == 0 && z3(nonzero_idx) == 0 && z4(nonzero_idx) == 0
                 nonzero_idx = nonzero_idx - 1;
