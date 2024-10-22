@@ -34,9 +34,9 @@ if n_clean ==1 % for one clean event
     if force_event == 1  % if left heelstrike is clean
         % AnkleMoment
         for i = 1:length(text)
-            nam = append(subID, ':LAnkleMoment'); % pulls in N.mm/kg
+            nam = ':LAnkleMoment' % pulls in N.mm/kg
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     acol = i+1;
                 elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -49,9 +49,9 @@ if n_clean ==1 % for one clean event
 
         % HipMoment
         for i = 1:length(text)
-            nam = append(subID, ':LHipMoment'); % pulls in N.mm/kg
+            nam = ':LHipMoment' % pulls in N.mm/kg
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     hcol = i+1;
                 elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -64,9 +64,9 @@ if n_clean ==1 % for one clean event
 
         % AnklePower
         for i = 1:length(text)
-            nam = append(subID, ':LAnklePower'); % pulls in W/kg
+            nam = ':LAnklePower' % pulls in W/kg
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     apcol = i+1;
                 elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -79,9 +79,9 @@ if n_clean ==1 % for one clean event
 
         % Hip Power
         for i = 1:length(text)
-            nam = append(subID, ':LHipPower'); % pulls in W/kg
+            nam = ':LHipPower' % pulls in W/kg
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     hpcol = i+1;
                 elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -94,9 +94,9 @@ if n_clean ==1 % for one clean event
 
         % NormalisedGRF
         for i = 1:length(text)
-            nam = append(subID, ':LNormalisedGRF'); % units undefined but needs something
+            nam = ':LNormalisedGRF' % units undefined but needs something
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     apGRF = i;
                     mlGRF = i+1;
@@ -123,9 +123,9 @@ if n_clean ==1 % for one clean event
     elseif force_event == 3 % if right heelstrike is clean
         % AnkleMoment
         for i = 1:length(text)
-            nam = append(subID, ':RAnkleMoment'); % pulls in N.mm/kg
+            nam = ':RAnkleMoment' % pulls in N.mm/kg
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     acol = i+1;
                 elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -138,9 +138,9 @@ if n_clean ==1 % for one clean event
 
         % HipMoment
         for i = 1:length(text)
-            nam = append(subID, ':RHipMoment'); % pulls in N.mm/kg
+            nam = ':RHipMoment' % pulls in N.mm/kg
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     hcol = i+1;
                 elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -153,9 +153,9 @@ if n_clean ==1 % for one clean event
 
         % AnklePower
         for i = 1:length(text)
-            nam = append(subID, ':RAnklePower'); % pulls in W/kg
+            nam = ':RAnklePower' % pulls in W/kg
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     apcol = i+1;
                 elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -168,9 +168,9 @@ if n_clean ==1 % for one clean event
 
         % Hip Power
         for i = 1:length(text)
-            nam = append(subID, ':RHipPower'); % pulls in W/kg
+            nam = ':RHipPower' % pulls in W/kg
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     hpcol = i+1;
                 elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -183,9 +183,9 @@ if n_clean ==1 % for one clean event
 
         % NormalisedGRF
         for i = 1:length(text)
-            nam = append(subID, ':RNormalisedGRF'); % units undefined but needs something
+            nam = ':RNormalisedGRF' % units undefined but needs something
 
-            if strcmp(text{i},nam)==1
+            if contains(text{i},nam)==1
                 if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                     apGRF = i;
                     mlGRF = i+1;
@@ -214,9 +214,9 @@ elseif n_clean ==2
 
     % AnkleMoment
     for i = 1:length(text)
-        nam = append(subID, ':LAnkleMoment'); % pulls in N.mm/kg
+        nam = ':LAnkleMoment' % pulls in N.mm/kg
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 acol = i+1;
             elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -228,9 +228,9 @@ elseif n_clean ==2
 
     % HipMoment
     for i = 1:length(text)
-        nam = append(subID, ':LHipMoment'); % pulls in N.mm/kg
+        nam = ':LHipMoment' % pulls in N.mm/kg
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 hcol = i+1;
             elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -242,9 +242,9 @@ elseif n_clean ==2
 
     % AnklePower
     for i = 1:length(text)
-        nam = append(subID, ':LAnklePower'); % pulls in W/kg
+        nam = ':LAnklePower' % pulls in W/kg
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 apcol = i+1;
             elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -256,9 +256,9 @@ elseif n_clean ==2
 
     % Hip Power
     for i = 1:length(text)
-        nam = append(subID, ':LHipPower'); % pulls in W/kg
+        nam = ':LHipPower' % pulls in W/kg
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 hpcol = i+1;
             elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -270,9 +270,9 @@ elseif n_clean ==2
 
     % NormalisedGRF
     for i = 1:length(text)
-        nam = append(subID, ':LNormalisedGRF'); % units undefined but needs something
+        nam = ':LNormalisedGRF' % units undefined but needs something
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 apGRF = i;
                 mlGRF = i+1;
@@ -297,9 +297,9 @@ elseif n_clean ==2
 
     % AnkleMoment
     for i = 1:length(text)
-        nam = append(subID, ':RAnkleMoment'); % pulls in N.mm/kg
+        nam = ':RAnkleMoment' % pulls in N.mm/kg
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 acol = i+1;
             elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -311,9 +311,9 @@ elseif n_clean ==2
 
     % HipMoment
     for i = 1:length(text)
-        nam = append(subID, ':RHipMoment'); % pulls in N.mm/kg
+        nam = ':RHipMoment' % pulls in N.mm/kg
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 hcol = i+1;
             elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -325,9 +325,9 @@ elseif n_clean ==2
 
     % AnklePower
     for i = 1:length(text)
-        nam = append(subID, ':RAnklePower'); % pulls in W/kg
+        nam = ':RAnklePower' % pulls in W/kg
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 apcol = i+1;
             elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -339,9 +339,9 @@ elseif n_clean ==2
 
     % Hip Power
     for i = 1:length(text)
-        nam = append(subID, ':RHipPower'); % pulls in W/kg
+        nam = ':RHipPower' % pulls in W/kg
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 hpcol = i+1;
             elseif APcol==2 % anteriorposterior is Y, mediolateral is X
@@ -353,9 +353,9 @@ elseif n_clean ==2
 
     % NormalisedGRF
     for i = 1:length(text)
-        nam = append(subID, ':RNormalisedGRF'); % units undefined but needs something
+        nam = ':RNormalisedGRF' % units undefined but needs something
 
-        if strcmp(text{i},nam)==1
+        if contains(text{i},nam)==1
             if APcol==1 % anteriorposterior axis is X, mediolateral axis is Y
                 apGRF = i;
                 mlGRF = i+1;
