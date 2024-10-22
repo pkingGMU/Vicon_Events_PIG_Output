@@ -158,7 +158,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
         for i = 1:num_gen_frames
             gen_data{i, 1} = subject_id;          % Subject
             gen_data{i, 2} = 'General';           % Context
-            gen_data{i, 3} = 'General';           % Name
+            gen_data{i, 3} = 'Event';           % Name
             gen_data{i, 4} = gen_frames(i);       % Time (s)
             gen_data{i, 5} = '';                  % Description (empty)
         end
