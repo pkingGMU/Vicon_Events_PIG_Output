@@ -1,6 +1,6 @@
-function [flhs,flto,frhs,frto, frame_start, FR] = gait_detection(trajectory, model_output)
+function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(trajectory, model_output)
 
-
+    failed = false;
     %% load motion data
     %frame = model_output(:,{Frame});
     frame_values = str2double(trajectory.("Frame"));
@@ -214,6 +214,7 @@ function [flhs,flto,frhs,frto, frame_start, FR] = gait_detection(trajectory, mod
 
     if isempty(flhs)
         disp('Gait_Detection order is not correct')
+        failed = true;
     end
 
     
