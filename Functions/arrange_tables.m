@@ -72,9 +72,11 @@ function [proc_tables, event_table] = arrange_tables(folder)
         
         %%% GAIT EVENTS
 
-        [lhs,lto,rhs,rto, frame_start, FR] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table);
+        [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table);
 
-
+        if failed == true
+            continue
+        end
        
 
         
@@ -206,7 +208,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
         % Find the row containing 'events' and 'Devices'
         events_row = find(strcmp(combined_data, 'Events'));  % Find the row with 'Events'
         devices_row = find(strcmp(combined_data, 'Devices'));  % Find the row with 'Devices'
-        
+
         % If both 'events' and 'Devices' are found
         if ~isempty(events_row) && ~isempty(devices_row)
             % Ensure that the 'Devices' row comes after the 'events' row
@@ -215,7 +217,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
                 combined_data(events_row + 3 : devices_row - 1, :) = [];
             end
         end
-        
+
         % Find events row again
         events_row = find(strcmp(combined_data, 'Events'));  % Find the row with 'Events'
 
@@ -225,22 +227,22 @@ function [proc_tables, event_table] = arrange_tables(folder)
             frame_rate_row = events_row + 1;
 
             label_row = events_row +2;
-            
+
             % Extract the 'events' row and the row below it
             events_data = combined_data(events_row:label_row, :);
-            
+
             % Remove the 'events' and the row below it from their original position
             combined_data(events_row:label_row, :) = [];
-            
+
             % Add 'events' data to the top
             combined_data = [events_data; combined_data];
         else 
              % If 'events' row is not found, create a custom 'events_data'
              events_data = {'Events', [], [], [], []; 100, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};  % Creating a 2x1 cell array
-            
+
              % Pad out new events data
              % Step 3: Get the size of the existing data
-             
+
              events_data_padded = [events_data, repmat({''}, size(events_data, 1), existing_cols - size(events_data, 2))];
 
              % Add 'events_data' to the top
@@ -248,16 +250,16 @@ function [proc_tables, event_table] = arrange_tables(folder)
         end
 
         % Replace missing values with a specific value, e.g., empty string or NaN
-        
+
         % If it's a cell array
-        
+
         mask = cellfun(@(x) any(isa(x,'missing')), combined_data); % using isa instead of ismissing allows white space through
         combined_data(mask) = {[]};
-        
+
         %%% Define folder to save excel
         % Root folder
         root_folder = pwd;
-        
+
         % Construct the full path to the subject's folder
         excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', 'Overground', subject_id);
 
@@ -266,7 +268,7 @@ function [proc_tables, event_table] = arrange_tables(folder)
             mkdir(excel_folder);
         end
         
-        %%% WORKING EXCEL
+        %% WORKING EXCEL
         % Write the modified data to a new Excel file
         new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
         new_full_file_path = fullfile(excel_folder, new_excel_filename);
