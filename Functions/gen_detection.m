@@ -31,6 +31,8 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
     gen_frames = [];  % Initialize as an empty array 
 
+    used_plates = [false,false,false,false];
+
     % Loop through each Foot Strike frame
     for i = 1:length(foot_strike_frames)
 
@@ -53,12 +55,15 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
         % Initialize variables for searching
         found = false;
         
-        [found, foot_strike_idx, plate] = gen_frame_search(foot_strike_idx, found, 'forward', z1,z2,z3,z4);
+        
+        [found, foot_strike_idx, plate, plate_name, used_plates] = gen_frame_search(foot_strike_idx, found, 'forward', z1,z2,z3,z4, used_plates);
 
         % Only check backward if nothings been found yet
         if found == false
-            [found, foot_strike_idx, plate] = gen_frame_search(foot_strike_idx, found, 'backward', z1,z2,z3,z4);
+            [found, foot_strike_idx, plate, plate_name, used_plates] = gen_frame_search(foot_strike_idx, found, 'backward', z1,z2,z3,z4, used_plates);
         end
+        
+        
 
         if found == false
             fprintf('No Foot Strike Force Plate data found \n')
@@ -67,19 +72,29 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
         %%% Searching for toe off frames
         % Initialize variables for searching
-        found = false;
         
-        [found, toe_off_idx, plate] = gen_frame_search(toe_off_idx, found, 'forward', z1,z2,z3,z4);
+        force_end_idx = foot_strike_idx;
 
-        % Only check backward if nothings been found yet
-        if found == false
-            [found, toe_off_idx, plate] = gen_frame_search(toe_off_idx, found, 'backward', z1,z2,z3,z4);
+        % Expand the window downwards (after the foot strike)
+        while force_end_idx < length(frames) && ~isempty(plate) && plate(force_end_idx + 1) ~= 0 
+            force_end_idx = force_end_idx + 1;
         end
+        
+        
 
-        if found == false
-            fprintf('No Toe Off Force Plate data found \n')
-            continue
-        end
+        % found = false;
+        % 
+        % [found, toe_off_idx, plate] = gen_frame_search(toe_off_idx, found, 'forward', z1,z2,z3,z4);
+        % 
+        % % Only check backward if nothings been found yet
+        % if found == false
+        %     [found, toe_off_idx, plate] = gen_frame_search(toe_off_idx, found, 'backward', z1,z2,z3,z4);
+        % end
+        % 
+        % if found == false
+        %     fprintf('No Toe Off Force Plate data found \n')
+        %     continue
+        % end
         
 
         % Ensure the frame index is valid
@@ -89,27 +104,24 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
             
         end
 
-        % Display the z1, z2, z3, z4 values for the current frame
-        fprintf('Frame %d: z1 = %.2f, z2 = %.2f, z3 = %.2f, z4 = %.2f\n', ...
-                foot_strike_frames(i), z1(foot_strike_idx), z2(foot_strike_idx), z3(foot_strike_idx), z4(foot_strike_idx));
+        % Display the values for the specified plate at the current frame
+        fprintf('Frame %d: plate: %s, force value: %.2f\n', ...
+            foot_strike_frames(i), plate_name, plate(foot_strike_idx));
 
 
         % Initialize arrays to store data before and after the clean foot strike
         force_start_idx = foot_strike_idx;
-        force_end_idx = toe_off_idx;
+        
 
         % Expand the window upwards (before the foot strike)
         while force_start_idx > 1 && (z1(force_start_idx - 1) ~= 0 || z2(force_start_idx - 1) ~= 0 || z3(force_start_idx - 1) ~= 0 || z4(force_start_idx - 1) ~= 0)
             force_start_idx = force_start_idx - 1;
         end
 
-        % Expand the window downwards (after the foot strike)
-        while force_end_idx < length(frames) && any((z1(force_end_idx + 1) ~= 0 || z2(force_end_idx + 1) ~= 0 || z3(force_end_idx + 1) ~= 0 || z4(force_end_idx + 1) ~= 0))
-            force_end_idx = force_end_idx + 1;
-        end
+        
         
         % Check for toe off lasting longer than 
-        if toe_off_idx > force_end_idx
+        if toe_off_idx > force_end_idx + 300
             fprintf('Foot Strike at frame %d is not clean because toe-off exceeds available force plate data\n', foot_strike_frames(i));
             continue
             % Skip to the next iteration if the toe-off goes beyond the data length
