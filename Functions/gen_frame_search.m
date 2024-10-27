@@ -29,30 +29,32 @@ function [found, found_idx, plate, plate_name, used_plates] = gen_frame_search(i
             found_idx = nonzero_idx;
             found = true;
 
-            % Check which variable(s) triggered the else condition
-            if z1(found_idx) ~= 0 && ~used_plates(1)
+            
+            % Check which variable(s) triggered the else condition based on threshold
+            if (z1(found_idx) > 100 || z1(found_idx) < -100) && ~used_plates(1)
                 disp(['z1 triggered the else condition at index: ', num2str(found_idx)]);
                 plate = z1;
                 plate_name = 'z1';
                 used_plates(1) = true;  % Mark z1 as used
-            elseif z2(found_idx) ~= 0 && ~used_plates(2)
+            elseif (z2(found_idx) > 100 || z2(found_idx) < -100) && ~used_plates(2)
                 disp(['z2 triggered the else condition at index: ', num2str(found_idx)]);
                 plate = z2;
                 plate_name = 'z2';
                 used_plates(2) = true;  % Mark z2 as used
-            elseif z3(found_idx) ~= 0 && ~used_plates(3)
+            elseif (z3(found_idx) > 100 || z3(found_idx) < -100) && ~used_plates(3)
                 disp(['z3 triggered the else condition at index: ', num2str(found_idx)]);
                 plate = z3;
                 plate_name = 'z3';
                 used_plates(3) = true;  % Mark z3 as used
-            elseif z4(found_idx) ~= 0 && ~used_plates(4)
+            elseif (z4(found_idx) > 100 || z4(found_idx) < -100) && ~used_plates(4)
                 disp(['z4 triggered the else condition at index: ', num2str(found_idx)]);
                 plate = z4;
                 plate_name = 'z4';
                 used_plates(4) = true;  % Mark z4 as used
             else
                 found = false;
-                break
+                break;
+            
                 
             
             end
