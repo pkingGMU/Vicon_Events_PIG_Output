@@ -91,7 +91,7 @@ switch choice
     case 'Overground'
         % If overground - use UF code
         type = {'Overground'};
-         waitfor(msgbox("Select your overground data folder."));
+        waitfor(msgbox("Select your overground data folder."));
         data_dir = uigetdir; % select your primary data folder
 
         cd(data_dir);
@@ -143,25 +143,28 @@ sub_varNames = {'SubID','Trial','Speed','Cadence','L_StepLength','R_StepLength',
     'L_HipFlexion_stance','R_HipFlexion_stance','L_Plantarflexion_swing','R_Plantarflexion_swing','L_Dorsiflexion_swing','R_Dorsiflexion_swing',...
     'L_KneeFlexion_swing','R_KneeFlexion_swing','L_HipFlexion_swing','R_HipFlexion_swing',...
     'L_RR','R_RR','L_aGRF','R_aGRF','L_vGRF','R_vGRF','L_AnkleMoment','R_AnkleMoment','L_AnklePower','R_AnklePower',...
-    'L_HipMoment','R_HipMoment','L_HipPower','R_HipPower'};
+    'L_HipMoment','R_HipMoment','L_HipPower','R_HipPower','LMoS_AP_hs','RMoS_AP_hs','LMoS_ML_hs','RMoS_ML_hs','LMoS_AP_to','RMoS_AP_to','LMoS_ML_to','RMoS_ML_to'};
+
+
 for i = 1:length(sub_varNames)-2
     jj{1,i} = 'double';
 end
 
 sub_varTypes =[{'string','string'} jj];
-sub_tab = table('Size',[nRows, length(sub_varTypes)],'VariableTypes',sub_varTypes,'VariableNames',sub_varNames);
+sub_tab = table('Size',[0, length(sub_varTypes)],'VariableTypes',sub_varTypes,'VariableNames',sub_varNames);
 
 
 av_varNames = {'SubID','Trial','Speed','Cadence','StepLength','StepWidth','StepTime','SingleSupport','DoubleSupport',...
     'StanceTime', 'SwingTime','Plantarflexion_stance','Dorsiflexion_stance','KneeFlexion_stance','HipFlexion_stance',...
     'Plantarflexion_swing','Dorsiflexion_swing','KneeFlexion_swing','HipFlexion_swing','RR','aGRF','vGRF','AnkleMoment',...
-    'AnklePower','HipMoment','HipPower'};
+    'AnklePower','HipMoment','HipPower','LMoS_AP_hs','RMoS_AP_hs','LMoS_ML_hs','RMoS_ML_hs','LMoS_AP_to','RMoS_AP_to','LMoS_ML_to','RMoS_ML_to'};
+
 for i = 1:length(av_varNames)-2
     ll{1,i} = 'double';
 end
 av_varTypes =[{'string','string'} ll];
 
-av_tab = table('Size',[nRows, length(av_varTypes)],'VariableTypes',av_varTypes,'VariableNames',av_varNames);
+av_tab = table('Size',[0, length(av_varTypes)],'VariableTypes',av_varTypes,'VariableNames',av_varNames);
 
 for each_subject = 1:length(sub_list_num)
     sub_name = sub_folder{each_subject};
@@ -320,9 +323,15 @@ for each_subject = 1:length(sub_list_num)
                 % col 10 & 11 = peak hip  moment (L&R) in last 50% gait cycle in
                 % Nm/kg
                 % col 12 & 13 =  peak hip power (L&R) in last 50% gait cycle in W/kg
+                mos(g,:)= MarginOfStability(subID,frames,camrate,model_text,model_data(mod_rows,:),coordata(mod_rows,:),coortext, all_events,APcol);
+
+                % col 1: LMoS_AP
+                % col 2; RMoS_AP
+                % col 3: LMoS_ML
+                % col 4: RMoS_ML
 
             elseif strcmp(type{:},'Overground')==1
-                
+
                 spatiotemps(g,:) = OvergroundSpatiotemporals(frames,lheeAP(traj_rows),lheeML(traj_rows),rheeAP(traj_rows),rheeML(traj_rows),all_events,camrate,direction);
                 % spatiotemporals structure:
                 % col 1: speed
@@ -342,15 +351,13 @@ for each_subject = 1:length(sub_list_num)
                 % col 15: right stance time (as a percentage of gait cycle)
                 % col 16: left swing time (as a percentage of gait cycle)
                 % col 17: right swing time (as a percentage of gait cycle)
-                
-                kinetics_data_provided = false;
 
                 jointAngs(g,:) = OvergroundJointAngs(subID,frames,model_text,model_data(mod_rows,:),all_events,APcol,direction);
 
-                if gen(:,1)~=0
-                    
-                    kinetics_data_provided = true;
+                mos(g,:)= MarginOfStability(subID,frames,camrate,model_text,model_data(mod_rows,:),coordata(mod_rows,:),coortext, all_events,APcol);
 
+
+                if gen(:,1)~=0
                     all_events_nogen = all_events(all_events(:, 2) ~= 5, :);
 
                     % Find if a general event matches any frames for this gait cycle
@@ -365,40 +372,35 @@ for each_subject = 1:length(sub_list_num)
                             force_event(ev,1) = all_events_nogen(find(all_events_nogen(:,1)==ev_frame),2);
                         end
 
-                        [kinetic] = OvergroundKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,force_event,APcol);
-                        kinetics(g,:) = kinetic;
+                        [kinetics] = OvergroundKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,force_event,APcol);
+
                     else
                         kinetics(g,:) = NaN(1,14);
-                        
                     end
                 else
                     kinetics(g,:) = NaN(1,14);
-                    
                 end
             end
 
-            if kinetics_data_provided == false
-                
-            end
-
-            %%% MoS - Added by Patrick
-            mos(g,:) = MarginOfStability(subID, frames, camrate, model_text,model_data(mod_rows, :), coordata, coortext, all_events, APcol);
-            
-            
-
         end
-        
-        %%% Mos Table - Added by Patrick
-        mos_table = array2table(mos);
-        mos_vars = {'L_MoS_AP_hs', 'R_MoS_AP_hs', 'L_MoS_ML_hs', 'R_MoS_ML_hs', 'L_MoS_AP_to', 'R_MoS_AP_to', 'L_MoS_ML_to', 'R_MoS_ML_to'};
-        mos_table.Properties.VariableNames = mos_vars;
-        
 
         % average across legs and save averages in a big subject
         [sub_LRsteps,sub_avs] = averages(spatiotemps,jointAngs,kinetics);
+        av_LMoS_AP_hs = mean(mos(:,1));
+        av_RMoS_AP_hs = mean(mos(:,2));
+        av_LMoS_ML_hs = mean(mos(:,3));
+        av_RMoS_ML_hs = mean(mos(:,4));
+        av_LMoS_AP_to = mean(mos(:,5));
+        av_RMoS_AP_to = mean(mos(:,6));
+        av_LMoS_ML_to = mean(mos(:,7));
+        av_RMoS_ML_to = mean(mos(:,8));
+        %mos = [L_MoS_AP_hs R_MoS_AP_hs L_MoS_ML_hs R_MoS_ML_hs L_MoS_AP_to R_MoS_AP_to L_MoS_ML_to R_MoS_ML_to];
+
+        sub_mos = array2table([av_LMoS_AP_hs av_RMoS_AP_hs av_LMoS_ML_hs av_RMoS_ML_hs av_LMoS_AP_to av_RMoS_AP_to av_LMoS_ML_to av_RMoS_ML_to]);
+        sub_mos.Properties.VariableNames = {'LMoS_AP_hs','RMoS_AP_hs','LMoS_ML_hs','RMoS_ML_hs','LMoS_AP_to','RMoS_AP_to','LMoS_ML_to','RMoS_ML_to'};
 
         % save all step data in a trial table
-        sub_full_gc = array2table([spatiotemps jointAngs kinetics mos]);
+        sub_full_gc = array2table([spatiotemps jointAngs kinetics]);
         LR_names = {'Speed','Cadence','L_StepLength','R_StepLength',...
             'L_StepWidth','R_StepWidth','L_StepTime_s','R_StepTime_s','L_StepTime_pct','R_StepTime_pct','L_SingleSupport','R_SingleSupport',...
             'DoubleSupport','L_StanceTime','R_StanceTime','L_SwingTime','R_SwingTime',...
@@ -406,26 +408,28 @@ for each_subject = 1:length(sub_list_num)
             'L_HipFlexion_stance','R_HipFlexion_stance','L_Plantarflexion_swing','R_Plantarflexion_swing','L_Dorsiflexion_swing','R_Dorsiflexion_swing',...
             'L_KneeFlexion_swing','R_KneeFlexion_swing','L_HipFlexion_swing','R_HipFlexion_swing',...
             'L_RR','R_RR','L_aGRF','R_aGRF','L_vGRF','R_vGRF','L_AnkleMoment','R_AnkleMoment','L_AnklePower','R_AnklePower',...
-            'L_HipMoment','R_HipMoment','L_HipPower','R_HipPower', 'L_MoS_AP_hs', 'R_MoS_AP_hs', 'L_MoS_ML_hs', 'R_MoS_ML_hs',... 
-            'L_MoS_AP_to', 'R_MoS_AP_to', 'L_MoS_ML_to', 'R_MoS_ML_to'};
+            'L_HipMoment','R_HipMoment','L_HipPower','R_HipPower'};
 
         sub_full_gc.Properties.VariableNames = LR_names;
         sub_step_tab1 = array2table(sub_LRsteps);
-        sub_step_tab1.Properties.VariableNames = sub_varNames(3:end);
+        sub_step_tab1.Properties.VariableNames = sub_varNames(3:end-8);
 
         temp = strsplit(trials{each_trial},'.');
         trial_nam = temp{1};
         sub_step_deets = cell2table({subID, trial_nam});
         sub_step_deets.Properties.VariableNames = {'SubID','Trial'};
 
-        sub_tab2 = [sub_step_deets sub_step_tab1];
+        sub_tab2 = [sub_step_deets sub_step_tab1 sub_mos];
         sub_tab = [sub_tab;sub_tab2];
 
         av_tab1 = array2table(sub_avs);
-        av_tab1.Properties.VariableNames = av_varNames(3:end);
+        av_tab1.Properties.VariableNames = av_varNames(3:end-8);
 
-        av_tab2 = [sub_step_deets av_tab1];
+        av_tab2 = [sub_step_deets av_tab1 sub_mos];
         av_tab = [av_tab;av_tab2];
+
+
+        %MoS_Tab = [sub_step_deets sub_mos];
 
         gc_fn = append(subID, '_', trial_nam, '_EachGaitCycleData.xlsx');
         processed_data = append(root_data_dir,slash_dir,'Processed Data',slash_dir,type{1});
@@ -435,7 +439,7 @@ for each_subject = 1:length(sub_list_num)
             code_dir core_dir data_dir each_subject each_trial sub_folder...
             sub_list_num sub_loc sub_varTypes subID subject_path trial_file...
             trial_list_num trials type sub_varNames av_varNames processed_data...
-            trial_nam 
+            trial_nam
 
     end % end trial loop
 
