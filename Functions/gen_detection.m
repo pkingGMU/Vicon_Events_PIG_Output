@@ -121,11 +121,11 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
         
         
         % Check for toe off lasting longer than 
-        if toe_off_idx > force_end_idx + 300
-            fprintf('Foot Strike at frame %d is not clean because toe-off exceeds available force plate data\n', foot_strike_frames(i));
-            continue
-            % Skip to the next iteration if the toe-off goes beyond the data length
-        end
+        % if toe_off_idx > force_end_idx + 300
+        %     fprintf('Foot Strike at frame %d is not clean because toe-off exceeds available force plate data\n', foot_strike_frames(i));
+        %     continue
+        %     % Skip to the next iteration if the toe-off goes beyond the data length
+        % end
 
         % Check for clean event: A single force plate is active at both foot strike and toe-off, and its paired plate has zero data in that window
         cleanFlag = false;  % Assume it's not clean unless proven otherwise
@@ -133,19 +133,19 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
          % Create a switch-case structure based on which force plate is active
         switch true
-            case (z1(force_start_idx) ~= 0 && z1(force_end_idx) ~= 0 && all(z2(force_start_idx:force_end_idx) == 0))  % FP1 has data, FP2 has none
+            case (z1(force_start_idx) ~= 0 && z1(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) < 100 & z3(force_start_idx:force_end_idx) > -100))  % FP1 has data, FP2 has none
                 cleanFlag = true;
                 relevantData.z1 = devices_data_table(force_start_idx:force_end_idx, "FP1Force_Fz");
     
-            case (z2(force_start_idx) ~= 0 && z2(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) == 0))  % FP2 has data, FP1 has none
+            case (z2(force_start_idx) ~= 0 && z2(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) < 100 & z3(force_start_idx:force_end_idx) > -100))  % FP2 has data, FP1 has none
                 cleanFlag = true;
                 relevantData.z2 = devices_data_table(force_start_idx:force_end_idx, "FP2Force_Fz");
     
-            case (z3(force_start_idx) ~= 0 && z3(force_end_idx) ~= 0 && all(z2(force_start_idx:force_end_idx) == 0) && all(z4(force_start_idx:force_end_idx) == 0))  % FP3 has data, FP4 has none
+            case (z3(force_start_idx) ~= 0 && z3(force_end_idx) ~= 0 && all(z2(force_start_idx:force_end_idx) < 100 & z2(force_start_idx:force_end_idx) > -100) && all(z4(force_start_idx:force_end_idx) < 100 & z4(force_start_idx:force_end_idx) > -100))  % FP3 has data, FP4 has none
                 cleanFlag = true;
                 relevantData.z3 = devices_data_table(force_start_idx:force_end_idx, "FP3Force_Fz");
     
-            case (z4(force_start_idx) ~= 0 && z4(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) == 0))  % FP4 has data, FP3 has none
+            case (z4(force_start_idx) ~= 0 && z4(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) < 100 & z3(force_start_idx:force_end_idx) > -100))  % FP4 has data, FP3 has none
                 cleanFlag = true;
                 relevantData.z4 = devices_data_table(force_start_idx:force_end_idx, "FP4Force_Fz");
     
