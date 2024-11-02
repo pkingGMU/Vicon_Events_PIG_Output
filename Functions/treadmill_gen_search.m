@@ -22,9 +22,9 @@ function [clean_foot_strikes] = treadmill_gen_search(plate, plate_str)
             if array_started
                 % Store the completed array in the struct
                 strike_counter = strcat("Strike", num2str(idx_counter));
-                clean_foot_strikes.(plate_str).(strike_counter) = temp_array;
-                clean_foot_strikes.(plate_str).start_idx = temp_array(1);
-                clean_foot_strikes.(plate_str).end_idx = temp_array(end);
+                clean_foot_strikes.(strike_counter).data = temp_array;
+                clean_foot_strikes.(strike_counter).start_idx = temp_array(1);
+                clean_foot_strikes.(strike_counter).end_idx = temp_array(end);
                 idx_counter = idx_counter + 1; % Increment the event counter
                 
                 % Reset for the next potential array
@@ -39,9 +39,9 @@ function [clean_foot_strikes] = treadmill_gen_search(plate, plate_str)
     % Check if there was an open array at the end of the loop
     if array_started
         strike_counter = strcat("Strike", num2str(idx_counter));
-        clean_foot_strikes.(plate_str).(strike_counter) = temp_array;
-        clean_foot_strikes.(plate_str).start_idx = temp_array(1);
-        clean_foot_strikes.(plate_str).end_idx = temp_array(end);
+        clean_foot_strikes.(strike_counter).data = temp_array;
+        clean_foot_strikes.(strike_counter).start_idx = temp_array(1);
+        clean_foot_strikes.(strike_counter).end_idx = temp_array(end);
     end
     
     disp(plate_str);

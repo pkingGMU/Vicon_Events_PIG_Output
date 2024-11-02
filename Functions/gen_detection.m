@@ -44,6 +44,95 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
     used_plates = [false,false,false,false];
 
+
+    % Loop through each plate
+
+    
+    % Get the field names from the struct clean_foot_strikes (ex.
+    % z1,z2,z3,z4)
+    plate_field_names = fieldnames(clean_foot_strike);
+
+    
+
+    % Loop thorugh each plate
+    for i = 1:length(plate_field_names)
+        
+        % Assign name to current plate
+        plate_field_name = plate_field_names{i};
+        
+        % Extract the data from the current plate
+        current = clean_foot_strike.(plate_field_name);
+        
+
+        % Prevents operating on empty cells
+        if iscell(current)
+            continue
+        end
+        
+
+        % Get the field names for the current plate
+        strike_field_names = fieldnames(current);
+
+        
+        % Loop through each strike
+        for j = 1:length(current)
+            
+            % Get the name of the current stirke
+            current_strike_name = strike_field_names{j};
+            
+            % Extract the necessary data
+            current_strike = current.(current_strike_name);
+
+            % Display the contents of the current field
+            if ~isempty(current)  % Check if 'data' is non-empty
+                disp(['Start of ', plate_field_name, ' ', current_strike_name ':']);
+                disp(clean_foot_strike.(plate_field_name).(current_strike_name).start_idx);  % Display the data
+            else
+                disp([field_name, ' is empty.']);
+            end
+
+            
+            
+
+
+        end
+        
+
+    end
+
+
+    % Initialize arrays
+    foot_strike_array = [];
+    toe_off_array = [];
+
+    % Loop through each Foot Strike frame
+    for i = 1:length(foot_strike_frames)
+
+        fprintf('Foot Strike/Toe Off Pair: %d\n', i);
+        
+        % Find the index of the first occurrence of the frame in the devices data
+        temp_foot_strike_idx = find(frames == foot_strike_frames(i), 1, 'first');  % Numeric comparison
+
+        try
+
+            % Find the index of the first occurrence of the frame in the devices data
+            temp_toe_off_idx = find(frames == toe_off_frames(i+1), 1, 'first');  % Numeric comparison
+        catch
+            fprintf('Out of Pairs')
+            break
+        end
+
+        foot_strike_array = [foot_strike_array, temp_foot_strike_idx];
+        toe_off_array = [toe_off_array, temp_toe_off_idx];
+
+
+    end
+
+    
+
+
+
+
     % Loop through each Foot Strike frame
     for i = 1:length(foot_strike_frames)
 
