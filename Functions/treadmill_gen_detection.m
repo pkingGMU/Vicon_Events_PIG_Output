@@ -1,4 +1,4 @@
-function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gait_events_tables)
+function [cleanEventsStruct, gen_frames] = treadmill_gen_detection(devices_data_table, gait_events_tables)
     % Input:
     % devices_data_table: Table containing the force plate data (z1, z2, z3, z4 columns).
     % gait_events_tables: Table containing the timing data (frames of interest in the first column and event types).
@@ -9,20 +9,14 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     % Get relevant columns
     frames = str2double(devices_data_table.Frame);  % Convert frames to numeric
     z1 = str2double(devices_data_table.("FP1Force_Fz"));    
-    z2 = str2double(devices_data_table.("FP2Force_Fz"));      
-    z3 = str2double(devices_data_table.("FP3Force_Fz")); 
-    z4 = str2double(devices_data_table.("FP4Force_Fz"));  % Fourth force plate
+    z2 = str2double(devices_data_table.("FP2Force_Fz")); 
 
 
     %%% Find Clean Foot Strikes %%%
-    clean_foot_strike.z1 = treadmill_gen_search(z1, 'z1');
-    clean_foot_strike.z2 = treadmill_gen_search(z2, 'z2');
-    clean_foot_strike.z3 = treadmill_gen_search(z3, 'z3');
-    clean_foot_strike.z4 = treadmill_gen_search(z4, 'z4');
-
     
 
     %%% Match indexes from 
+    
     
     % Extract frames of interest from the fourth column of gait_events_tables
     targetFrames = round((gait_events_tables{:, 4} * 100), 0);  % Multiply by hundred since its in seconds
