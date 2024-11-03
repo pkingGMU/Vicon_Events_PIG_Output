@@ -44,6 +44,37 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
     used_plates = [false,false,false,false];
 
+    % Initialize arrays
+    foot_strike_array = [];
+    toe_off_array = [];
+
+    % Loop through each Foot Strike frame
+    for i = 1:length(foot_strike_frames)
+
+        fprintf('Foot Strike/Toe Off Pair: %d\n', i);
+        
+        % Find the index of the first occurrence of the frame in the devices data
+        temp_foot_strike_idx = find(frames == foot_strike_frames(i), 1, 'first');  % Numeric comparison
+
+        try
+
+            % Find the index of the first occurrence of the frame in the devices data
+            temp_toe_off_idx = find(frames == toe_off_frames(i+1), 1, 'first');  % Numeric comparison
+        catch
+            fprintf('Out of Pairs')
+            fprintf('\n')
+            break
+        end
+
+        foot_strike_array = [foot_strike_array, temp_foot_strike_idx];
+        toe_off_array = [toe_off_array, temp_toe_off_idx];
+
+
+    end
+
+
+
+
 
     % Loop through each plate
 
@@ -86,13 +117,91 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
             % Display the contents of the current field
             if ~isempty(current)  % Check if 'data' is non-empty
                 disp(['Start of ', plate_field_name, ' ', current_strike_name ':']);
-                disp(clean_foot_strike.(plate_field_name).(current_strike_name).start_idx);  % Display the data
+                disp([clean_foot_strike.(plate_field_name).(current_strike_name).start_idx]);  % Display the data
+                fprintf('\n')
             else
                 disp([field_name, ' is empty.']);
             end
 
-            
-            
+            % Assign values
+            heel_plate = clean_foot_strike.(plate_field_name).(current_strike_name).start_idx;
+            toe_plate = clean_foot_strike.(plate_field_name).(current_strike_name).end_idx;
+
+            %%% Determine the most fitting foot strike idx
+
+            % Get the difference in values
+            idx_differences = abs(foot_strike_array - heel_plate);
+
+            % Find the min
+            [~, closest_idx] = min(idx_differences);
+
+            % Closest idx
+            heel_close = foot_strike_array(closest_idx);
+            toe_close = toe_off_array(closest_idx);
+
+            disp([heel_close, heel_plate])
+
+
+            if abs(heel_close - heel_plate) >= 75
+                disp('Heel/Toe not all the way on the plate')
+                continue
+            end
+
+
+            %%% Check for overlap
+            % Check for clean event: A single force plate is active at both foot strike and toe-off, and its paired plate has zero data in that window
+            cleanFlag = false;  % Assume it's not clean unless proven otherwise
+            relevantData = struct();  % Structure to store relevant data for clean events
+    
+             % Create a switch-case structure based on which force plate is active
+            switch plate_field_name
+                case 'z1' 
+                    
+                    if z1(heel_plate) ~= 0 && z1(toe_plate) ~= 0 && all(z3(heel_plate:toe_plate) < 100 & z3(heel_plate:toe_plate) > -100)
+                        cleanFlag = true;
+                    end
+                case 'z2'
+                    if z2(heel_plate) ~= 0 && z2(toe_plate) ~= 0 && all(z3(heel_plate:toe_plate) < 100 & z3(heel_plate:toe_plate) > -100)
+                        cleanFlag = true;
+                    end
+
+                case 'z3' 
+
+                    if z3(heel_plate) ~= 0 && z3(toe_plate) ~= 0 && all(z2(heel_plate:toe_plate) < 100 & z2(heel_plate:toe_plate) > -100) && all(z4(heel_plate:toe_plate) < 100 & z4(heel_plate:toe_plate) > -100)
+                        cleanFlag = true;
+                    end
+
+                case 'z4'
+
+                    if z4(heel_plate) ~= 0 && z4(toe_plate) ~= 0 && all(z3(heel_plate:toe_plate) < 100 & z3(heel_plate:toe_plate) > -100)
+                        cleanFlag = true;
+                    end
+        
+          
+        
+                otherwise
+                    % If none of the cases match, it's not a clean event
+                    fprintf('Foot Strike at frame %d is not clean due to overlapping paired force plate data\n', foot_strike_frames(i));
+            end
+
+            if cleanFlag == false
+                     fprintf('Foot Strike at frame %d is not clean due to overlapping paired force plate data\n', foot_strike_frames(i));
+
+            end
+
+             % If clean, store the event data
+            if cleanFlag
+                fprintf('Clean Foot Strike confirmed at frame %d (Toe-off at frame %d)\n', foot_strike_frames(i), toe_off_frames(i));
+                gen_frames(end+1,1) = foot_strike_frames(i);
+        
+                % Store this clean data segment in the structure with a unique field name (event1, event2, etc.)
+                eventFieldName = sprintf('event%d', eventCounter);
+                cleanEventsStruct.(eventFieldName) = relevantData;
+        
+                % Increment event counter
+                eventCounter = eventCounter + 1;
+                
+            end
 
 
         end
@@ -100,183 +209,14 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
     end
 
-
-    % Initialize arrays
-    foot_strike_array = [];
-    toe_off_array = [];
-
-    % Loop through each Foot Strike frame
-    for i = 1:length(foot_strike_frames)
-
-        fprintf('Foot Strike/Toe Off Pair: %d\n', i);
-        
-        % Find the index of the first occurrence of the frame in the devices data
-        temp_foot_strike_idx = find(frames == foot_strike_frames(i), 1, 'first');  % Numeric comparison
-
-        try
-
-            % Find the index of the first occurrence of the frame in the devices data
-            temp_toe_off_idx = find(frames == toe_off_frames(i+1), 1, 'first');  % Numeric comparison
-        catch
-            fprintf('Out of Pairs')
-            break
-        end
-
-        foot_strike_array = [foot_strike_array, temp_foot_strike_idx];
-        toe_off_array = [toe_off_array, temp_toe_off_idx];
+    gen_frames = gen_frames / 100;  % Convert back from frames to seconds
 
 
-    end
 
     
 
-
-
-
-    % Loop through each Foot Strike frame
-    for i = 1:length(foot_strike_frames)
-
-        fprintf('Foot Strike/Toe Off Pair: %d\n', i);
-        
-        % Find the index of the first occurrence of the frame in the devices data
-        foot_strike_idx = find(frames == foot_strike_frames(i), 1, 'first');  % Numeric comparison
-
-        try
-
-            % Find the index of the first occurrence of the frame in the devices data
-            toe_off_idx = find(frames == toe_off_frames(i+1), 1, 'first');  % Numeric comparison
-        catch
-            fprintf('Out of Pairs')
-            break
-        end
-        
-        %%% Searching for force plate indexes that are not zero within a
-        %%% 100 frame tolerance
-        % Initialize variables for searching
-        found = false;
-        
-        
-        [found, foot_strike_idx, plate, plate_name, used_plates] = gen_frame_search(foot_strike_idx, found, 'forward', z1,z2,z3,z4, used_plates);
-
-        % Only check backward if nothings been found yet
-        if found == false
-            [found, foot_strike_idx, plate, plate_name, used_plates] = gen_frame_search(foot_strike_idx, found, 'backward', z1,z2,z3,z4, used_plates);
-        end
-        
-        
-
-        if found == false
-            fprintf('No Foot Strike Force Plate data found \n')
-            continue
-        end
-
-        %%% Searching for toe off frames
-        % Initialize variables for searching
-        
-        force_end_idx = foot_strike_idx;
-
-        % Expand the window downwards (after the foot strike)
-        while force_end_idx < length(frames) && ~isempty(plate) && plate(force_end_idx + 1) ~= 0 
-            force_end_idx = force_end_idx + 1;
-        end
-        
-        
-
-        % found = false;
-        % 
-        % [found, toe_off_idx, plate] = gen_frame_search(toe_off_idx, found, 'forward', z1,z2,z3,z4);
-        % 
-        % % Only check backward if nothings been found yet
-        % if found == false
-        %     [found, toe_off_idx, plate] = gen_frame_search(toe_off_idx, found, 'backward', z1,z2,z3,z4);
-        % end
-        % 
-        % if found == false
-        %     fprintf('No Toe Off Force Plate data found \n')
-        %     continue
-        % end
-        
-
-        % Ensure the frame index is valid
-        if isempty(foot_strike_idx) || isempty(toe_off_idx)
-            fprintf('No frames found')
-            continue
-            
-        end
-
-        % Display the values for the specified plate at the current frame
-        fprintf('Frame %d: plate: %s, force value: %.2f\n', ...
-            foot_strike_frames(i), plate_name, plate(foot_strike_idx));
-
-
-        % Initialize arrays to store data before and after the clean foot strike
-        force_start_idx = foot_strike_idx;
-        
-
-        % Expand the window upwards (before the foot strike)
-        while force_start_idx > 1 && (z1(force_start_idx - 1) ~= 0 || z2(force_start_idx - 1) ~= 0 || z3(force_start_idx - 1) ~= 0 || z4(force_start_idx - 1) ~= 0)
-            force_start_idx = force_start_idx - 1;
-        end
-
-        
-        
-        % Check for toe off lasting longer than 
-        % if toe_off_idx > force_end_idx + 300
-        %     fprintf('Foot Strike at frame %d is not clean because toe-off exceeds available force plate data\n', foot_strike_frames(i));
-        %     continue
-        %     % Skip to the next iteration if the toe-off goes beyond the data length
-        % end
-
-        % Check for clean event: A single force plate is active at both foot strike and toe-off, and its paired plate has zero data in that window
-        cleanFlag = false;  % Assume it's not clean unless proven otherwise
-        relevantData = struct();  % Structure to store relevant data for clean events
-
-         % Create a switch-case structure based on which force plate is active
-        switch true
-            case (z1(force_start_idx) ~= 0 && z1(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) < 100 & z3(force_start_idx:force_end_idx) > -100))  % FP1 has data, FP2 has none
-                cleanFlag = true;
-                relevantData.z1 = devices_data_table(force_start_idx:force_end_idx, "FP1Force_Fz");
     
-            case (z2(force_start_idx) ~= 0 && z2(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) < 100 & z3(force_start_idx:force_end_idx) > -100))  % FP2 has data, FP1 has none
-                cleanFlag = true;
-                relevantData.z2 = devices_data_table(force_start_idx:force_end_idx, "FP2Force_Fz");
-    
-            case (z3(force_start_idx) ~= 0 && z3(force_end_idx) ~= 0 && all(z2(force_start_idx:force_end_idx) < 100 & z2(force_start_idx:force_end_idx) > -100) && all(z4(force_start_idx:force_end_idx) < 100 & z4(force_start_idx:force_end_idx) > -100))  % FP3 has data, FP4 has none
-                cleanFlag = true;
-                relevantData.z3 = devices_data_table(force_start_idx:force_end_idx, "FP3Force_Fz");
-    
-            case (z4(force_start_idx) ~= 0 && z4(force_end_idx) ~= 0 && all(z3(force_start_idx:force_end_idx) < 100 & z3(force_start_idx:force_end_idx) > -100))  % FP4 has data, FP3 has none
-                cleanFlag = true;
-                relevantData.z4 = devices_data_table(force_start_idx:force_end_idx, "FP4Force_Fz");
-    
-            otherwise
-                % If none of the cases match, it's not a clean event
-                fprintf('Foot Strike at frame %d is not clean due to overlapping paired force plate data\n', foot_strike_frames(i));
-        end
-        
-        % If clean, store the event data
-        if cleanFlag
-            fprintf('Clean Foot Strike confirmed at frame %d (Toe-off at frame %d)\n', foot_strike_frames(i), toe_off_frames(i));
-            gen_frames(end+1,1) = foot_strike_frames(i);
-    
-            % Store this clean data segment in the structure with a unique field name (event1, event2, etc.)
-            eventFieldName = sprintf('event%d', eventCounter);
-            cleanEventsStruct.(eventFieldName) = relevantData;
-    
-            % Increment event counter
-            eventCounter = eventCounter + 1;
-            
-        end
 
-        fprintf('\n\n')
-
-     end
-   
-
-
-gen_frames = gen_frames / 100;  % Convert back from frames to seconds
-
-% Display the clean events structure
 
             
 
