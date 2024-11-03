@@ -11,8 +11,14 @@ function [subjects] = process(subjects_list)
         [proc_tables] = arrange_tables(subject);
     
         % Easy naming convention
+        % Regex to get subject name
+        subject = char(subject);
+        parts = strsplit(subject, 'Data\');
+        subject_name = parts{2};
+
+
         % Display subject for debugging
-        subject =  'sub' + string(subject.name);
+        subject =  'sub' + string(subject_name);
 
         subjects.(subject).proc_tables = proc_tables;
 

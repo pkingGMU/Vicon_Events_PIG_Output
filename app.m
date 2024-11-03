@@ -1,7 +1,18 @@
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% UI APPLICATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 
 function dataProcessingApp()
+
+    % Local imports
+    addpath(genpath('Functions'))
+    addpath(genpath('Data'))
+    addpath(genpath('Gait_Analysis_Code'))
+    addpath(genpath('Gait_Analysis_Data'))
+    addpath(genpath('Functions'))
+
+
     % Create a figure for the UI
     fig = uifigure('Name', 'Data Processing App', 'Position', [100, 100, 300, 200]);
 
