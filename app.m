@@ -62,6 +62,7 @@ function processDataCallback()
 
     % Process Data
     subjects = process(selectedFolders);
+    disp('Processing finished')
 
 
 end

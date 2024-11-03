@@ -1,4 +1,4 @@
-function [clean_foot_strikes] = treadmill_gen_search(plate, plate_str)
+function [clean_foot_strikes] = gen_search(plate, plate_str)
 %TREADMILL_GEN_SEARCH Summary of this function goes here
 %   Detailed explanation goes here
     
@@ -44,9 +44,8 @@ function [clean_foot_strikes] = treadmill_gen_search(plate, plate_str)
         clean_foot_strikes.(strike_counter).end_idx = temp_array(end);
     end
     
-    disp(plate_str);
-    disp(idx_counter);
-
+    
+    fprintf('Number of strikes for %s: %d\n', plate_str, idx_counter - 1);
 
 end
 

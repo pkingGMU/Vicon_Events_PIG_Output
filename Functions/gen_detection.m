@@ -15,10 +15,10 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
 
     %%% Find Clean Foot Strikes %%%
-    clean_foot_strike.z1 = treadmill_gen_search(z1, 'z1');
-    clean_foot_strike.z2 = treadmill_gen_search(z2, 'z2');
-    clean_foot_strike.z3 = treadmill_gen_search(z3, 'z3');
-    clean_foot_strike.z4 = treadmill_gen_search(z4, 'z4');
+    clean_foot_strike.z1 = gen_search(z1, 'z1');
+    clean_foot_strike.z2 = gen_search(z2, 'z2');
+    clean_foot_strike.z3 = gen_search(z3, 'z3');
+    clean_foot_strike.z4 = gen_search(z4, 'z4');
 
     
 
@@ -48,10 +48,11 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     foot_strike_array = [];
     toe_off_array = [];
 
+    fprintf('Reading Foot Strike/Toe Off Pairs\n');
     % Loop through each Foot Strike frame
     for i = 1:length(foot_strike_frames)
 
-        fprintf('Foot Strike/Toe Off Pair: %d\n', i);
+        
         
         % Find the index of the first occurrence of the frame in the devices data
         temp_foot_strike_idx = find(frames == foot_strike_frames(i), 1, 'first');  % Numeric comparison
@@ -139,7 +140,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
             heel_close = foot_strike_array(closest_idx);
             toe_close = toe_off_array(closest_idx);
 
-            disp([heel_close, heel_plate])
+            disp(['Closest heel strike index: ', heel_close])
 
 
             if abs(heel_close - heel_plate) >= 75
