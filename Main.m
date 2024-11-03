@@ -3,7 +3,10 @@
 %%% Local Imports
 % Add function folder to search path
 addpath(genpath('Functions'))
-
+addpath(genpath('Data'))
+addpath(genpath('Gait_Analysis_Code'))
+addpath(genpath('Gait_Analysis_Data'))
+addpath(genpath('Overground'))
 
 
 %%

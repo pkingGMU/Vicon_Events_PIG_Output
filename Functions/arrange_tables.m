@@ -5,8 +5,10 @@ function [proc_tables, event_table] = arrange_tables(folder)
     
     %%% Make an array of the file names
     
+    % Convert to char
+    folder = char(folder);
 
-    folder = fullfile(folder.folder, folder.name);
+    %folder = fullfile(folder.folder, folder.name);
     
     % File pattern is equal to our folder directory + a csv file 
     filePattern = fullfile(folder, '*.csv');
