@@ -147,7 +147,21 @@ function [proc_tables, event_table] = arrange_tables(folder)
 
         %%% GEN DETECTION
 
-        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table);
+        % Determine if its overground or treadmill
+        % Ask if you are doing overground or treadmill analysis
+        choice = questdlg('Is this treadmill or overground walking?', ...
+            'Select Gait Type ', ...
+            'Treadmill', 'Overground', 'Cancel', 'Treadmill');
+
+        switch choice
+            case 'Treadmill'
+                        [gen, gen_frames] = treadmill_gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table);
+
+            case 'Overground'
+                        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table);
+
+        end
+
 
           
         proc_tables.(file_name_short).gen_events = gen;

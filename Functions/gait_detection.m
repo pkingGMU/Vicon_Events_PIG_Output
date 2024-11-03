@@ -5,7 +5,7 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     %frame = model_output(:,{Frame});
     frame_values = str2double(trajectory.("Frame"));
     frame_start = frame_values(1);
-    FR=100; % frame rate, Hz
+    FR=120; % frame rate, Hz
     %t=frame/FR; %time, sec
     %n=length(t);
     
