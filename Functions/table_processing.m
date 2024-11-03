@@ -4,7 +4,13 @@ function [section_data_table] = table_processing(section, data_table)
     disp(section)
     
     % Finding the section in the first column of the full data table
-    section_index = find(strcmp(data_table.Var1, section));
+    try 
+        section_index = find(strcmp(data_table.Var1, section));
+        variable = 'Var1';
+    catch
+        section_index = find(strcmp(data_table.Subject, section));
+        variable = 'Subject';
+    end
     
     % Getting the size of the full data table
     % We'll need this later
@@ -39,7 +45,7 @@ function [section_data_table] = table_processing(section, data_table)
             % should stay the same throughout
 
             % Row end is finding the next section and going up one row
-            rowEnd = find(strcmp(data_table.Var1, 'Model Outputs')) - 1;
+            rowEnd = find(strcmp(data_table.(variable), 'Model Outputs')) - 1;
 
             % Labels is a new one row table that is the row of the label
             % idx we found early and all the columns up until our column
@@ -50,7 +56,7 @@ function [section_data_table] = table_processing(section, data_table)
             sub_labels = data_table(labelIdx - 1, 1:colEnd);
    
         case 'Model Outputs'
-            rowEnd = find(strcmp(data_table.Var1, 'Trajectories')) - 1;
+            rowEnd = find(strcmp(data_table.(variable), 'Trajectories')) - 1;
             labels = data_table(labelIdx, 1:colEnd);
             sub_labels = data_table(labelIdx - 1, 1:colEnd);
            

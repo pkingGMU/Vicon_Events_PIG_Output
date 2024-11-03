@@ -4,7 +4,10 @@
 
 
 function dataProcessingApp()
-
+    
+    clc
+    close all hidden
+    
     % Local imports
     addpath(genpath('Functions'))
     addpath(genpath('Data'))
