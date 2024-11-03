@@ -5,8 +5,8 @@
 ## Description
 
 This project is split into two parts. 
-* The first is running Main.m to calculate both gen, foot strike, and foot off events from Vicon's csv export. This will create an xlsx file with the events listed as well as the devices, model output, and trajectory data.
-* The second part is running R01_GaitAnalysis.m located in the `Gait_Analysis_Code` Folder to get a full analysis on the data. 
+* The first is processing raw Vicon Data from PIG to calculate both gen, foot strike, and foot off events from Vicon's csv export. This will create an xlsx file with the events listed as well as the devices, model output, and trajectory data.
+* The second part is running and analysis located in the `Gait_Analysis_Code` Folder to get a full analysis on the data. 
 
 **ISSUES**: see issues tab
 
@@ -22,9 +22,9 @@ Exporting from Vicon
 
 * Download this repo by either cloning it using GitHub or clicking `<> Code` -> `Download ZIP`
 * Take your Vicon export csvs and put them in the `Data` folder provided. The structure should look like `Data` Folder -> `SubjectID` Folder -> `Trial` Files .csv
-* Run Main.m (Will take n files * 45 seconds amount of time so be patient)
+* Run app.m (Will take n files * 45 seconds amount of time so be patient) and choose `Process Data`
 * All completed .xlsx files will appear in the provided `Gait_Analysis_Data` Folder
-* Run R01_GaitAnalysis.m and follow the instructions
+* Run app.m  and choose `Analyze Data`
 * When it asks for project folder select .../Vicon_Events_PIG_Output
 * When it asks for data folder select .../Vicon_Events_PIG_Output/Gait_Analysis_Data
 * When it asks for code folder select .../Vicon_Events_PIG_Output/Gait_Analysis_Code
