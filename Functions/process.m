@@ -13,8 +13,10 @@ function [subjects] = process(subjects_list)
         % Easy naming convention
         % Regex to get subject name
         subject = char(subject);
-        parts = strsplit(subject, 'Data\');
+        parts = strsplit(subject, 'Data');
         subject_name = parts{2};
+        subject_name = regexprep(subject_name, '[\\/]', '');
+
 
 
         % Display subject for debugging
