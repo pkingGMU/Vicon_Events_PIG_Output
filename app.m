@@ -61,10 +61,15 @@ function processDataCallback()
         else
             disp('No folders selected.');
         end
+
+        choice = questdlg('Is this treadmill or overground walking?', ...
+            'Select Gait Type ', ...
+            'Treadmill', 'Overground', 'Cancel', 'Treadmill');
+
     end
 
     % Process Data
-    subjects = process(selectedFolders);
+    subjects = process(selectedFolders, choice);
     disp('Processing finished')
 
 

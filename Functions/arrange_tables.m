@@ -1,4 +1,4 @@
-function [proc_tables, event_table] = arrange_tables(folder)
+function [proc_tables, event_table] = arrange_tables(folder, choice)
     %%%
     % 
     %%%
@@ -149,9 +149,9 @@ function [proc_tables, event_table] = arrange_tables(folder)
 
         % Determine if its overground or treadmill
         % Ask if you are doing overground or treadmill analysis
-        choice = questdlg('Is this treadmill or overground walking?', ...
-            'Select Gait Type ', ...
-            'Treadmill', 'Overground', 'Cancel', 'Treadmill');
+        % choice = questdlg('Is this treadmill or overground walking?', ...
+        %     'Select Gait Type ', ...
+        %     'Treadmill', 'Overground', 'Cancel', 'Treadmill');
 
         switch choice
             case 'Treadmill'

@@ -107,7 +107,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
         
         % Loop through each strike
-        for j = 1:length(current)
+        for j = 1:length(strike_field_names)
             
             % Get the name of the current stirke
             current_strike_name = strike_field_names{j};
@@ -140,10 +140,10 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
             heel_close = foot_strike_array(closest_idx);
             toe_close = toe_off_array(closest_idx);
 
-            disp(['Closest heel strike index: ', heel_close])
+            disp(['Closest heel strike index: ', num2str(heel_close)])
 
 
-            if abs(heel_close - heel_plate) >= 75
+            if abs(heel_close - heel_plate) >= 75 || abs (toe_close - toe_plate) >= 75
                 disp('Heel/Toe not all the way on the plate')
                 continue
             end
