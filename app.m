@@ -78,8 +78,8 @@ end
 % Callback function for Analyze Data button
 function analyzeDataCallback()
     disp('Running analysis script...');
-
-    run("Gait_Analysis_Code\R01_GaitAnalysis.m")
+    cd ("Gait_Analysis_Code")
+    run("R01_GaitAnalysis.m")
     
     disp("Analysis Completed")
 end

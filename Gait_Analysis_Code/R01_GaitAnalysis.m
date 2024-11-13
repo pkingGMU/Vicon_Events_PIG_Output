@@ -313,7 +313,9 @@ for each_subject = 1:length(sub_list_num)
                 % col 14: Right peak knee flexion during swing (+ve)
                 % col 15: Left peak hip flexion during swing (+ve)
                 % col 16: Right peak hip flexion during swing (+ve)
-
+                
+                %%% UNCOMMENT HERE FOR KINETICS
+    
                 kinetics(g,:) = TreadmillKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,APcol);
                 % col 1 = redistribution ratio (0 = all about ankle, 2 = all about hip)
                 % % col 2 & 3 = peak anterior ground reaction forces (L&R) in % bodyweight
@@ -427,6 +429,8 @@ for each_subject = 1:length(sub_list_num)
 
         av_tab2 = [sub_step_deets av_tab1 sub_mos];
         av_tab = [av_tab;av_tab2];
+
+        
 
 
         %MoS_Tab = [sub_step_deets sub_mos];
