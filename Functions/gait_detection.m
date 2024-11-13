@@ -140,8 +140,8 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
             l_force_plate = str2double(devices_table.("LeftPlateForce_Fz")); 
             r_force_plate = str2double(devices_table.("RightPlateForce_Fz")); 
 
-            [~, rhs] = findpeaks(r_force_plate);
-            [~, lhs] = findpeaks(l_force_plate);
+            % [~, rhs] = findpeaks(r_force_plate);
+            % [~, lhs] = findpeaks(l_force_plate);
 
             [flhs, flto] = max_grf_search(l_force_plate);
             [frhs, frto] = max_grf_search(r_force_plate);
@@ -271,11 +271,16 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     frhs = frhs(1:min_len);
     frto = frto(1:min_len);
 
+    flhs = str2double(devices_table{flhs, 1}') /FR;
+    flto = str2double(devices_table{flto, 1}') /FR;
+    frhs = str2double(devices_table{frhs, 1}') /FR;
+    frto = str2double(devices_table{frto, 1}') /FR;
 
-    flhs = (flhs + frame_start-1)/FR;
-    flto = (flto + frame_start-1)/FR;
-    frhs = (frhs + frame_start-1)/FR;
-    frto = (frto + frame_start-1)/FR;
+
+    % flhs = (flhs + frame_start-1)/FR;
+    % flto = (flto + frame_start-1)/FR;
+    % frhs = (frhs + frame_start-1)/FR;
+    % frto = (frto + frame_start-1)/FR;
 
     
 
