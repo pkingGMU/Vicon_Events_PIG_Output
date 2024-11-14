@@ -7,8 +7,8 @@ function [heel_strikes, toe_offs] = max_grf_search(plate_data)
             max_GRF = max(GRF);
             
             % Set thresholds for heel strikes and toe offs
-            heel_strike_threshold = 0.75 * max_GRF;  % 80% of max GRF
-            toe_off_threshold = 0.10 * max_GRF;     % 20% of max GRF
+            heel_strike_threshold = 0.75 * max_GRF;  % 75% of max GRF
+            toe_off_threshold = 0.10 * max_GRF;     % 10% of max GRF
             
             % Initialize lists for heel strikes and toe offs
             heel_strikes = [];
