@@ -13,25 +13,25 @@ function [clean_foot_strikes] = treadmill_gen_search(hs_array, to_array, event_n
             case 'left'
 
                 try
-                    clean_foot_strikes.(strike_counter).end_idx = to_array(event+1);
+                    clean_foot_strikes.(strike_counter).end_idx = int32(to_array(event+1));
                 catch
                     disp('Out of pairs')
                     continue
                 end
 
-                clean_foot_strikes.(strike_counter).start_idx = hs_array(event);
+                clean_foot_strikes.(strike_counter).start_idx = int32(hs_array(event));
                 
                     
 
             case 'right'
                 try
-                    clean_foot_strikes.(strike_counter).end_idx = to_array(event+1);
+                    clean_foot_strikes.(strike_counter).end_idx = int32(to_array(event+1));
                 catch
                     disp('Out of pairs')
                     continue
                 end
 
-                clean_foot_strikes.(strike_counter).start_idx = hs_array(event);
+                clean_foot_strikes.(strike_counter).start_idx = int32(hs_array(event));
                 
 
         end
