@@ -74,6 +74,9 @@ function [cleanEventsStruct, gen_frames] = treadmill_gen_detection(devices_data_
             heel_plate_frame = clean_foot_strike.(plate_field_name).(current_strike_name).start_idx;
             toe_plate_frame = clean_foot_strike.(plate_field_name).(current_strike_name).end_idx;
 
+            % heel_plate_frame = double(heel_plate_frame);
+            % toe_plate_frame = double(toe_plate_frame);
+
             heel_plate= find(frames == heel_plate_frame, 1, "first");
             toe_plate = find(frames == toe_plate_frame, 1, "first");
 
@@ -113,11 +116,11 @@ function [cleanEventsStruct, gen_frames] = treadmill_gen_detection(devices_data_
                         cleanFlag = true;
                     end
                 case 'right'
-                    if z2(heel_plate) ~= 0 && z2(toe_plate) ~= 0 && all(z1(heel_plate:toe_plate_comparison) < 100 & z1(heel_plate:toe_plate_comparison) > -100)
+                    if z2(heel_plate) ~= 0 && z2(toe_plate) ~= 0 && all(z1(heel_plate:toe_plate_comparison) < 200 & z1(heel_plate:toe_plate_comparison) > -200)
                         cleanFlag = true;
                     end
 
-                
+             %%% 
         
           
         
