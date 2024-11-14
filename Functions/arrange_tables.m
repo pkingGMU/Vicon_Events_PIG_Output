@@ -201,104 +201,60 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
 
 
         
-        %%% Create excel
-        
+        %%% Create Excel
         existing_data = readcell(file_name);
-
+        
+        % Convert table to cell and pad with empty columns if necessary
         new_data = table2cell(event_table);
+        empty_row = repmat({''}, 1, size(existing_data, 2));  % Empty row with same number of columns
+        new_data_padded = [new_data, repmat({''}, size(new_data, 1), max(0, size(existing_data, 2) - size(new_data, 2)))];
         
-        % Add empty row
-        empty_row = repmat({''}, 1, size(existing_data, 2));  % Empty row with the same number of columns
-
-        
-
-        % Step 3: Get the size of the existing data
-        [~, existing_cols] = size(existing_data);
-        
-        % Pad columns
-        new_data_padded = [new_data, repmat({''}, size(new_data, 1), existing_cols - size(new_data, 2))];
-        
-        % Concat csv with event data
+        % Combine new data with existing data, adding an empty row in between
         combined_data = [new_data_padded; empty_row; existing_data];
         
         %%% Rearrange Data
-
-        % Find the row containing 'events' and 'Devices'
-        events_row = find(strcmp(combined_data, 'Events'));  % Find the row with 'Events'
-        devices_row = find(strcmp(combined_data, 'Devices'));  % Find the row with 'Devices'
-
-        % If both 'events' and 'Devices' are found
-        if ~isempty(events_row) && ~isempty(devices_row)
-            % Ensure that the 'Devices' row comes after the 'events' row
-            if devices_row > events_row
-                % Delete all rows between 'events' and 'Devices'
-                combined_data(events_row + 3 : devices_row - 1, :) = [];
-            end
+        
+        % Use logical indexing to locate 'Events' and 'Devices' rows once
+        events_idx = find(strcmp(combined_data(:, 1), 'Events'), 1);
+        devices_idx = find(strcmp(combined_data(:, 1), 'Devices'), 1);
+        
+        % Remove rows between 'Events' and 'Devices' if found and in correct order
+        if ~isempty(events_idx) && ~isempty(devices_idx) && devices_idx > events_idx
+            combined_data(events_idx + 3 : devices_idx - 1, :) = [];
         end
-
-        % Find events row again
-        events_row = find(strcmp(combined_data, 'Events'));  % Find the row with 'Events'
-
-        % If 'events' row is found, move it and the next row to the top
-        if ~isempty(events_row)
-            % Ensure the row below 'events' is included
-            frame_rate_row = events_row + 1;
-
-            label_row = events_row +2;
-
-            % Extract the 'events' row and the row below it
-            events_data = combined_data(events_row:label_row, :);
-
-            % Remove the 'events' and the row below it from their original position
-            combined_data(events_row:label_row, :) = [];
-
-            % Add 'events' data to the top
+        
+        % Move 'Events' and associated rows to the top if 'Events' row is found
+        if ~isempty(events_idx)
+            % Extract and move 'Events' and its related rows (up to label_row) to the top
+            events_data = combined_data(events_idx : events_idx + 2, :);
+            combined_data(events_idx : events_idx + 2, :) = [];  % Remove these rows
+            combined_data = [events_data; combined_data];        % Prepend to top
+        else
+            % Create custom 'events_data' if 'Events' row not found
+            events_data = {'Events', [], [], [], []; 100, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};
+            events_data = [events_data, repmat({''}, size(events_data, 1), max(0, size(existing_data, 2) - size(events_data, 2)))];
             combined_data = [events_data; combined_data];
-        else 
-             % If 'events' row is not found, create a custom 'events_data'
-             events_data = {'Events', [], [], [], []; 100, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};  % Creating a 2x1 cell array
-
-             % Pad out new events data
-             % Step 3: Get the size of the existing data
-
-             events_data_padded = [events_data, repmat({''}, size(events_data, 1), existing_cols - size(events_data, 2))];
-
-             % Add 'events_data' to the top
-             combined_data = [events_data_padded; combined_data];
         end
-
-        % Replace missing values with a specific value, e.g., empty string or NaN
-
-        % If it's a cell array
-
-        mask = cellfun(@(x) any(isa(x,'missing')), combined_data); % using isa instead of ismissing allows white space through
-        combined_data(mask) = {[]};
-
-        %%% Define folder to save excel
-        % Root folder
+        
+        % Replace any missing values (using `isa` with `cellfun` for efficiency)
+        combined_data(cellfun(@(x) isa(x, 'missing'), combined_data)) = {[]};
+        
+        %%% Define Folder and Save Excel
+        
+        % Define root folder based on 'choice' variable
         root_folder = pwd;
+        excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', choice, subject_id);
         
-        switch choice
-            case 'Treadmill'
-                % Construct the full path to the subject's folder
-                excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', 'Treadmill', subject_id);
-
-            case 'Overground'
-                % Construct the full path to the subject's folder
-                excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', 'Overground', subject_id);
-        end
-        
-
-        % Check if the folder exists, if not, create it
+        % Create directory if it doesn't exist
         if ~exist(excel_folder, 'dir')
             mkdir(excel_folder);
         end
         
-        %% WORKING EXCEL
-        % Write the modified data to a new Excel file
+        % Write to Excel file
         new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
         new_full_file_path = fullfile(excel_folder, new_excel_filename);
         writecell(combined_data, new_full_file_path);
+
         
      
      end
