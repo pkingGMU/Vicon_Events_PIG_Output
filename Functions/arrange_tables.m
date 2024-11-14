@@ -74,7 +74,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
         
         %%% GAIT EVENTS
 
-        [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table);
+        [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table, proc_tables.(file_name_short).devices_data_table, choice);
 
         if failed == true
             continue
@@ -155,7 +155,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
 
         switch choice
             case 'Treadmill'
-                        [gen, gen_frames] = treadmill_gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table);
+                        [gen, gen_frames] = treadmill_gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, lhs, lto, rhs, rto);
 
             case 'Overground'
                         [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table);
@@ -195,6 +195,8 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
 
         % Sort the event_table by Context and then by Name
         event_table = sortrows(event_table, {'Context', 'Name'}, {'ascend', 'ascend'});
+
+        event_table.("Time (s)") = round(event_table.("Time (s)"), 3);
 
 
 
@@ -275,9 +277,17 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
         %%% Define folder to save excel
         % Root folder
         root_folder = pwd;
+        
+        switch choice
+            case 'Treadmill'
+                % Construct the full path to the subject's folder
+                excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', 'Treadmill', subject_id);
 
-        % Construct the full path to the subject's folder
-        excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', 'Overground', subject_id);
+            case 'Overground'
+                % Construct the full path to the subject's folder
+                excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', 'Overground', subject_id);
+        end
+        
 
         % Check if the folder exists, if not, create it
         if ~exist(excel_folder, 'dir')
