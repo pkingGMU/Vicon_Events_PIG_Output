@@ -270,7 +270,8 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     flto = flto(1:min_len);
     frhs = frhs(1:min_len);
     frto = frto(1:min_len);
-
+    
+    % Calculate to time
     flhs = str2double(devices_table{flhs, 1}') /FR;
     flto = str2double(devices_table{flto, 1}') /FR;
     frhs = str2double(devices_table{frhs, 1}') /FR;
