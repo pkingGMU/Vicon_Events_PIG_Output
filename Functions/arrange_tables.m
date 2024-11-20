@@ -80,7 +80,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
             continue
         end
        
-
+        clear full_data_table;
         
 
         % Define the subject
@@ -198,43 +198,58 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
 
         event_table.("Time (s)") = round(event_table.("Time (s)"), 3);
 
-
-
+        fprintf("Add new info to old csv")
+        
         
         %%% Create Excel
+        % Existing data
         existing_data = readcell(file_name);
         
-        % Convert table to cell and pad with empty columns if necessary
+        fprintf("Debug 1")
+
+        % Convert the event_table to cell
         new_data = table2cell(event_table);
-        empty_row = repmat({''}, 1, size(existing_data, 2));  % Empty row with same number of columns
-        new_data_padded = [new_data, repmat({''}, size(new_data, 1), max(0, size(existing_data, 2) - size(new_data, 2)))];
         
-        % Combine new data with existing data, adding an empty row in between
+        % Get the number of columns in the existing data (to handle padding)
+        num_existing_cols = size(existing_data, 2);
+        
+        % Pad the new data with empty columns if necessary
+        empty_row = repmat({''}, 1, num_existing_cols);  % Empty row with the same number of columns
+        new_data_padded = [new_data, repmat({''}, size(new_data, 1), max(0, num_existing_cols - size(new_data, 2)))];
+        
+        % Create the combined data by starting with the padded new data and adding an empty row
         combined_data = [new_data_padded; empty_row; existing_data];
         
-        %%% Rearrange Data
+        clear existing_data new_data_padded empty_row event_table gen_data gen_frames gen_table lhs lto rhs rto new_data output_data;
+        fprintf("Debug 2")
         
-        % Use logical indexing to locate 'Events' and 'Devices' rows once
+
+        % %% Rearrange Data
+        
+        % Logical indexing to locate 'Events' and 'Devices' rows
         events_idx = find(strcmp(combined_data(:, 1), 'Events'), 1);
         devices_idx = find(strcmp(combined_data(:, 1), 'Devices'), 1);
         
-        % Remove rows between 'Events' and 'Devices' if found and in correct order
+        % Only remove rows if 'Events' and 'Devices' are found in the correct order
         if ~isempty(events_idx) && ~isempty(devices_idx) && devices_idx > events_idx
-            combined_data(events_idx + 3 : devices_idx - 1, :) = [];
+            combined_data(events_idx + 3 : devices_idx - 1, :) = [];  % Remove rows between 'Events' and 'Devices'
         end
         
-        % Move 'Events' and associated rows to the top if 'Events' row is found
+        % Move 'Events' and associated rows to the top if 'Events' is found
         if ~isempty(events_idx)
-            % Extract and move 'Events' and its related rows (up to label_row) to the top
+            % Extract and move 'Events' and related rows (up to label_row) to the top
             events_data = combined_data(events_idx : events_idx + 2, :);
             combined_data(events_idx : events_idx + 2, :) = [];  % Remove these rows
-            combined_data = [events_data; combined_data];        % Prepend to top
+            combined_data = [events_data; combined_data];        % Prepend to the top
         else
-            % Create custom 'events_data' if 'Events' row not found
+            % Create custom 'events_data' if 'Events' row is not found
             events_data = {'Events', [], [], [], []; 100, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};
-            events_data = [events_data, repmat({''}, size(events_data, 1), max(0, size(existing_data, 2) - size(events_data, 2)))];
-            combined_data = [events_data; combined_data];
+            events_data = [events_data, repmat({''}, size(events_data, 1), num_existing_cols - size(events_data, 2))];
+            combined_data = [events_data; combined_data];  % Prepend custom 'events_data' to the top
         end
+        
+        clear events_data 
+
         
         % Replace any missing values (using `isa` with `cellfun` for efficiency)
         combined_data(cellfun(@(x) isa(x, 'missing'), combined_data)) = {[]};
@@ -249,11 +264,201 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
         if ~exist(excel_folder, 'dir')
             mkdir(excel_folder);
         end
-        
-        % Write to Excel file
+
+        % Determine File Name
         new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
         new_full_file_path = fullfile(excel_folder, new_excel_filename);
-        writecell(combined_data, new_full_file_path);
+        
+        % Check if the file already exists
+        if exist(new_full_file_path, 'file') == 2  % '2' means the file exists
+            % Delete the existing file
+            delete(new_full_file_path);
+        end
+
+        %% Define chunk size and number of rows
+        chunk_size = 1000;  % Chunk size of 1000 rows
+        num_rows = size(combined_data, 1);  % Total number of rows
+        num_chunks = ceil(num_rows / chunk_size);  % Number of chunks needed
+        
+        % Precompute chunk indices based on the total number of rows
+        chunk_indices = 1:chunk_size:num_rows;  % Start indices for each chunk
+        
+        % Specify the temporary output folder (e.g., a folder named 'tmp' in the current directory)
+        tmp_folder = fullfile(pwd, 'my_temp_folder');
+        if ~exist(tmp_folder, 'dir')
+            mkdir(tmp_folder);  % Create the temporary folder if it doesn't exist
+        end
+        
+        % Process each chunk
+        for i = 1:num_chunks
+            % Calculate the start and end rows for the current chunk
+            chunk_start = chunk_indices(i);
+            chunk_end = min(chunk_start + chunk_size - 1, num_rows);  % Ensure it doesn't exceed num_rows
+            
+            % Extract the chunk of data for this chunk
+            chunk = combined_data(chunk_start:chunk_end, :);
+            
+            % Specify the Excel filename for this chunk (each chunk gets a unique file)
+            file_name = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
+            
+            % Display progress
+            fprintf('Writing rows %d to %d to file %s\n', chunk_start, chunk_end, file_name);
+            
+            % Write the chunk to an Excel file
+            try
+                writecell(chunk, file_name);
+                fprintf('Successfully wrote to %s\n', file_name);
+            catch ME
+                fprintf('Error writing to %s: %s\n', file_name, ME.message);
+            end
+        end
+        
+        %% After all chunks are written, merge the files into a single Excel file
+        % Define the combined Excel file path (where the final data will be saved)
+        combined_file = new_full_file_path;
+        
+        % Create or open the combined Excel file
+        for i = 1:num_chunks
+            % Specify the individual file created for the current chunk
+            worker_file = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
+            
+            % Read the chunk of data from the worker's file
+            chunk_data = readcell(worker_file);
+            
+            % Optionally, remove 'missing' entries and replace them with empty cells
+            chunk_data(cellfun(@(x) isa(x, 'missing'), chunk_data)) = {[]};
+            
+            % Specify the range to write the data in the combined file
+            if i == 1
+                % For the first chunk, write to the beginning of the file
+                writecell(chunk_data, combined_file);
+            else
+                % For subsequent chunks, append to the file
+                writecell(chunk_data, combined_file, 'WriteMode', 'append');
+            end
+            
+            % Optionally, delete the worker file after merging
+            delete(worker_file);
+        end
+        
+        fprintf('All worker files have been merged into %s.\n', combined_file);
+        
+        %% Delete the temporary folder and its contents
+        rmdir(tmp_folder, 's');
+        fprintf('Temporary files and folder have been deleted.\n');
+
+
+
+
+        % Fill in data (e.g., replace NaN or empty cells if needed)
+        % combined_data(cellfun(@isempty, combined_data)) = {NaN}; 
+
+        
+
+        % %%% Parallel Pool %%%
+        % 
+        % % Define chunk size and number of rows
+        % % Define chunk size and number of rows
+        % chunk_size = 10000;  % Adjust chunk size based on your memory constraints
+        % num_rows = size(combined_data, 1);  % Total number of rows
+        % num_chunks = ceil(num_rows / chunk_size);  % Number of chunks needed
+        % 
+        % % Precompute chunk indices based on the total number of rows
+        % chunk_indices = 1:chunk_size:num_rows;  % Start indices for each chunk
+        % 
+        % % Specify the temporary output folder (e.g., a folder named 'tmp' in the current directory)
+        % tmp_folder = fullfile(pwd, 'my_temp_folder');
+        % if ~exist(tmp_folder, 'dir')
+        %     mkdir(tmp_folder);  % Create the temporary folder if it doesn't exist
+        % end
+        
+        % Start the parallel pool with a specified number of workers
+        % parpool(3);  % Start 4 workers 
+        
+        % Use `spmd` for parallel execution
+        % spmd
+        %     % Get the worker ID (lab index) to assign each worker a different task
+        %     lab_id = spmdIndex;
+        %     num_labs = spmdSize;
+        % 
+        %     % Calculate the start and end rows for each worker to avoid overlap
+        %     rows_per_worker = ceil(num_rows / num_labs);  % Calculate how many rows per worker
+        % 
+        %     % Calculate the start and end row for each worker
+        %     chunk_start = (lab_id - 1) * rows_per_worker + 1;  % First row for the current worker
+        %     chunk_end = min(chunk_start + rows_per_worker - 1, num_rows);  % Last row for the current worker (cannot exceed total rows)
+        % 
+        %     % Extract the chunk of data for this worker
+        %     chunk = combined_data(chunk_start:chunk_end, :);
+        % 
+        %     % Specify the Excel filename for this worker (each worker gets a unique file)
+        %     file_name = sprintf('%s/worker_%d_data.xlsx', tmp_folder, lab_id);
+        % 
+        %     % Display progress for the current worker
+        %     fprintf('Worker %d: Writing rows %d to %d to file %s\n', lab_id, chunk_start, chunk_end, file_name);
+        % 
+        %     % Write the chunk to the worker's own Excel file
+        %     try
+        %         writecell(chunk, file_name);
+        %         fprintf('Worker %d: Successfully wrote to %s\n', lab_id, file_name);
+        %     catch ME
+        %         fprintf('Worker %d: Error writing to %s: %s\n', lab_id, file_name, ME.message);
+        %     end
+        % end
+        
+        % clear combined_data
+        % 
+        % % After all workers are done, display a message
+        % fprintf('All workers have completed writing their chunks.\n');
+
+        
+        % % After parallel processing is done, merge the files
+        % % Get the number of workers (labs) again in the main MATLAB session
+        % num_labs = length(num_labs);
+
+
+        % %%% Recreate %%%
+        % % Define the combined Excel file path (where the final data will be saved)
+        % combined_file = new_full_file_path;
+
+        
+        % % Create or open the combined Excel file
+        % for i = 1:num_labs
+        %     % Specify the individual file created by each worker
+        %     worker_file = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
+        % 
+        %     % Read the chunk of data from the worker's file
+        %     chunk_data = readcell(worker_file);
+        % 
+        %     chunk_data(cellfun(@(x) isa(x, 'missing'), chunk_data)) = {[]};
+        % 
+        %     % Specify the range to write the data in the combined file
+        %     range = sprintf('A%d', (i-1) * str2double(rows_per_worker(i)) + 1);  % Start writing from the correct row
+        % 
+        %     % Write the data to the combined file
+        %     writecell(chunk_data, combined_file, 'WriteMode', 'append');
+        % 
+        %     % Optionally, delete the worker file after merging
+        %     delete(worker_file);
+        % end
+        
+        % fprintf('All worker files have been merged into %s.\n', combined_file);
+        % 
+        % 
+        % % Delete the temporary folder and its contents
+        % rmdir(tmp_folder, 's');
+        % fprintf('Temporary files and folder have been deleted.\n');
+
+        
+       
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        % Write to Excel file
+        %writecell(combined_data, new_full_file_path);
+
+        % % Close the parallel pool after the task is done
+        % delete(gcp);
 
         
      
