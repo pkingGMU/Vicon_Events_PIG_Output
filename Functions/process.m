@@ -22,6 +22,8 @@ function [subjects] = process(subjects_list, choice)
         % Display subject for debugging
         subject =  'sub' + string(subject_name);
 
+        subject = regexprep(subject, ' ', '_');
+
         subjects.(subject).proc_tables = proc_tables;
 
         
