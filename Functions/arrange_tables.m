@@ -276,7 +276,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
         end
 
         %% Define chunk size and number of rows
-        chunk_size = 1000;  % Chunk size of 1000 rows
+        chunk_size = 5000;  % Chunk size of 1000 rows
         num_rows = size(combined_data, 1);  % Total number of rows
         num_chunks = ceil(num_rows / chunk_size);  % Number of chunks needed
         
