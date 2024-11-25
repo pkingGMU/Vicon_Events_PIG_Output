@@ -1,4 +1,4 @@
-function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gait_events_tables)
+function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gait_events_tables, fr)
     % Input:
     % devices_data_table: Table containing the force plate data (z1, z2, z3, z4 columns).
     % gait_events_tables: Table containing the timing data (frames of interest in the first column and event types).
@@ -25,7 +25,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     %%% Match indexes from 
     
     % Extract frames of interest from the fourth column of gait_events_tables
-    targetFrames = round((gait_events_tables{:, 4} * 100), 0);  % Multiply by hundred since its in seconds
+    targetFrames = round((gait_events_tables{:, 4} * fr), 0);  % Multiply by hundred since its in seconds
     eventType = gait_events_tables{:, 3};  
 
     % Filter the targetFrames for "Foot Strike" events only
@@ -210,7 +210,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
     end
 
-    gen_frames = gen_frames / 100;  % Convert back from frames to seconds
+    gen_frames = gen_frames / fr;  % Convert back from frames to seconds
 
 
 

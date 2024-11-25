@@ -1,4 +1,4 @@
-function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(trajectory, model_output, devices_table, choice)
+function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(trajectory, model_output, devices_table, choice, fr)
 
     failed = false;
     %% load motion data
@@ -13,6 +13,8 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
                 FR = 100; % frame rate, Hz
 
     end
+
+    FR = fr;
     
     switch choice
         case 'Overground'
