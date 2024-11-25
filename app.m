@@ -1,7 +1,4 @@
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% UI APPLICATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% UI APPLICATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function dataProcessingApp()
     
@@ -15,23 +12,28 @@ function dataProcessingApp()
     addpath(genpath('Gait_Analysis_Data'))
     addpath(genpath('Functions'))
 
-
     % Create a figure for the UI
-    fig = uifigure('Name', 'Data Processing App', 'Position', [100, 100, 300, 200]);
+    fig = uifigure('Name', 'Data Processing App', 'Position', [100, 100, 300, 300]);
 
     % Create a button for "Process Data"
     btnProcessData = uibutton(fig, 'push', 'Text', 'Process Data', ...
-        'Position', [50, 120, 200, 40], ...
-        'ButtonPushedFcn', @(btn,event) processDataCallback());
+        'Position', [50, 180, 200, 40], ...
+        'ButtonPushedFcn', @(btn,event) processDataCallback(fig));
 
     % Create a button for "Analyze Data"
     btnAnalyzeData = uibutton(fig, 'push', 'Text', 'Analyze Data', ...
-        'Position', [50, 60, 200, 40], ...
+        'Position', [50, 120, 200, 40], ...
         'ButtonPushedFcn', @(btn,event) analyzeDataCallback());
+
+    % Create a text field for Frame Rate input
+    lblFrameRate = uilabel(fig, 'Text', 'Frame Rate:', 'Position', [50, 80, 80, 22]);
+    txtFrameRate = uieditfield(fig, 'numeric', 'Position', [130, 80, 100, 22]);
+    txtFrameRate.Value = 120;  % Default value is 100
+
 end
 
 % Callback function for Process Data button
-function processDataCallback()
+function processDataCallback(fig)
     % List of subject folders (you could replace this with dynamic folder listing)
     
     dataPath = fullfile(pwd, 'Data');
@@ -65,20 +67,26 @@ function processDataCallback()
         choice = questdlg('Is this treadmill or overground walking?', ...
             'Select Gait Type ', ...
             'Treadmill', 'Overground', 'Cancel', 'Treadmill');
+    end
 
+    test = fig.Children(1).Value;
+
+    % Get the frame rate input from the text box
+    frameRate = fig.Children(1).Value;  % Access the text box for frame rate
+    if isnan(frameRate)
+        uialert(fig, 'Please enter a valid frame rate value.', 'Input Error');
+        return;
     end
 
     % Process Data
-    subjects = process(selectedFolders, choice);
+    subjects = process(selectedFolders, choice, frameRate);
     disp('Processing finished')
-
-
 end
 
 % Callback function for Analyze Data button
 function analyzeDataCallback()
     disp('Running analysis script...');
-    cd ("Gait_Analysis_Code")
+    cd("Gait_Analysis_Code")
     run("R01_GaitAnalysis.m")
     
     disp("Analysis Completed")

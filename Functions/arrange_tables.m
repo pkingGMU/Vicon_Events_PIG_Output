@@ -1,4 +1,4 @@
-function [proc_tables, event_table] = arrange_tables(folder, choice)
+function [proc_tables, event_table] = arrange_tables(folder, choice, fr)
     %%%
     % 
     %%%
@@ -74,7 +74,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
         
         %%% GAIT EVENTS
 
-        [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table, proc_tables.(file_name_short).devices_data_table, choice);
+        [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table, proc_tables.(file_name_short).devices_data_table, choice, fr);
 
         if failed == true
             continue
@@ -155,10 +155,10 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
 
         switch choice
             case 'Treadmill'
-                        [gen, gen_frames] = treadmill_gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, lhs, lto, rhs, rto);
+                        [gen, gen_frames] = treadmill_gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, lhs, lto, rhs, rto, fr);
 
             case 'Overground'
-                        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table);
+                        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, fr);
 
         end
 
@@ -176,7 +176,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
         for i = 1:num_gen_frames
             gen_data{i, 1} = subject_id;          % Subject
             gen_data{i, 2} = 'General';           % Context
-            gen_data{i, 3} = 'Event';           % Name
+            gen_data{i, 3} = 'Event';             % Name
             gen_data{i, 4} = gen_frames(i);       % Time (s)
             gen_data{i, 5} = '';                  % Description (empty)
         end
@@ -243,7 +243,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice)
             combined_data = [events_data; combined_data];        % Prepend to the top
         else
             % Create custom 'events_data' if 'Events' row is not found
-            events_data = {'Events', [], [], [], []; 100, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};
+            events_data = {'Events', [], [], [], []; fr, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};
             events_data = [events_data, repmat({''}, size(events_data, 1), num_existing_cols - size(events_data, 2))];
             combined_data = [events_data; combined_data];  % Prepend custom 'events_data' to the top
         end

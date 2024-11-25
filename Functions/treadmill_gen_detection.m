@@ -1,4 +1,4 @@
-function [cleanEventsStruct, gen_frames] = treadmill_gen_detection(devices_data_table, gait_events_tables, lhs, lto, rhs, rto)
+function [cleanEventsStruct, gen_frames] = treadmill_gen_detection(devices_data_table, gait_events_tables, lhs, lto, rhs, rto, fr)
     % Input:
     % devices_data_table: Table containing the force plate data (z1, z2, z3, z4 columns).
     % gait_events_tables: Table containing the timing data (frames of interest in the first column and event types).
@@ -6,10 +6,10 @@ function [cleanEventsStruct, gen_frames] = treadmill_gen_detection(devices_data_
     z1 = str2double(devices_data_table.("LeftPlateForce_Fz"));    
     z2 = str2double(devices_data_table.("RightPlateForce_Fz"));      
 
-    lhs = lhs * 120;
-    lto = lto * 120;
-    rhs = rhs * 120;
-    rto = rto * 120;
+    lhs = lhs * fr;
+    lto = lto * fr;
+    rhs = rhs * fr;
+    rto = rto * fr;
 
     clean_foot_strike.left = treadmill_gen_search(lhs, lto, 'left');
     clean_foot_strike.right = treadmill_gen_search(rhs, rto, 'right');
@@ -154,7 +154,7 @@ function [cleanEventsStruct, gen_frames] = treadmill_gen_detection(devices_data_
 
     end
 
-    gen_frames = gen_frames / 120;  % Convert back from frames to seconds
+    gen_frames = gen_frames / fr;  % Convert back from frames to seconds
 
 
 
