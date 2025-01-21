@@ -52,7 +52,7 @@ for gg=1:filenum
     trial_names(gg,1) = {name};
 
     % Read in the data from the selected trial
-%[trial_num, trial_txt, trial_raw 
+    %[trial_num, trial_txt, trial_raw 
     trial_num = readtable(pathfilename, 'HeaderLines', 5, 'ReadVariableNames', false);
     trial_txt = readtable(pathfilename, 'HeaderLines', 0, 'ReadVariableName', false, 'TreatAsMissing', {''});
 
@@ -61,27 +61,27 @@ for gg=1:filenum
     
 
     [xtrial_num, ytrial_num] = size(trial_num);
-% linecounter = 4; %this is the FIRST ROW the event data includes the time and descriptions in the text file
-% eventcounter = 0;
+    % linecounter = 4; %this is the FIRST ROW the event data includes the time and descriptions in the text file
+    % eventcounter = 0;
     camrate = trial_txt(2,1);
 
 
     % *************************************************************************
     % Trajectories Data
-%     for ii = linecounter:xtrial_num
-%             if strcmp(trial_raw(linecounter,1), 'Trajectories') == 1
-%                     Trajstart = ii; % where do "Trajectories" start?
-%                     break
-%             end
-%             linecounter = linecounter + 1;
-%     end
-% 
-    %     crop = (xtrial_num) - (Trajstart+4); %how many frames are in the trajectories?
-% 
-    %     % Separate Trajectory (Coordinate) data into a new matrix
-%     for ii = 1:crop %from where the "Trajectories" line +4 down (i.e., the actual start of the trajectories)
-%             coordata(ii,:) = trial_num(ii+Trajstart+4,:); % redefining the coordinate data for easy access and reference...according to how it is stored in the excel sheet
-%     end
+    % for ii = linecounter:xtrial_num
+    %     if strcmp(trial_raw(linecounter,1), 'Trajectories') == 1
+    %         Trajstart = ii; % where do "Trajectories" start?
+    %         break
+    %     end
+    %     linecounter = linecounter + 1;
+    % end
+    % 
+    % crop = (xtrial_num) - (Trajstart+4); %how many frames are in the trajectories?
+    % 
+    % % Separate Trajectory (Coordinate) data into a new matrix
+    % for ii = 1:crop %from where the "Trajectories" line +4 down (i.e., the actual start of the trajectories)
+    %     coordata(ii,:) = trial_num(ii+Trajstart+4,:); % redefining the coordinate data for easy access and reference...according to how it is stored in the excel sheet
+    % end
 
     coordata = table2array(trial_num);
     Trajstart = 1;
@@ -90,14 +90,15 @@ for gg=1:filenum
     firstcolcoordata(:,1) = coordata(:,1);
     [coordatarows, coordatacols] = size(coordata);
     for ii = 1:coordatacols
-        newtextb(1,ii) =(trial_txt(Trajstart+2,ii));
-        if newtextb(1,ii) == ""  % if empty, move to the next column
+        newtextb(1,ii) =(trial_txt{Trajstart+2,ii});
+        
+        if isempty(newtextb{1, ii}) || strcmp(newtextb{1, ii}, {''})  % if empty, move to the next column
             ii=ii+1;
         else
             newtextb2 = [newtextb{1,ii}];
             newtextb4 = split(newtextb2,':'); % Parse off subject name
             newtextb5(1,1) = newtextb4(2,1);
-            trial_txt(Trajstart+2,ii) = newtextb5(1,1); % Replace names with generic version
+            trial_txt{Trajstart+2,ii} = newtextb5(1,1); % Replace names with generic version
             ii=ii+1;
         end
     end
@@ -107,7 +108,7 @@ for gg=1:filenum
     % *************************************************************************
     % Separate out the arrays of interest
     for ii = 1:coordatacols
-        ltoe = strmatch('LTOE',trial_txt(Trajstart+2,ii));
+        ltoe = strcmp('LTOE',trial_txt{Trajstart+2,ii});
         if ltoe == 1
             LTOEzcol = ii+2;
             LTOEycol = ii+1;
@@ -115,7 +116,7 @@ for gg=1:filenum
         end
     end
     for ii = 1:coordatacols
-        rtoe = strmatch('RTOE',trial_txt(Trajstart+2,ii));
+        rtoe = strcmp('RTOE',trial_txt{Trajstart+2,ii});
         if rtoe == 1
             RTOEzcol = ii+2;
             RTOEycol = ii+1;
@@ -123,7 +124,7 @@ for gg=1:filenum
         end
     end
     for ii = 1:coordatacols
-        ltoe = strmatch('LHEE',trial_txt(Trajstart+2,ii));
+        ltoe = strcmp('LHEE',trial_txt{Trajstart+2,ii});
         if ltoe == 1
             LHEEzcol = ii+2;
             LHEEycol = ii+1;
@@ -131,7 +132,7 @@ for gg=1:filenum
         end
     end
     for ii = 1:coordatacols
-        rtoe = strmatch('RHEE',trial_txt(Trajstart+2,ii));
+        rtoe = strcmp('RHEE',trial_txt{Trajstart+2,ii});
         if rtoe == 1
             RHEEzcol = ii+2;
             RHEEycol = ii+1;
@@ -154,7 +155,7 @@ for gg=1:filenum
 
     % Read in position of a dowel marker
     for ii = 1:coordatacols     % new dowel model
-        obs1 = strmatch('dowel_new1',trial_txt(Trajstart+2,ii));
+        obs1 = strcmp('dowel_new1',trial_txt{Trajstart+2,ii});
         if obs1 == 1
             obs1ycol = ii+1;
             obs1zcol = ii+2;
@@ -165,7 +166,7 @@ for gg=1:filenum
     end
     % if old trials with original dowel model
     for ii = 1:coordatacols
-        obs1 = strmatch('dowel1',trial_txt(Trajstart+2,ii));
+        obs1 = strcmp('dowel1',trial_txt{Trajstart+2,ii});
         if obs1 == 1
             obs1ycol = ii+1;
             obs1zcol = ii+2;
@@ -176,7 +177,7 @@ for gg=1:filenum
     end
     % Read in position of highest Branch marker (#2, usually but check anyway)
     for ii = 1:coordatacols
-        branch2 = strmatch('branch2',trial_txt(Trajstart+2,ii));
+        branch2 = strcmp('branch2',trial_txt{Trajstart+2,ii});
         if branch2 == 1
             obs1ycol = ii+1;
             obs1zcol = ii+2;
@@ -187,7 +188,7 @@ for gg=1:filenum
     end
     % Read in position of the middle rope marker (Rope3)
     for ii = 1:coordatacols
-        obs1 = strmatch('rope3',trial_txt(Trajstart+2,ii));
+        obs1 = strcmp('rope3',trial_txt{Trajstart+2,ii});
         if obs1 == 1
             obs1ycol = ii+1;
             obs1zcol = ii+2;
@@ -423,6 +424,9 @@ for gg=1:filenum
 end
 
 
+
+
+
 % SubID = trial_txt(4,1);
 Subject = char(SubID);
 
@@ -434,9 +438,20 @@ headers = {'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_
     'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
     'Obstacle Height'};
 Sheeta = string(SubID);
-% Sheet = strcat(Sheeta,trial_type1);
-xlswrite(fname2,headers,Sheeta);
-xlswrite(fname2,OBS_data,Sheeta,'A2');
+
+% Convert OBS_data to a table
+OBS_table = cell2table(OBS_data, 'VariableNames', headers);
+
+% Change directory to ou;tput
+cd ..
+cd("OBS_Outputs/")
+
+
+writetable(OBS_table, fname2, 'Sheet', Sheeta, 'WriteRowNames', false);
+
+% % Sheet = strcat(Sheeta,trial_type1);
+% xlswrite(fname2,headers,Sheeta);
+% xlswrite(fname2,OBS_data,Sheeta,'A2');
 
 % *************************************************************************
 
