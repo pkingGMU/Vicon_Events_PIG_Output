@@ -52,7 +52,13 @@ for gg=1:filenum
     trial_names(gg,1) = {name};
 
     % Read in the data from the selected trial
-    [trial_num, trial_txt, trial_raw] = csvread(pathfilename);
+%    [trial_num, trial_txt, trial_raw 
+    trial_num = readtable(pathfilename, 'HeaderLines', 5, 'ReadVariableNames', false);
+    trial_txt = readtable(pathfilename, 'HeaderLines', 0, 'ReadVariableName', false, 'TreatAsMissing', {''});
+
+    % Replace empty cells with NaN
+    trial_txt = trial_txt(1:5, :);
+    
 
     [xtrial_num, ytrial_num] = size(trial_num);
     linecounter = 4; %this is the FIRST ROW the event data includes the time and descriptions in the text file
