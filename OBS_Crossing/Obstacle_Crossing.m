@@ -52,7 +52,7 @@ for gg=1:filenum
     trial_names(gg,1) = {name};
 
     % Read in the data from the selected trial
-%    [trial_num, trial_txt, trial_raw 
+%[trial_num, trial_txt, trial_raw 
     trial_num = readtable(pathfilename, 'HeaderLines', 5, 'ReadVariableNames', false);
     trial_txt = readtable(pathfilename, 'HeaderLines', 0, 'ReadVariableName', false, 'TreatAsMissing', {''});
 
@@ -61,9 +61,9 @@ for gg=1:filenum
     
 
     [xtrial_num, ytrial_num] = size(trial_num);
-    linecounter = 4; %this is the FIRST ROW the event data includes the time and descriptions in the text file
-    eventcounter = 0;
-    camrate = trial_num(1,1);
+%     linecounter = 4; %this is the FIRST ROW the event data includes the time and descriptions in the text file
+%     eventcounter = 0;
+    camrate = trial_txt(2,1);
 
 
     % *************************************************************************
