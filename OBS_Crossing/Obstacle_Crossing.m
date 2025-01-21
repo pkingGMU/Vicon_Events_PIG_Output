@@ -61,27 +61,30 @@ for gg=1:filenum
     
 
     [xtrial_num, ytrial_num] = size(trial_num);
-%     linecounter = 4; %this is the FIRST ROW the event data includes the time and descriptions in the text file
-%     eventcounter = 0;
+% linecounter = 4; %this is the FIRST ROW the event data includes the time and descriptions in the text file
+% eventcounter = 0;
     camrate = trial_txt(2,1);
 
 
     % *************************************************************************
     % Trajectories Data
-    for ii = linecounter:xtrial_num
-        if strcmp(trial_raw(linecounter,1), 'Trajectories') == 1
-            Trajstart = ii; % where do "Trajectories" start?
-            break
-        end
-        linecounter = linecounter + 1;
-    end
+%     for ii = linecounter:xtrial_num
+%             if strcmp(trial_raw(linecounter,1), 'Trajectories') == 1
+%                     Trajstart = ii; % where do "Trajectories" start?
+%                     break
+%             end
+%             linecounter = linecounter + 1;
+%     end
+% 
+    %     crop = (xtrial_num) - (Trajstart+4); %how many frames are in the trajectories?
+% 
+    %     % Separate Trajectory (Coordinate) data into a new matrix
+%     for ii = 1:crop %from where the "Trajectories" line +4 down (i.e., the actual start of the trajectories)
+%             coordata(ii,:) = trial_num(ii+Trajstart+4,:); % redefining the coordinate data for easy access and reference...according to how it is stored in the excel sheet
+%     end
 
-    crop = (xtrial_num) - (Trajstart+4); %how many frames are in the trajectories?
-
-    % Separate Trajectory (Coordinate) data into a new matrix
-    for ii = 1:crop %from where the "Trajectories" line +4 down (i.e., the actual start of the trajectories)
-        coordata(ii,:) = trial_num(ii+Trajstart+4,:); % redefining the coordinate data for easy access and reference...according to how it is stored in the excel sheet
-    end
+    coordata = table2array(trial_num);
+    Trajstart = 1;
 
     % Rename trajectory headers
     firstcolcoordata(:,1) = coordata(:,1);
