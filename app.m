@@ -74,7 +74,7 @@ function processDataCallback(fig)
             'Treadmill', 'Overground', 'Cancel', 'Treadmill');
     end
 
-    test = fig.Children(1).Value;
+    
 
     % Get the frame rate input from the text box
     frameRate = fig.Children(1).Value;  % Access the text box for frame rate
@@ -83,8 +83,10 @@ function processDataCallback(fig)
         return;
     end
 
+    method = 'process';
+
     % Process Data
-    subjects = process(selectedFolders, choice, frameRate);
+    subjects = process(selectedFolders, choice, frameRate, method);
     disp('Processing finished')
 end
 
