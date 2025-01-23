@@ -72,6 +72,13 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr)
         
         proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
         
+        
+
+        if strcmp(method, 'obstacle') == 1
+            clear full_data_table;
+            continue
+        end
+        
         %%% GAIT EVENTS
 
         [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table, proc_tables.(file_name_short).devices_data_table, choice, fr);
