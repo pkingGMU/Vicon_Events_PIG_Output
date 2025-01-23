@@ -87,6 +87,9 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
         % Check for obstacle method
         if strcmp(method, 'obstacle') == 1
             clear full_data_table;
+
+            % Obstacle Crossing calculations
+            OBS_Data(file, :) = Obstacle_Crossing_P(proc_tables, folder, fr, file_name_short);
             continue
         end
 
@@ -481,4 +484,38 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
         
      
      end
+
+    % Check for obstacle method
+    if strcmp(method, 'obstacle') == 1
+        % SubID = trial_txt(4,1);
+        Subject = char(subject_name);
+
+        % ***************** Export data to an Excel sheet ***********************
+        % Name the excel sheet: (with file path)
+        fname2 = ['OBS_Output.xlsx'];
+        headers = {'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
+            'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
+            'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
+            'Obstacle Height'};
+        Sheeta = string(Subject);
+
+        % Convert OBS_data to a table
+        OBS_table = cell2table(OBS_Data, 'VariableNames', headers);
+
+        % Change directory to ou;tput
+        cd ("OBS_Crossing")
+        cd("OBS_Outputs")
+        
+
+
+        writetable(OBS_table, fname2, 'Sheet', Sheeta, 'WriteRowNames', false);
+
+        cd ..
+        cd ..
+
+       
+    end
+
+    
+
 end
