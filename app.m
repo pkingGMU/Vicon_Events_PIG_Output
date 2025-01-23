@@ -25,6 +25,11 @@ function dataProcessingApp()
         'Position', [50, 120, 200, 40], ...
         'ButtonPushedFcn', @(btn,event) analyzeDataCallback());
 
+    % Create a button for "Obstacle Crossing"
+    btnObstacleCrossing = uibutton(fig, 'push', 'Text', 'Obstacle Crossing Process', ...
+        'Position', [50, 240, 200, 40], ...
+        'ButtonPushedFcn', @(btn,event) obstacleDataCallback(fig));
+
     % Create a text field for Frame Rate input
     lblFrameRate = uilabel(fig, 'Text', 'Frame Rate:', 'Position', [50, 80, 80, 22]);
     txtFrameRate = uieditfield(fig, 'numeric', 'Position', [130, 80, 100, 22]);
