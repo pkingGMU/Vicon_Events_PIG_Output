@@ -1,3 +1,4 @@
+function Obstacle_Crossing_P(proc_table_struct, subject, fr, trial_name)
 %% Program to process obstacle crossing data collected in the MOVE lab at the University of Arkansas.
 % Written by Dr. Abigail Schmitt
 %
@@ -24,180 +25,93 @@
 %           This is the horizontal distance between the obstacle and the
 %           heel marker of the trailing foot at foot-strike of the crossing step.
 %
-% ***** Clear variables, close all windows, clear command window *****
-
-clear;
-close all;
-clc;
-
-
-
 %% **************Select Directory******************************************
 % Import Data Set
 % Set Directory and use prompt to choose exported files for analysis
-[files,datapath] = uigetfile('*.csv','Select Exported Data','MultiSelect','on');
-for j=1:length(files)
-    Files{j} = [datapath, files{j}];  % (an error here means you need to select multiple files)
+
+proc_table_struct = proc_table_struct;
+
+%%% Get Subject Name %%%
+% Easy naming convention
+% Regex to get subject name
+subject = char(subject);
+parts = strsplit(subject, 'Data');
+subject_name = parts{2};
+subject_name = regexprep(subject_name, '[\\/]', '');
+% Display subject for debugging
+subject =  'sub' + string(subject_name);
+subject = regexprep(subject, ' ', '_');
+
+% Read in the data from the selected trial
+%[trial_num, trial_txt, trial_raw 
+trial_num = proc_table_struct.(trial_name).trajectory_data_table;
+trial_txt = trial_num.Properties.VariableNames;
+
+
+coordata = table2array(trial_num);
+Trajstart = 1;
+
+
+
+% *************************************************************************
+% Separate out the arrays of interest
+
+ltoez = trial_num.LTOE_Z;
+ltoey = trial_num.LTOE_Y;
+rtoez = trial_num.RTOE_Z;
+rtoey = trial_num.RTOE_Y;
+lheez = trial_num.LHEE_Z;
+lheey = trial_num.LHEE_Y;
+rheez = trial_num.RHEE_Z;
+rheey = trial_num.RHEE_Y;
+
+obs1
+
+
+% Read in position of a dowel marker
+for ii = 1:coordatacols     % new dowel model
+    obs1 = strcmp('dowel_new1',trial_txt{Trajstart+2,ii});
+    if obs1 == 1
+        obs1ycol = ii+1;
+        obs1zcol = ii+2;
+        obs1y_pos = mean(coordata(:,obs1ycol));
+        obs1z_pos = mean(coordata(:,obs1zcol));
+        break
+    end
 end
-
-filenum=length(files);
-for gg=1:filenum
-
-    [pname, name, ext]=fileparts(cell2mat(Files(gg)));% break file name into path name(w/o extension) and the extension
-    fname=strcat(name,ext);% File name w/ extension
-    pathfilename=cell2mat(files(gg)); % String variable of file path and file name  
-    cd(datapath);% Set the current directory
-
-    % Pull the trial name from the selected trial and create a column vector
-    trial_names(gg,1) = {name};
-
-    % Read in the data from the selected trial
-    %[trial_num, trial_txt, trial_raw 
-    trial_num = readtable(pathfilename, 'HeaderLines', 5, 'ReadVariableNames', false);
-    trial_txt = readtable(pathfilename, 'HeaderLines', 0, 'ReadVariableName', false, 'TreatAsMissing', {''});
-
-    % Replace empty cells with NaN
-    trial_txt = trial_txt(1:5, :);
-    
-
-    [xtrial_num, ytrial_num] = size(trial_num);
-    % linecounter = 4; %this is the FIRST ROW the event data includes the time and descriptions in the text file
-    % eventcounter = 0;
-    camrate = trial_txt(2,1);
-
-
-    % *************************************************************************
-    % Trajectories Data
-    % for ii = linecounter:xtrial_num
-    %     if strcmp(trial_raw(linecounter,1), 'Trajectories') == 1
-    %         Trajstart = ii; % where do "Trajectories" start?
-    %         break
-    %     end
-    %     linecounter = linecounter + 1;
-    % end
-    % 
-    
-    % crop = (xtrial_num) - (Trajstart+4); %how many frames are in the trajectories?
-    % 
-    % % Separate Trajectory (Coordinate) data into a new matrix
-    % for ii = 1:crop %from where the "Trajectories" line +4 down (i.e., the actual start of the trajectories)
-    %     coordata(ii,:) = trial_num(ii+Trajstart+4,:); % redefining the coordinate data for easy access and reference...according to how it is stored in the excel sheet
-    % end
-
-    coordata = table2array(trial_num);
-    Trajstart = 1;
-
-    % Rename trajectory headers
-    firstcolcoordata(:,1) = coordata(:,1);
-    [coordatarows, coordatacols] = size(coordata);
-    for ii = 1:coordatacols
-        newtextb(1,ii) =(trial_txt{Trajstart+2,ii});
-        
-        if isempty(newtextb{1, ii}) || strcmp(newtextb{1, ii}, {''})  % if empty, move to the next column
-            ii=ii+1;
-        else
-            newtextb2 = [newtextb{1,ii}];
-            newtextb4 = split(newtextb2,':'); % Parse off subject name
-            newtextb5(1,1) = newtextb4(2,1);
-            trial_txt{Trajstart+2,ii} = newtextb5(1,1); % Replace names with generic version
-            ii=ii+1;
-        end
+% if old trials with original dowel model
+for ii = 1:coordatacols
+    obs1 = strcmp('dowel1',trial_txt{Trajstart+2,ii});
+    if obs1 == 1
+        obs1ycol = ii+1;
+        obs1zcol = ii+2;
+        obs1y_pos = mean(coordata(:,obs1ycol));
+        obs1z_pos = mean(coordata(:,obs1zcol));
+        break
     end
-
-    SubID = newtextb4(1,1);
-
-    % *************************************************************************
-    % Separate out the arrays of interest
-    for ii = 1:coordatacols
-        ltoe = strcmp('LTOE',trial_txt{Trajstart+2,ii});
-        if ltoe == 1
-            LTOEzcol = ii+2;
-            LTOEycol = ii+1;
-            break
-        end
+end
+% Read in position of highest Branch marker (#2, usually but check anyway)
+for ii = 1:coordatacols
+    branch2 = strcmp('branch2',trial_txt{Trajstart+2,ii});
+    if branch2 == 1
+        obs1ycol = ii+1;
+        obs1zcol = ii+2;
+        obs1y_pos = mean(coordata(:,obs1ycol));
+        obs1z_pos = mean(coordata(:,obs1zcol));
+        break
     end
-    for ii = 1:coordatacols
-        rtoe = strcmp('RTOE',trial_txt{Trajstart+2,ii});
-        if rtoe == 1
-            RTOEzcol = ii+2;
-            RTOEycol = ii+1;
-            break
-        end
+end
+% Read in position of the middle rope marker (Rope3)
+for ii = 1:coordatacols
+    obs1 = strcmp('rope3',trial_txt{Trajstart+2,ii});
+    if obs1 == 1
+        obs1ycol = ii+1;
+        obs1zcol = ii+2;
+        obs1y_pos = mean(coordata(:,obs1ycol));
+        obs1z_pos = mean(coordata(:,obs1zcol));
+        break
     end
-    for ii = 1:coordatacols
-        ltoe = strcmp('LHEE',trial_txt{Trajstart+2,ii});
-        if ltoe == 1
-            LHEEzcol = ii+2;
-            LHEEycol = ii+1;
-            break
-        end
-    end
-    for ii = 1:coordatacols
-        rtoe = strcmp('RHEE',trial_txt{Trajstart+2,ii});
-        if rtoe == 1
-            RHEEzcol = ii+2;
-            RHEEycol = ii+1;
-            break
-        end
-    end
-
-
-    for ii = 1:coordatarows % separate individual trajectory columns of interest
-        ltoez(ii,1) = coordata(ii, LTOEzcol);
-        rtoez(ii,1) = coordata(ii, RTOEzcol);
-        ltoey(ii,1) = coordata(ii, LTOEycol);
-        rtoey(ii,1) = coordata(ii, RTOEycol);
-        lheez(ii,1) = coordata(ii, LHEEzcol);
-        rheez(ii,1) = coordata(ii, RHEEzcol);
-        lheey(ii,1) = coordata(ii, LHEEycol);
-        rheey(ii,1) = coordata(ii, RHEEycol);
-    end
-
-
-    % Read in position of a dowel marker
-    for ii = 1:coordatacols     % new dowel model
-        obs1 = strcmp('dowel_new1',trial_txt{Trajstart+2,ii});
-        if obs1 == 1
-            obs1ycol = ii+1;
-            obs1zcol = ii+2;
-            obs1y_pos = mean(coordata(:,obs1ycol));
-            obs1z_pos = mean(coordata(:,obs1zcol));
-            break
-        end
-    end
-    % if old trials with original dowel model
-    for ii = 1:coordatacols
-        obs1 = strcmp('dowel1',trial_txt{Trajstart+2,ii});
-        if obs1 == 1
-            obs1ycol = ii+1;
-            obs1zcol = ii+2;
-            obs1y_pos = mean(coordata(:,obs1ycol));
-            obs1z_pos = mean(coordata(:,obs1zcol));
-            break
-        end
-    end
-    % Read in position of highest Branch marker (#2, usually but check anyway)
-    for ii = 1:coordatacols
-        branch2 = strcmp('branch2',trial_txt{Trajstart+2,ii});
-        if branch2 == 1
-            obs1ycol = ii+1;
-            obs1zcol = ii+2;
-            obs1y_pos = mean(coordata(:,obs1ycol));
-            obs1z_pos = mean(coordata(:,obs1zcol));
-            break
-        end
-    end
-    % Read in position of the middle rope marker (Rope3)
-    for ii = 1:coordatacols
-        obs1 = strcmp('rope3',trial_txt{Trajstart+2,ii});
-        if obs1 == 1
-            obs1ycol = ii+1;
-            obs1zcol = ii+2;
-            obs1y_pos = mean(coordata(:,obs1ycol));
-            obs1z_pos = mean(coordata(:,obs1zcol));
-            break
-        end
-    end
+end
 
     % *************************************************************************
 
@@ -422,7 +336,7 @@ for gg=1:filenum
 
     % *************************************************************************
 
-end
+
 
 
 
@@ -457,3 +371,6 @@ writetable(OBS_table, fname2, 'Sheet', Sheeta, 'WriteRowNames', false);
 % *************************************************************************
 
 disp('Hooray. One down.')
+
+end
+

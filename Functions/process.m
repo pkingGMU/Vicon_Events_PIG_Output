@@ -1,5 +1,5 @@
 
-function [subjects] = process(subjects_list, choice, fr)
+function [subjects] = process(subjects_list, choice, fr, method)
 % Takes in the list of subjects and arranges the data for each one. Returns
 % the struct 'subjects' for each subject for each file.
 
@@ -8,7 +8,7 @@ function [subjects] = process(subjects_list, choice, fr)
         subject = subjects_list(i);
 
         % Get subject data for subject folder
-        [proc_tables] = arrange_tables(subject, choice, fr);
+        [proc_tables, ~] = arrange_tables(subject, choice, fr, method);
     
         % Easy naming convention
         % Regex to get subject name
@@ -25,6 +25,9 @@ function [subjects] = process(subjects_list, choice, fr)
         subject = regexprep(subject, ' ', '_');
 
         subjects.(subject).proc_tables = proc_tables;
+
+      
+
 
         
 
