@@ -84,7 +84,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
         proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
         
         
-
+        % Check for obstacle method
         if strcmp(method, 'obstacle') == 1
             clear full_data_table;
             continue
