@@ -15,6 +15,17 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
     % files is an array of all the files in our chosen directory with the csv extension
     files = dir(filePattern);
     
+    %%% Get Subject Name %%%
+    % Easy naming convention
+    % Regex to get subject name
+    subject = char(folder);
+    parts = strsplit(subject, 'Data');
+    subject_name = parts{2};
+    subject_name = regexprep(subject_name, '[\\/]', '');
+    % Display subject for debugging
+    subject =  'sub' + string(subject_name);
+    subject = regexprep(subject, ' ', '_');
+    
     %%% Loop through all file names in the files array
     
     % We loop through the amount of times there are files and set the
