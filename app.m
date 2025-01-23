@@ -98,3 +98,57 @@ function analyzeDataCallback()
     
     disp("Analysis Completed")
 end
+
+% Callback function for Obstacle crossing data button
+function obstacleDataCallback(fig)
+    % List of subject folders (you could replace this with dynamic folder listing)
+    
+    dataPath = fullfile(pwd, 'ObstacleData');
+
+    % Get a list of folders within the 'Data' directory
+    dirInfo = dir(dataPath);
+    isFolder = [dirInfo.isdir];
+    folderNames = {dirInfo(isFolder).name};
+
+    % Filter out '.' and '..' which represent current and parent directories
+    folderNames = folderNames(~ismember(folderNames, {'.', '..'}));
+    
+    % Display list dialog to select subject folders
+    if isempty(folderNames)
+        uialert(uifigure, 'No folders found in Data directory.', 'Folder Error');
+    else
+        [selection, ok] = listdlg('PromptString', 'Select Subject Folders:', ...
+                                  'SelectionMode', 'multiple', ...
+                                  'ListString', folderNames);
+
+        % If the user clicked OK and made a selection
+        if ok
+            selectedFolders = fullfile(dataPath, folderNames(selection));
+            disp('Selected folders for processing:');
+            disp(selectedFolders);
+            % Here, you would add the code to process the selected folders
+        else
+            disp('No folders selected.');
+        end
+
+        choice = questdlg('Is this treadmill or overground walking?', ...
+            'Select Gait Type ', ...
+            'Treadmill', 'Overground', 'Cancel', 'Treadmill');
+    end
+
+    
+
+    % Get the frame rate input from the text box
+    frameRate = fig.Children(1).Value;  % Access the text box for frame rate
+    
+    if isnan(frameRate)
+        uialert(fig, 'Please enter a valid frame rate value.', 'Input Error');
+        return;
+    end
+
+    method = 'obstacle';
+
+    % Process Data
+    subjects = process(selectedFolders, choice, frameRate, method);
+    disp('Processing finished')
+end
