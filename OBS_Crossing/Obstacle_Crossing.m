@@ -76,6 +76,7 @@ for gg=1:filenum
     %     linecounter = linecounter + 1;
     % end
     % 
+    
     % crop = (xtrial_num) - (Trajstart+4); %how many frames are in the trajectories?
     % 
     % % Separate Trajectory (Coordinate) data into a new matrix
@@ -160,7 +161,7 @@ for gg=1:filenum
             obs1ycol = ii+1;
             obs1zcol = ii+2;
             obs1y_pos = mean(coordata(:,obs1ycol));
-            obs1z_pos = mean(coordata(:,obs1zcol))
+            obs1z_pos = mean(coordata(:,obs1zcol));
             break
         end
     end
@@ -171,7 +172,7 @@ for gg=1:filenum
             obs1ycol = ii+1;
             obs1zcol = ii+2;
             obs1y_pos = mean(coordata(:,obs1ycol));
-            obs1z_pos = mean(coordata(:,obs1zcol))
+            obs1z_pos = mean(coordata(:,obs1zcol));
             break
         end
     end
@@ -182,7 +183,7 @@ for gg=1:filenum
             obs1ycol = ii+1;
             obs1zcol = ii+2;
             obs1y_pos = mean(coordata(:,obs1ycol));
-            obs1z_pos = mean(coordata(:,obs1zcol))
+            obs1z_pos = mean(coordata(:,obs1zcol));
             break
         end
     end
@@ -193,7 +194,7 @@ for gg=1:filenum
             obs1ycol = ii+1;
             obs1zcol = ii+2;
             obs1y_pos = mean(coordata(:,obs1ycol));
-            obs1z_pos = mean(coordata(:,obs1zcol))
+            obs1z_pos = mean(coordata(:,obs1zcol));
             break
         end
     end

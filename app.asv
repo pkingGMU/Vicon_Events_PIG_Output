@@ -83,10 +83,8 @@ function processDataCallback(fig)
         return;
     end
 
-    method = 'process';
-
     % Process Data
-    subjects = process(selectedFolders, choice, frameRate, method);
+    subjects = process(selectedFolders, choice, frameRate);
     disp('Processing finished')
 end
 
@@ -145,8 +143,6 @@ function obstacleDataCallback(fig)
         uialert(fig, 'Please enter a valid frame rate value.', 'Input Error');
         return;
     end
-
-    method = 'obstacle';
 
     % Process Data
     subjects = process(selectedFolders, choice, frameRate, method);
