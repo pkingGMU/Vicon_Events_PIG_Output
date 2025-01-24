@@ -41,7 +41,7 @@ end
 function processDataCallback(fig)
     % List of subject folders (you could replace this with dynamic folder listing)
     
-    dataPath = fullfile(pwd, 'Data');
+    dataPath = fullfile(pwd, 'Gait_Preprocess', 'Data');
 
     % Get a list of folders within the 'Data' directory
     dirInfo = dir(dataPath);
