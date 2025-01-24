@@ -8,7 +8,7 @@ function [subjects] = process(subjects_list, choice, fr, method)
         subject = subjects_list(i);
 
         % Get subject data for subject folder
-        [proc_tables, ~] = arrange_tables(subject, choice, fr, method);
+        [proc_tables] = arrange_tables(subject, choice, fr, method);
     
         % Easy naming convention
         % Regex to get subject name
