@@ -503,7 +503,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
         OBS_table = cell2table(OBS_Data, 'VariableNames', headers);
 
         % Change directory to ou;tput
-        cd ("OBS_Crossing")
+        cd ("Gait_Obstacle")
         cd("OBS_Outputs")
         
 

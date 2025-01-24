@@ -103,7 +103,7 @@ end
 function obstacleDataCallback(fig)
     % List of subject folders (you could replace this with dynamic folder listing)
     
-    dataPath = fullfile(pwd, 'ObstacleData');
+    dataPath = fullfile(pwd, 'Gait_Obstacle', 'OBS_Data');
 
     % Get a list of folders within the 'Data' directory
     dirInfo = dir(dataPath);
