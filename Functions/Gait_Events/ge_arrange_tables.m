@@ -158,48 +158,6 @@ function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
         proc_tables.(file_name_short).event_data_table = event_table;
 
 
-
-        %%% GEN DETECTION
-
-        % Determine if its overground or treadmill
-        % Ask if you are doing overground or treadmill analysis
-        % choice = questdlg('Is this treadmill or overground walking?', ...
-        %     'Select Gait Type ', ...
-        %     'Treadmill', 'Overground', 'Cancel', 'Treadmill');
-
-        switch choice
-            case 'Treadmill'
-                        [gen, gen_frames] = treadmill_gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, lhs, lto, rhs, rto, fr);
-
-            case 'Overground'
-                        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, fr);
-
-        end
-
-
-          
-        proc_tables.(file_name_short).gen_events = gen;
-
-
-        %%% Appending gen_frames vertically %%%
-        % Number of gen_frames
-        num_gen_frames = length(gen_frames);
-        
-        % Create new rows for gen_frames
-        gen_data = cell(num_gen_frames, 5);
-        for i = 1:num_gen_frames
-            gen_data{i, 1} = subject_id;          % Subject
-            gen_data{i, 2} = 'General';           % Context
-            gen_data{i, 3} = 'Event';             % Name
-            gen_data{i, 4} = gen_frames(i);       % Time (s)
-            gen_data{i, 5} = '';                  % Description (empty)
-        end
-        
-        % Convert gen_data to table
-        gen_table = cell2table(gen_data, 'VariableNames', {'Subject', 'Context', 'Name', 'Time (s)', 'Description'});
-        
-        % Append gen_table to event_table
-        event_table = [event_table; gen_table];
         
         % Save the updated event table in proc_tables
         proc_tables.(file_name_short).event_data_table = event_table;
@@ -272,7 +230,7 @@ function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
         
         % Define root folder based on 'choice' variable
         root_folder = pwd;
-        excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', choice, subject_id);
+        excel_folder = fullfile(root_folder, 'Output', 'Gait_Events', choice, subject_id);
         
         % Create directory if it doesn't exist
         if ~exist(excel_folder, 'dir')
