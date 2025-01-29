@@ -68,12 +68,7 @@ function processDataCallback(fig)
 
     outcome_selection = possible_outcomes(outcome_selection);
 
-    choice = questdlg('Is this treadmill or overground walking?', ...
-            'Select Gait Type ', ...
-            'Treadmill', 'Overground', 'Cancel', 'Treadmill');
-
-
-    selection_routing(outcome_selection, choice, frameRate);
+    selection_routing(outcome_selection, frameRate);
 
     
     % dataPath = fullfile(pwd, 'Gait_Preprocess', 'Data');
