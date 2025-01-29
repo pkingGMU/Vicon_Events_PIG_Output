@@ -6,14 +6,6 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     frame_values = str2double(trajectory.("Frame"));
     frame_start = frame_values(1);
 
-    switch choice
-            case 'Treadmill'
-                FR = 120; % frame rate, Hz
-            case 'Overground'
-                FR = 100; % frame rate, Hz
-
-    end
-
     FR = fr;
     
     switch choice
