@@ -1,15 +1,21 @@
 function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
     %%%
-    % 
+    % Function specifically designed for ONLY looking for Gait Events. We
+    % take in a folder which is generally the data folder. It will parse
+    % out Subject name and get a list of all the *.csv files.
+    % It will process each file for each subject into 3 different processed
+    % tables. This includes the devices data table, model_outputs data
+    % table, and trajectory data table. It will then auto detect gait events (hs, opp_to, opp_hs, to).
+    % It will NOT look for general events like force plate strikes. The data will then be rebuilt into a new
+    % .xlsx file using a chunk method because of the opening time for
+    % excel. Writing in smaller multiple chunks reduces memory allocation
+    % for worse computers. 
     %%%
     
-    %%% Make an array of the file names
     
+    %%% Folder conversion %%%
     % Convert to char
     folder = char(folder);
-
-    %folder = fullfile(folder.folder, folder.name);
-    
     % File pattern is equal to our folder directory + a csv file 
     filePattern = fullfile(folder, '*.csv');
     % files is an array of all the files in our chosen directory with the csv extension
@@ -43,7 +49,7 @@ function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
         % A shorted file name without the csv extension
         file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_');
         % Remove any unnecessary numbers
-        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '')
+        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '');
         
         % Debugging
         disp(file_name_short)
