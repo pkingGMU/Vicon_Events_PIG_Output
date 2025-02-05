@@ -86,13 +86,22 @@ function [proc_tables] = obstacle_arrange_tables(folder, choice, fr)
 
 
     %%% Obstacle Crossing %%%
-        
+
     % SubID = trial_txt(4,1);
     Subject = char(subject_name);
 
+    excel_folder = fullfile(pwd, 'Output', 'Obstacle_Crossing', Subject);
+    
+    % Create directory if it doesn't exist
+    if ~exist(excel_folder, 'dir')
+        mkdir(excel_folder);
+    end
+        
+    
+
     % ***************** Export data to an Excel sheet ***********************
     % Name the excel sheet: (with file path)
-    fname2 = fullfile(pwd, 'Output', 'Obstacle_Crossing', strcat(Subject, '.xlsx'));
+    fname2 = fullfile(excel_folder, strcat(Subject, '.xlsx'));
     headers = {'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
         'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
         'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
