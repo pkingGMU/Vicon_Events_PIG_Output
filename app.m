@@ -42,7 +42,8 @@ function processDataCallback(fig)
     end
 
     
-    possible_outcomes = ["Gait Events", "Gait Events & Clean Force Strikes", "R01 Analysis", "Obstacle Crossing Outcomes"];
+    possible_outcomes = ["Gait Events", "Gait Events & Clean Force Strikes", "R01 Analysis", ...
+        "Obstacle Crossing Outcomes", "Margin Of Stability"];
     
     % Get list of outcome measures
     [outcome_selection, ~] = listdlg('PromptString', 'Select Outcome:', ...
