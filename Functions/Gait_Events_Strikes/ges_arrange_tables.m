@@ -1,4 +1,4 @@
-function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
+function [proc_tables, event_table] = ges_arrange_tables(folder, choice, fr)
     %%%
     % 
     %%%
@@ -84,14 +84,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
         proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
         
         
-        % Check for obstacle method
-        if strcmp(method, 'obstacle') == 1
-            clear full_data_table;
-
-            % Obstacle Crossing calculations
-            OBS_Data(file, :) = Obstacle_Crossing_P(proc_tables, folder, fr, file_name_short);
-            continue
-        end
+        
 
         %%% GAIT EVENTS
 
@@ -280,20 +273,33 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
         % Define root folder based on 'choice' variable
         root_folder = pwd;
         excel_folder = fullfile(root_folder, 'Gait_Analysis_Data', choice, subject_id);
+        excel_folder_2 = fullfile(root_folder, 'Output','Gait_Events_Strikes', choice, subject_id);
         
         % Create directory if it doesn't exist
         if ~exist(excel_folder, 'dir')
             mkdir(excel_folder);
         end
 
+        % Create directory if it doesn't exist
+        if ~exist(excel_folder_2, 'dir')
+            mkdir(excel_folder_2);
+        end
+
         % Determine File Name
         new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
         new_full_file_path = fullfile(excel_folder, new_excel_filename);
+        new_full_file_path_2 = fullfile(excel_folder_2, new_excel_filename);
         
         % Check if the file already exists
         if exist(new_full_file_path, 'file') == 2  % '2' means the file exists
             % Delete the existing file
             delete(new_full_file_path);
+        end
+
+        % Check if the file already exists
+        if exist(new_full_file_path_2, 'file') == 2  % '2' means the file exists
+            % Delete the existing file
+            delete(new_full_file_path_2);
         end
 
         %% Define chunk size and number of rows
@@ -337,6 +343,7 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
         %% After all chunks are written, merge the files into a single Excel file
         % Define the combined Excel file path (where the final data will be saved)
         combined_file = new_full_file_path;
+        combined_file_2 = new_full_file_path_2;
         
         % Create or open the combined Excel file
         for i = 1:num_chunks
@@ -353,9 +360,13 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
             if i == 1
                 % For the first chunk, write to the beginning of the file
                 writecell(chunk_data, combined_file);
+                % For the first chunk, write to the beginning of the file
+                writecell(chunk_data, combined_file_2);
             else
                 % For subsequent chunks, append to the file
                 writecell(chunk_data, combined_file, 'WriteMode', 'append');
+                % For subsequent chunks, append to the file
+                writecell(chunk_data, combined_file_2, 'WriteMode', 'append');
             end
             
             % Optionally, delete the worker file after merging
@@ -363,161 +374,10 @@ function [proc_tables, event_table] = arrange_tables(folder, choice, fr, method)
         end
         
         fprintf('All worker files have been merged into %s.\n', combined_file);
+        fprintf('All worker files have been merged into %s.\n', combined_file_2);
         
         %% Delete the temporary folder and its contents
         rmdir(tmp_folder, 's');
         fprintf('Temporary files and folder have been deleted.\n');
-
-
-
-
-        % Fill in data (e.g., replace NaN or empty cells if needed)
-        % combined_data(cellfun(@isempty, combined_data)) = {NaN}; 
-
-        
-
-        % %%% Parallel Pool %%%
-        % 
-        % % Define chunk size and number of rows
-        % % Define chunk size and number of rows
-        % chunk_size = 10000;  % Adjust chunk size based on your memory constraints
-        % num_rows = size(combined_data, 1);  % Total number of rows
-        % num_chunks = ceil(num_rows / chunk_size);  % Number of chunks needed
-        % 
-        % % Precompute chunk indices based on the total number of rows
-        % chunk_indices = 1:chunk_size:num_rows;  % Start indices for each chunk
-        % 
-        % % Specify the temporary output folder (e.g., a folder named 'tmp' in the current directory)
-        % tmp_folder = fullfile(pwd, 'my_temp_folder');
-        % if ~exist(tmp_folder, 'dir')
-        %     mkdir(tmp_folder);  % Create the temporary folder if it doesn't exist
-        % end
-        
-        % Start the parallel pool with a specified number of workers
-        % parpool(3);  % Start 4 workers 
-        
-        % Use `spmd` for parallel execution
-        % spmd
-        %     % Get the worker ID (lab index) to assign each worker a different task
-        %     lab_id = spmdIndex;
-        %     num_labs = spmdSize;
-        % 
-        %     % Calculate the start and end rows for each worker to avoid overlap
-        %     rows_per_worker = ceil(num_rows / num_labs);  % Calculate how many rows per worker
-        % 
-        %     % Calculate the start and end row for each worker
-        %     chunk_start = (lab_id - 1) * rows_per_worker + 1;  % First row for the current worker
-        %     chunk_end = min(chunk_start + rows_per_worker - 1, num_rows);  % Last row for the current worker (cannot exceed total rows)
-        % 
-        %     % Extract the chunk of data for this worker
-        %     chunk = combined_data(chunk_start:chunk_end, :);
-        % 
-        %     % Specify the Excel filename for this worker (each worker gets a unique file)
-        %     file_name = sprintf('%s/worker_%d_data.xlsx', tmp_folder, lab_id);
-        % 
-        %     % Display progress for the current worker
-        %     fprintf('Worker %d: Writing rows %d to %d to file %s\n', lab_id, chunk_start, chunk_end, file_name);
-        % 
-        %     % Write the chunk to the worker's own Excel file
-        %     try
-        %         writecell(chunk, file_name);
-        %         fprintf('Worker %d: Successfully wrote to %s\n', lab_id, file_name);
-        %     catch ME
-        %         fprintf('Worker %d: Error writing to %s: %s\n', lab_id, file_name, ME.message);
-        %     end
-        % end
-        
-        % clear combined_data
-        % 
-        % % After all workers are done, display a message
-        % fprintf('All workers have completed writing their chunks.\n');
-
-        
-        % % After parallel processing is done, merge the files
-        % % Get the number of workers (labs) again in the main MATLAB session
-        % num_labs = length(num_labs);
-
-
-        % %%% Recreate %%%
-        % % Define the combined Excel file path (where the final data will be saved)
-        % combined_file = new_full_file_path;
-
-        
-        % % Create or open the combined Excel file
-        % for i = 1:num_labs
-        %     % Specify the individual file created by each worker
-        %     worker_file = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
-        % 
-        %     % Read the chunk of data from the worker's file
-        %     chunk_data = readcell(worker_file);
-        % 
-        %     chunk_data(cellfun(@(x) isa(x, 'missing'), chunk_data)) = {[]};
-        % 
-        %     % Specify the range to write the data in the combined file
-        %     range = sprintf('A%d', (i-1) * str2double(rows_per_worker(i)) + 1);  % Start writing from the correct row
-        % 
-        %     % Write the data to the combined file
-        %     writecell(chunk_data, combined_file, 'WriteMode', 'append');
-        % 
-        %     % Optionally, delete the worker file after merging
-        %     delete(worker_file);
-        % end
-        
-        % fprintf('All worker files have been merged into %s.\n', combined_file);
-        % 
-        % 
-        % % Delete the temporary folder and its contents
-        % rmdir(tmp_folder, 's');
-        % fprintf('Temporary files and folder have been deleted.\n');
-
-        
-       
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        % Write to Excel file
-        %writecell(combined_data, new_full_file_path);
-
-        % % Close the parallel pool after the task is done
-        % delete(gcp);
-
-        
-     
-    end
-
-    % Check for obstacle method
-    if strcmp(method, 'obstacle') == 1
-        % SubID = trial_txt(4,1);
-        Subject = char(subject_name);
-
-        % ***************** Export data to an Excel sheet ***********************
-        % Name the excel sheet: (with file path)
-        fname2 = ['OBS_Output.xlsx'];
-        headers = {'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
-            'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
-            'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
-            'Obstacle Height'};
-        Sheeta = string(Subject);
-
-        % Convert OBS_data to a table
-        OBS_table = cell2table(OBS_Data, 'VariableNames', headers);
-
-        % Change directory to ou;tput
-        cd ("Gait_Obstacle")
-        cd("OBS_Outputs")
-        
-
-
-        writetable(OBS_table, fname2, 'Sheet', Sheeta, 'WriteRowNames', false);
-
-        cd ..
-        cd ..
-
-        
-
-       
-    end
-
-    
 
 end

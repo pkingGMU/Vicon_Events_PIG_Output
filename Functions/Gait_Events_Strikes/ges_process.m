@@ -1,5 +1,5 @@
 
-function [subjects] = process(subjects_list, choice, fr, method)
+function [subjects] = ges_process(subjects_list, choice, fr)
 % Takes in the list of subjects and arranges the data for each one. Returns
 % the struct 'subjects' for each subject for each file.
 
@@ -8,7 +8,7 @@ function [subjects] = process(subjects_list, choice, fr, method)
         subject = subjects_list(i);
 
         % Get subject data for subject folder
-        [proc_tables] = arrange_tables(subject, choice, fr, method);
+        [proc_tables] = ges_arrange_tables(subject, choice, fr);
 
         %%% new arrange table for Obstacle Crossing?
     
@@ -19,8 +19,6 @@ function [subjects] = process(subjects_list, choice, fr, method)
         subject_name = parts{2};
         subject_name = regexprep(subject_name, '[\\/]', '');
 
-
-
         % Display subject for debugging
         subject =  'sub' + string(subject_name);
 
@@ -28,13 +26,5 @@ function [subjects] = process(subjects_list, choice, fr, method)
 
         subjects.(subject).proc_tables = proc_tables;
 
-      
-
-
-        
-
-        
-
-        
     end
 end

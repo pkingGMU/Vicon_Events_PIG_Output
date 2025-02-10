@@ -1,4 +1,4 @@
-function [OBS_data] = Obstacle_Crossing_P(proc_table_struct, subject, fr, trial_name)
+function [OBS_data] = obstacle_analysis(proc_table_struct, subject, ~, trial_name)
 %% Program to process obstacle crossing data collected in the MOVE lab at the University of Arkansas.
 % Written by Dr. Abigail Schmitt
 %
@@ -28,8 +28,6 @@ function [OBS_data] = Obstacle_Crossing_P(proc_table_struct, subject, fr, trial_
 %% **************Select Directory******************************************
 % Import Data Set
 % Set Directory and use prompt to choose exported files for analysis
-
-proc_table_struct = proc_table_struct;
 
 %%% Get Subject Name %%%
 % Easy naming convention
@@ -288,45 +286,6 @@ OBS_data(1, :) = [trial Lead_foot approach_dist_trail landing_dist_lead...
         trial_num trial_txt trial_raw camrate OBS_data trial_type1...
         trial_type2 trial_type3 trial_type4 trial_type5 obstacle...
         obs1y_pos obs1z_pos  %Uncomment if dowel not in all trials for a subject
-
-
-    % *************************************************************************
-
-
-
-
-
-
-
-% % SubID = trial_txt(4,1);
-% Subject = char(SubID);
-% 
-% % ***************** Export data to an Excel sheet ***********************
-% % Name the excel sheet: (with file path)
-% fname2 = [pname,'/','OBS_Outputs','.xlsx'];
-% headers = {'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
-%     'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
-%     'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
-%     'Obstacle Height'};
-% Sheeta = string(SubID);
-% 
-% % Convert OBS_data to a table
-% OBS_table = cell2table(OBS_data, 'VariableNames', headers);
-% 
-% % Change directory to ou;tput
-% cd ..
-% cd("OBS_Outputs/")
-% 
-% 
-% writetable(OBS_table, fname2, 'Sheet', Sheeta, 'WriteRowNames', false);
-% 
-% % % Sheet = strcat(Sheeta,trial_type1);
-% % xlswrite(fname2,headers,Sheeta);
-% % xlswrite(fname2,OBS_data,Sheeta,'A2');
-% 
-% % *************************************************************************
-% 
-% disp('Hooray. One down.')
 
 end
 
