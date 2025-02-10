@@ -76,6 +76,11 @@ function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
         % great for organizing a lot of data into folder like structures
         % that reduce our variables!
 
+        %%% Find gesture data %%% 
+        % Mainly used for Mackenzies Obstacle
+        %%% Crossing
+        save_gesture = save_gesture_events(full_data_table);
+
 
         % Create new data table for devices
         
@@ -159,13 +164,18 @@ function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
 
         % Convert to table
         event_table = cell2table(output_data, 'VariableNames', {'Subject', 'Context', 'Name', 'Time (s)', 'Description'});
-
-        % Add event table to proc tables
-        proc_tables.(file_name_short).event_data_table = event_table;
-
-
         
-        % Save the updated event table in proc_tables
+        % Add saved gesture events if any
+        if ~isempty(save_gesture)
+            
+            save_gesture.Properties.VariableNames = event_table.Properties.VariableNames;
+            % Convert cell to numeric values if the content is numeric in a cell
+            save_gesture.("Time (s)") = cellfun(@str2double, save_gesture.("Time (s)"));
+
+            
+            event_table = [save_gesture; event_table];
+        end
+        % Add event table to proc tables
         proc_tables.(file_name_short).event_data_table = event_table;
         
 
