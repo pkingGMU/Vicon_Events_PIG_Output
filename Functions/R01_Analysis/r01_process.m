@@ -181,6 +181,10 @@ function r01_process(selectedFolders, selection, choice, fr)
             frame_number=coordata(:,1);
     
             gaitcycles = getGaitCycles(frame_number,all_events,lhs,rhs);
+
+            if isempty(gaitcycles)
+                continue
+            end
     
             % extract marker coordinates for relevant foot markers
             [lheeAP, lheeML, rheeAP, rheeML, LToe_AP] = defineFootMarkers(coortext,coordata,APcol);
@@ -206,6 +210,12 @@ function r01_process(selectedFolders, selection, choice, fr)
     
             % extract Dynamic Plug in Gait Model Outputs
             modelrows = find(strcmp(active_text(:,1),'Model Outputs'));
+
+            if isempty(modelrows)
+                disp("Failed finding Model Outputs")
+                continue
+            end
+
             model_text = active_text(modelrows+2,:);
             moddatstart = modelrows+4;
             allnan = find(isnan(active_data(:,1)));
@@ -213,6 +223,8 @@ function r01_process(selectedFolders, selection, choice, fr)
             model_data = active_data(moddatstart:moddatend,:);
             sub_loc = find(strcmp(active_text(:,1),'Subject'));
             subID = string(active_text(sub_loc(1,1)+1,1));
+
+            
     
     
             % For each gait cycle:
@@ -322,9 +334,12 @@ function r01_process(selectedFolders, selection, choice, fr)
                                 ev_frame=frames(matchingIndices(ev));
                                 force_event(ev,1) = all_events_nogen(find(all_events_nogen(:,1)==ev_frame),2);
                             end
-    
-                            [kinetics] = OvergroundKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,force_event,APcol);
-    
+                            try
+                                [kinetics] = OvergroundKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,force_event,APcol);
+                            catch
+                                disp("Missing kinetic info")
+                                kinetics(g,:) = NaN(1,14);
+                            end
                         else
                             kinetics(g,:) = NaN(1,14);
                         end
