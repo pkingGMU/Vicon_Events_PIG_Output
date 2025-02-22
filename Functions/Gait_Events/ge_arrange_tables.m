@@ -175,6 +175,7 @@ function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
             
             event_table = [save_gesture; event_table];
         end
+        
         % Add event table to proc tables
         proc_tables.(file_name_short).event_data_table = event_table;
         
