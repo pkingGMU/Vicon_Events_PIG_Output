@@ -3,6 +3,8 @@ function [gaitcycles] = getGaitCycles(data,all_events,lhs,rhs)
 % spits out a cell array with start and end of each gait cycle based on
 % which foot is the first heelstrike in the data
 
+gaitcycles = {};
+
  if all_events(1,2) == 1
            startleg = 1; % left
            numcycles = length(lhs)-1;
@@ -32,4 +34,5 @@ else
         end
         startframe = jj+1;
     end
+
 end
