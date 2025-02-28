@@ -46,7 +46,23 @@ function selection_routing(outcome_selection, fr)
             
                 ges_process(selectedFolders, choice, fr)
         case 'R01 Analysis'
-            [folderNames, dataPath, choice] = folder_names(1);
+            dataPath = fullfile(pwd, 'Output/', 'Gait_Events_Strikes/', 'Overground');
+    
+            % Get a list of folders within the 'Data' directory
+            dirInfo = dir(dataPath);
+            isFolder = [dirInfo.isdir];
+            folderNames = {dirInfo(isFolder).name};
+            
+            % Filter out '.' and '..' which represent current and parent directories
+            folderNames = folderNames(~ismember(folderNames, {'.', '..'}));
+            
+            
+            choice = questdlg('Is this treadmill or overground walking?', ...
+                'Select Gait Type ', ...
+                'Treadmill', 'Overground', 'Cancel', 'Treadmill');
+            
+                
+            
 
             % Display list dialog to select subject folders
             if isempty(folderNames)
