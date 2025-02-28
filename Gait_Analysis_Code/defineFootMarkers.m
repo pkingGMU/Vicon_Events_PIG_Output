@@ -14,10 +14,16 @@ function [varargout] = defineFootMarkers(text,data,APcol)
 %   [LHeel_AP, LHeel_ML, RHeel_AP, RHeel_ML, LToe_AP, LToe_ML, RToe_AP, RToe_ML, LToe_UP, RToe_UP, LHeel_UP, RHeel_UP] = defineFootMarkers(text,data)
 
 % rhee
+
+rhee_found = 0;
+
 for i = 1:length(text)
     nam = [':RHEE'];
-    if length(text{i}) > 4
+    if length(text{i}) > 4 && rhee_found == 0
         if strcmp(text{i}(end-4:end),nam)==1
+
+            rhee_found = 1;
+
             if APcol == 1
                 rhee_AP_col = i;
                 rhee_ML_col = i+1;
@@ -33,11 +39,17 @@ end
 rhee_ap = data(:,rhee_AP_col);
 rhee_ml = data(:,rhee_ML_col);
 rhee_up = data(:,rhee_up_col);
+
+lhee_found = 0;
+
 % lhee
 for i = 1:length(text)
     nam = [':LHEE'];
-    if length(text{i}) > 4
+    if length(text{i}) > 4 && lhee_found == 0
         if strcmp(text{i}(end-4:end),nam)==1
+
+            lhee_found = 1;
+
             if APcol == 1
                 lhee_AP_col = i;
                 lhee_ML_col = i+1;
@@ -54,11 +66,16 @@ lhee_ap = data(:,lhee_AP_col);
 lhee_ml = data(:,lhee_ML_col);
 lhee_up = data(:,lhee_up_col);
 
+rtoe_found = 0;
+
 % rtoe
 for i = 1:length(text)
     nam = [':RTOE'];
-    if length(text{i}) > 4
+    if length(text{i}) > 4 && rtoe_found == 0
         if strcmp(text{i}(end-4:end),nam)==1
+
+            rtoe_found = 1;
+
             if APcol == 1
                 rtoe_AP_col = i;
                 rtoe_ML_col = i+1;
@@ -75,11 +92,16 @@ rtoe_ap = data(:,rtoe_AP_col);
 rtoe_ml = data(:,rtoe_ML_col);
 rtoe_up = data(:,rtoe_UP_col);
 
+ltoe_found = 0;
+
 % ltoe
 for i = 1:length(text)
     nam = [':LTOE'];
-    if length(text{i}) > 4
+    if length(text{i}) > 4 && ltoe_found == 0
         if strcmp(text{i}(end-4:end),nam)==1
+
+            ltoe_found = 1;
+
             if APcol == 1
                 ltoe_AP_col = i;
                 ltoe_ML_col = i+1;
