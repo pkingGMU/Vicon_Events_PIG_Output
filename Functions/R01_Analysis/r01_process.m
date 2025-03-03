@@ -406,7 +406,7 @@ function r01_process(selectedFolders, selection, choice, fr)
             %MoS_Tab = [sub_step_deets sub_mos];
     
             gc_fn = append(subID, '_', trial_nam, '_EachGaitCycleData.xlsx');
-            processed_data = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1});
+            processed_data = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, trial_nam);
             
             if ~exist(processed_data, 'dir')
                 mkdir(processed_data);  % Create the temporary folder if it doesn't exist
@@ -425,10 +425,9 @@ function r01_process(selectedFolders, selection, choice, fr)
         end % end trial loop
     
         % save averages across legs per trial in a subject table
-        
         sub_fn = append(subID,'_EachStep.xlsx');
-        sub_fn = fullfile(processed_data, sub_fn);
-        writetable(sub_tab,sub_fn);
+        sub_folder = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, sub_fn);
+        writetable(sub_tab,sub_folder);
     
     end % end subject loop
     
