@@ -222,7 +222,8 @@ function r01_process(selectedFolders, selection, choice, fr)
             moddatend = allnan(find(allnan>moddatstart,1))-1;
             model_data = active_data(moddatstart:moddatend,:);
             sub_loc = find(strcmp(active_text(:,1),'Subject'));
-            subID = string(active_text(sub_loc(1,1)+1,1));
+            subID = sub_name;
+            % subID = string(active_text(sub_loc(1,1)+1,1));
 
             
     
@@ -420,14 +421,14 @@ function r01_process(selectedFolders, selection, choice, fr)
                 code_dir core_dir data_dir each_subject each_trial sub_folder...
                 sub_list_num sub_loc sub_varTypes subID subject_path trial_file...
                 trial_list_num trials type sub_varNames av_varNames processed_data...
-                trial_nam
+                trial_nam sub_name
     
         end % end trial loop
     
         % save averages across legs per trial in a subject table
         sub_fn = append(subID,'_EachStep.xlsx');
-        sub_folder = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, sub_fn);
-        writetable(sub_tab,sub_folder);
+        sub_folder_output = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, sub_fn);
+        writetable(sub_tab,sub_folder_output);
     
     end % end subject loop
     
