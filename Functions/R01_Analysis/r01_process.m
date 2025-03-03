@@ -96,8 +96,7 @@ function r01_process(selectedFolders, selection, choice, fr)
     end
     
     sub_varTypes =[{'string','string'} jj];
-    sub_tab = table('Size',[0, length(sub_varTypes)],'VariableTypes',sub_varTypes,'VariableNames',sub_varNames);
-    
+    sub_tab_total = table('Size',[0, length(sub_varTypes)],'VariableTypes',sub_varTypes,'VariableNames',sub_varNames);
     
     av_varNames = {'SubID','Trial','Speed','Cadence','StepLength','StepWidth','StepTime','SingleSupport','DoubleSupport',...
         'StanceTime', 'SwingTime','Plantarflexion_stance','Dorsiflexion_stance','KneeFlexion_stance','HipFlexion_stance',...
@@ -112,6 +111,10 @@ function r01_process(selectedFolders, selection, choice, fr)
     av_tab = table('Size',[0, length(av_varTypes)],'VariableTypes',av_varTypes,'VariableNames',av_varNames);
     
     for each_subject = 1:length(sub_list_num)
+
+        sub_tab = table('Size',[0, length(sub_varTypes)],'VariableTypes',sub_varTypes,'VariableNames',sub_varNames);
+
+
         sub_name = sub_folder{each_subject};
         % Construct the path to the subject's folder
         
@@ -222,7 +225,8 @@ function r01_process(selectedFolders, selection, choice, fr)
             moddatend = allnan(find(allnan>moddatstart,1))-1;
             model_data = active_data(moddatstart:moddatend,:);
             sub_loc = find(strcmp(active_text(:,1),'Subject'));
-            subID = string(active_text(sub_loc(1,1)+1,1));
+            subID = sub_name;
+            % subID = string(active_text(sub_loc(1,1)+1,1));
 
             
     
@@ -393,6 +397,7 @@ function r01_process(selectedFolders, selection, choice, fr)
     
             sub_tab2 = [sub_step_deets sub_step_tab1 sub_mos];
             sub_tab = [sub_tab;sub_tab2];
+            sub_tab_total = [sub_tab_total;sub_tab2];
     
             av_tab1 = array2table(sub_avs);
             av_tab1.Properties.VariableNames = av_varNames(3:end-8);
@@ -406,7 +411,7 @@ function r01_process(selectedFolders, selection, choice, fr)
             %MoS_Tab = [sub_step_deets sub_mos];
     
             gc_fn = append(subID, '_', trial_nam, '_EachGaitCycleData.xlsx');
-            processed_data = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1});
+            processed_data = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, trial_nam);
             
             if ~exist(processed_data, 'dir')
                 mkdir(processed_data);  % Create the temporary folder if it doesn't exist
@@ -416,19 +421,20 @@ function r01_process(selectedFolders, selection, choice, fr)
         
             
             writetable(sub_full_gc, processed_data_file);
-            clearvars -except av_tab sub_tab slash_dir root_data_dir APcol...
+            clearvars -except av_tab sub_tab sub_tab_total slash_dir root_data_dir APcol...
                 code_dir core_dir data_dir each_subject each_trial sub_folder...
                 sub_list_num sub_loc sub_varTypes subID subject_path trial_file...
                 trial_list_num trials type sub_varNames av_varNames processed_data...
-                trial_nam
+                trial_nam sub_name
     
         end % end trial loop
     
         % save averages across legs per trial in a subject table
-        
         sub_fn = append(subID,'_EachStep.xlsx');
-        sub_fn = fullfile(processed_data, sub_fn);
-        writetable(sub_tab,sub_fn);
+        sub_folder_output = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, sub_fn);
+        writetable(sub_tab,sub_folder_output);
+
+        clearvars sub_tab
     
     end % end subject loop
     
@@ -439,6 +445,9 @@ function r01_process(selectedFolders, selection, choice, fr)
     if ~exist(processed_data_dir, 'dir')
         mkdir(processed_data_dir);  % Create the temporary folder if it doesn't exist
     end
+    sub_total_fn = append('Total','_EachStep.xlsx');
+    sub_total_folder_output = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, sub_total_fn);
+    writetable(sub_tab_total,sub_total_folder_output);
 
     
     
