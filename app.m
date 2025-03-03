@@ -54,5 +54,7 @@ function processDataCallback(fig)
 
     selection_routing(outcome_selection, frameRate);
 
+    disp("Finished!")
+
 end
 
