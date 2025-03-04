@@ -27,7 +27,7 @@ for i = 1:length(text)
             up = i+2;
 
         elseif APcol==2 % anteriorposterior is Y, mediolateral is X
-                        ap = i;
+            ap = i;
             ml = i+1;
             up = i+2;
             
