@@ -61,8 +61,29 @@ lheey = trial_num.LHEE_Y;
 rheez = trial_num.RHEE_Z;
 rheey = trial_num.RHEE_Y;
 
-obs1y_pos = mean(trial_num.dowel1_Y);
-obs1z_pos = mean(trial_num.dowel1_Z);
+try
+    obs1y_pos = mean(trial_num.dowel1_Y);
+    obs1z_pos = mean(trial_num.dowel1_Z);
+catch
+
+    try
+        obs1y_pos = mean(trial_num.Obstacle1_Y);
+        obs1z_pos = mean(trial_num.Obstacle1_Z);
+    catch
+
+        try
+            obs1y_pos = mean(trial_num.OBS1_Y);
+            obs1z_pos = mean(trial_num.OBS1_Z);
+        catch
+        end
+
+    end
+
+
+end
+
+
+
 
 
 % *************************************************************************
