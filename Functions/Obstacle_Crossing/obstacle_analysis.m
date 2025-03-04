@@ -1,4 +1,4 @@
-function [OBS_data] = obstacle_analysis(proc_table_struct, subject, ~, trial_name)
+function [OBS_data] = obstacle_analysis(proc_table_struct, subject, fr, trial_name)
 %% Program to process obstacle crossing data collected in the MOVE lab at the University of Arkansas.
 % Written by Dr. Abigail Schmitt
 %
@@ -41,28 +41,80 @@ subject =  'sub' + string(subject_name);
 subject = regexprep(subject, ' ', '_');
 
 % Read in the data from the selected trial
-%[trial_num, trial_txt, trial_raw 
-trial_num = proc_table_struct.(trial_name).trajectory_data_table;
+%[traj_num, trial_txt, trial_raw 
+traj_num = proc_table_struct.(trial_name).trajectory_data_table;
 
-trial_num = convertvars(trial_num, @iscell, 'string');
-trial_num = convertvars(trial_num, @isstring, 'double');
+traj_num = convertvars(traj_num, @iscell, 'string');
+traj_num = convertvars(traj_num, @isstring, 'double');
+
+model_num = proc_table_struct.(trial_name).model_data_table;
+
+model_num = convertvars(model_num, @iscell, 'string');
+model_num = convertvars(model_num, @isstring, 'double');
 
 
 
 % *************************************************************************
 % Separate out the arrays of interest
 
-ltoez = trial_num.LTOE_Z;
-ltoey = trial_num.LTOE_Y;
-rtoez = trial_num.RTOE_Z;
-rtoey = trial_num.RTOE_Y;
-lheez = trial_num.LHEE_Z;
-lheey = trial_num.LHEE_Y;
-rheez = trial_num.RHEE_Z;
-rheey = trial_num.RHEE_Y;
+ltoez = traj_num.LTOE_Z;
+ltoex = traj_num.LTOE_X;
+ltoey = traj_num.LTOE_Y;
+rtoez = traj_num.RTOE_Z;
+rtoey = traj_num.RTOE_Y;
+rtoex = traj_num.RTOE_X;
+lheez = traj_num.LHEE_Z;
+lheey = traj_num.LHEE_Y;
+lheex = traj_num.LHEE_X;
+rheez = traj_num.RHEE_Z;
+rheey = traj_num.RHEE_Y;
+rheex = traj_num.RHEE_X;
 
-obs1y_pos = mean(trial_num.dowel1_Y);
-obs1z_pos = mean(trial_num.dowel1_Z);
+% MOS Inputs
+COM_AP = (model_num.CentreOfMass_X)/1000;
+COM_ML = (model_num.CentreOfMass_Y)/1000;
+COM_UP = (model_num.CentreOfMass_Z)/1000;
+
+rank_ap = (traj_num.RANK_X)/1000;
+rank_ml = (traj_num.RANK_Y)/1000;
+rank_up = (traj_num.RANK_Z)/1000;
+
+lank_ap = (traj_num.LANK_X)/1000;
+lank_ml = (traj_num.LANK_Y)/1000;
+lank_up = (traj_num.LANK_Z)/1000;
+
+rtoe_ap = (traj_num.RTOE_X)/1000;
+rtoe_ml = (traj_num.RTOE_Y)/1000;
+rtoe_up = (traj_num.RTOE_Z)/1000;
+
+ltoe_ap = (traj_num.LTOE_X)/1000;
+ltoe_ml = (traj_num.LTOE_Y)/1000;
+ltoe_up = (traj_num.LTOE_Z)/1000;
+
+
+try
+    obs1y_pos = mean(traj_num.dowel1_Y);
+    obs1z_pos = mean(traj_num.dowel1_Z);
+catch
+
+    try
+        obs1y_pos = mean(traj_num.Obstacle1_Y);
+        obs1z_pos = mean(traj_num.Obstacle1_Z);
+    catch
+
+        try
+            obs1y_pos = mean(traj_num.OBS1_Y);
+            obs1z_pos = mean(traj_num.OBS1_Z);
+        catch
+        end
+
+    end
+
+
+end
+
+
+
 
 
 % *************************************************************************
@@ -130,7 +182,7 @@ rheez_min_frame = find(rheez==rheez_min);  % Foot-strike of right foot
 l_eventsdata = [ltoez_min_frame,lheez_min_frame];
 r_eventsdata = [rtoez_min_frame,rheez_min_frame];
 if rtoez_min_frame > ltoez_min_frame
-    Lead_foot = 'Left ';
+    Lead_foot = 'Left';
 else ltoez_min_frame > rtoez_min_frame;
     Lead_foot = 'Right';
 end
@@ -187,17 +239,19 @@ for mm = 1:length (rheeycycles)
 end
 
 % Re-assign to "Lead" and "Trail"
-if Lead_foot == 'Left '
+if strcmp(Lead_foot, 'Left') == 1
     Lead_toe_clearance = Lmin_toe_clearance;
     Trail_toe_clearance = Rmin_toe_clearance;
     Lead_heel_clearance = Lmin_heel_clearance;
     Trail_heel_clearance = Rmin_heel_clearance;
-else Lead_foot == 'Right';
+elseif strcmp(Lead_foot, 'Right') == 1
     Lead_toe_clearance = Rmin_toe_clearance;
     Trail_toe_clearance = Lmin_toe_clearance;
     Lead_heel_clearance = Rmin_heel_clearance;
     Trail_heel_clearance = Lmin_heel_clearance;
 end
+
+
 
 % *********************************************************************
 % Find horizontal clearance measures
@@ -254,12 +308,12 @@ end
 
 
 % Rename to Lead and Trail from Left and Right
-if Lead_foot == 'Left '
+if strcmp(Lead_foot, 'Left') == 1
     approach_dist_trail = approach_dist_right;
     landing_dist_lead = landing_dist_left;
     approach_dist_lead = approach2_dist_left;
     landing_dist_trail = landing2_dist_right;
-else Lead_foot == 'Right';
+elseif strcmp(Lead_foot, 'Right') == 1
     approach_dist_trail = approach_dist_left;
     landing_dist_lead = landing_dist_right;
     approach_dist_lead = approach2_dist_right;
@@ -271,11 +325,130 @@ end
 
 trial = cellstr(trial_name);
 
+disp(strcmp(Lead_foot, 'Left'))
+
+if strcmp(Lead_foot, 'Left') == 1
+    obs_start_frame = ltoez_min_frame;
+    obs_end_frame = rheez_min_frame;
+    
+    hs_foot = 1;
+    hs = ltoez_min_frame;
+    to = lheez_min_frame;
+    opp_hs = rtoez_min_frame;
+    opp_to = rheez_min_frame;
+
+elseif strcmp(Lead_foot, 'Right') == 1
+    obs_start_frame = rtoez_min_frame;
+    obs_end_frame = lheez_min_frame;
+    
+    hs_foot = 2;
+    hs = rtoez_min_frame;
+    to = rheez_min_frame;
+    opp_hs = ltoez_min_frame;
+    opp_to = lheez_min_frame;
+
+end
+
+lead_step_length = landing_dist_lead + approach_dist_trail;
+trail_step_length = approach_dist_trail + landing_dist_lead;
+
+disp(lheex(lheez_min_frame,1));
+disp(ltoex(ltoez_min_frame, 1));
+disp(rheex(rheez_min_frame,1));
+
+%% Step Width
+if strcmp(Lead_foot, 'Left') == 1
+    lead_step_width = abs(lheex(lheez_min_frame,1) - rtoex(ltoez_min_frame, 1));
+    trail_step_width = abs(rheex(rheez_min_frame,1) - ltoex(rtoez_min_frame, 1));
+elseif strcmp(Lead_foot, 'Right') == 1
+    trail_step_width = abs(lheex(lheez_min_frame,1) - rtoex(ltoez_min_frame, 1));
+    lead_step_width = abs(rheex(rheez_min_frame,1) - ltoex(rtoez_min_frame, 1));
+end
+
+
+%% MOS
+
+% create CoM vector and  Ankle vector
+% at heelstrike
+CoM_Vec_at_hs = [COM_AP(hs);COM_ML(hs);COM_UP(hs)];
+RAnk_Vec_at_hs = [rank_ap(hs);rank_ml(hs);rank_up(hs)];
+LAnk_Vec_at_hs = [lank_ap(hs);lank_ml(hs);lank_up(hs)];
+% at opposite heelstrike
+CoM_Vec_at_ohs = [COM_AP(opp_hs);COM_ML(opp_hs);COM_UP(opp_hs)];
+RAnk_Vec_at_ohs = [rank_ap(opp_hs);rank_ml(opp_hs);rank_up(opp_hs)];
+LAnk_Vec_at_ohs = [lank_ap(opp_hs);lank_ml(opp_hs);lank_up(opp_hs)];
+% at toe off
+CoM_Vec_at_to = [COM_AP(to);COM_ML(to);COM_UP(to)];
+RAnk_Vec_at_to = [rank_ap(to);rank_ml(to);rank_up(to)];
+LAnk_Vec_at_to = [lank_ap(to);lank_ml(to);lank_up(to)];
+% at opposite toe off
+CoM_Vec_at_oto = [COM_AP(opp_to);COM_ML(opp_to);COM_UP(opp_to)];
+RAnk_Vec_at_oto = [rank_ap(opp_to);rank_ml(opp_to);rank_up(opp_to)];
+LAnk_Vec_at_oto = [lank_ap(opp_to);lank_ml(opp_to);lank_up(opp_to)];
+
+% calculate center of mass velocity
+dt = 1/fr;
+
+for i = 1:length(COM_AP)-1
+    CoM_vel_AP(i,1) = (COM_AP(i+1)-COM_AP(i))/dt;
+    CoM_vel_ML(i,1) = (COM_ML(i+1)-COM_ML(i))/dt;
+end
+
+if hs_foot == 1 % left heel strike/gc
+    LBoS_AP_hs = ltoe_ap(hs);
+    LBoS_ML_hs = lank_ml(hs);
+    RBoS_AP_hs = rtoe_ap(opp_hs);
+    RBoS_ML_hs = rank_ml(opp_hs);
+    LBoS_AP_to = ltoe_ap(to);
+    LBoS_ML_to = lank_ml(to);
+    RBoS_AP_to = rtoe_ap(opp_to);
+    RBoS_ML_to = rank_ml(opp_to);
+
+    %acl_MoS(CoM_Vec,ank_vec, CoM, CoM_vel, BoS)
+
+    L_MoS_AP_hs = calc_MoS(CoM_Vec_at_hs,LAnk_Vec_at_hs,COM_AP(hs),CoM_vel_AP(hs),LBoS_AP_hs);
+    R_MoS_AP_hs = calc_MoS(CoM_Vec_at_ohs,RAnk_Vec_at_ohs,COM_AP(opp_hs),CoM_vel_AP(opp_hs),RBoS_AP_hs);
+    L_MoS_ML_hs = calc_MoS(CoM_Vec_at_hs,LAnk_Vec_at_hs,COM_ML(hs),CoM_vel_ML(hs),LBoS_ML_hs);
+    R_MoS_ML_hs = calc_MoS(CoM_Vec_at_ohs,RAnk_Vec_at_ohs,COM_ML(opp_hs),CoM_vel_ML(opp_hs),RBoS_ML_hs);
+    L_MoS_AP_to = calc_MoS(CoM_Vec_at_to,LAnk_Vec_at_to,COM_AP(to),CoM_vel_AP(to),LBoS_AP_to);
+    R_MoS_AP_to = calc_MoS(CoM_Vec_at_oto,RAnk_Vec_at_oto,COM_AP(opp_to),CoM_vel_AP(opp_to),RBoS_AP_to);
+    L_MoS_ML_to = calc_MoS(CoM_Vec_at_to,LAnk_Vec_at_to,COM_ML(to),CoM_vel_ML(to),LBoS_ML_to);
+    R_MoS_ML_to = calc_MoS(CoM_Vec_at_oto,RAnk_Vec_at_oto,COM_ML(opp_to),CoM_vel_ML(opp_to),RBoS_ML_to);
+
+
+else % right leg heelstrike
+   LBoS_AP_hs = ltoe_ap(opp_hs);
+    LBoS_ML_hs = lank_ml(opp_hs);
+    RBoS_AP_hs = rtoe_ap(hs);
+    RBoS_ML_hs = rank_ml(hs);
+    LBoS_AP_to = ltoe_ap(opp_to);
+    LBoS_ML_to = lank_ml(opp_to);
+    RBoS_AP_to = rtoe_ap(to);
+    RBoS_ML_to = rank_ml(to);
+
+    L_MoS_AP_hs = calc_MoS(CoM_Vec_at_ohs,LAnk_Vec_at_ohs,COM_AP(opp_hs),CoM_vel_AP(opp_hs),LBoS_AP_hs);
+    R_MoS_AP_hs = calc_MoS(CoM_Vec_at_hs,RAnk_Vec_at_hs,COM_AP(hs),CoM_vel_AP(hs),RBoS_AP_hs);
+    L_MoS_ML_hs = calc_MoS(CoM_Vec_at_ohs,LAnk_Vec_at_ohs,COM_ML(opp_hs),CoM_vel_ML(opp_hs),LBoS_ML_hs);
+    R_MoS_ML_hs = calc_MoS(CoM_Vec_at_hs,RAnk_Vec_at_hs,COM_ML(hs),CoM_vel_ML(hs),RBoS_ML_hs);
+    L_MoS_AP_to = calc_MoS(CoM_Vec_at_oto,LAnk_Vec_at_oto,COM_AP(opp_to),CoM_vel_AP(opp_to),LBoS_AP_to);
+    R_MoS_AP_to = calc_MoS(CoM_Vec_at_to,RAnk_Vec_at_to,COM_AP(to),CoM_vel_AP(to),RBoS_AP_to);
+    L_MoS_ML_to = calc_MoS(CoM_Vec_at_oto,LAnk_Vec_at_oto,COM_ML(opp_to),CoM_vel_ML(opp_to),LBoS_ML_to);
+    R_MoS_ML_to = calc_MoS(CoM_Vec_at_to,RAnk_Vec_at_to,COM_ML(to),CoM_vel_ML(to),RBoS_ML_to);
+
+    
+end
+
+mos = [L_MoS_AP_hs R_MoS_AP_hs L_MoS_ML_hs R_MoS_ML_hs L_MoS_AP_to R_MoS_AP_to L_MoS_ML_to R_MoS_ML_to];
+
+
+
 % Combine all data
 OBS_data(1, :) = [trial Lead_foot approach_dist_trail landing_dist_lead...
     approach_dist_lead landing_dist_trail...
     Lead_toe_clearance Trail_toe_clearance...
-    Lead_heel_clearance Trail_heel_clearance obs1z_pos];
+    Lead_heel_clearance Trail_heel_clearance obs1z_pos obs_start_frame obs_end_frame...
+    lead_step_length trail_step_length lead_step_width trail_step_width L_MoS_AP_hs...
+    R_MoS_AP_hs L_MoS_ML_hs R_MoS_ML_hs L_MoS_AP_to R_MoS_AP_to L_MoS_ML_to R_MoS_ML_to];
 
     
 
@@ -283,7 +456,7 @@ OBS_data(1, :) = [trial Lead_foot approach_dist_trail landing_dist_lead...
     % *************************************************************************
 
     clearvars -except SubID files filenum Files datapath fname pname name ...
-        trial_num trial_txt trial_raw camrate OBS_data trial_type1...
+        traj_num trial_txt trial_raw camrate OBS_data trial_type1...
         trial_type2 trial_type3 trial_type4 trial_type5 obstacle...
         obs1y_pos obs1z_pos  %Uncomment if dowel not in all trials for a subject
 
