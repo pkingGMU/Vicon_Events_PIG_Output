@@ -53,13 +53,17 @@ trial_num = convertvars(trial_num, @isstring, 'double');
 % Separate out the arrays of interest
 
 ltoez = trial_num.LTOE_Z;
+ltoex = trial_num.LTOE_X;
 ltoey = trial_num.LTOE_Y;
 rtoez = trial_num.RTOE_Z;
 rtoey = trial_num.RTOE_Y;
+rtoex = trial_num.RTOE_X;
 lheez = trial_num.LHEE_Z;
 lheey = trial_num.LHEE_Y;
+lheex = trial_num.LHEE_X;
 rheez = trial_num.RHEE_Z;
 rheey = trial_num.RHEE_Y;
+rheex = trial_num.RHEE_X;
 
 try
     obs1y_pos = mean(trial_num.dowel1_Y);
@@ -151,7 +155,7 @@ rheez_min_frame = find(rheez==rheez_min);  % Foot-strike of right foot
 l_eventsdata = [ltoez_min_frame,lheez_min_frame];
 r_eventsdata = [rtoez_min_frame,rheez_min_frame];
 if rtoez_min_frame > ltoez_min_frame
-    Lead_foot = 'Left ';
+    Lead_foot = 'Left';
 else ltoez_min_frame > rtoez_min_frame;
     Lead_foot = 'Right';
 end
@@ -208,17 +212,19 @@ for mm = 1:length (rheeycycles)
 end
 
 % Re-assign to "Lead" and "Trail"
-if Lead_foot == 'Left '
+if strcmp(Lead_foot, 'Left') == 1
     Lead_toe_clearance = Lmin_toe_clearance;
     Trail_toe_clearance = Rmin_toe_clearance;
     Lead_heel_clearance = Lmin_heel_clearance;
     Trail_heel_clearance = Rmin_heel_clearance;
-else Lead_foot == 'Right';
+elseif strcmp(Lead_foot, 'Right') == 1
     Lead_toe_clearance = Rmin_toe_clearance;
     Trail_toe_clearance = Lmin_toe_clearance;
     Lead_heel_clearance = Rmin_heel_clearance;
     Trail_heel_clearance = Lmin_heel_clearance;
 end
+
+
 
 % *********************************************************************
 % Find horizontal clearance measures
@@ -275,12 +281,12 @@ end
 
 
 % Rename to Lead and Trail from Left and Right
-if Lead_foot == 'Left '
+if strcmp(Lead_foot, 'Left') == 1
     approach_dist_trail = approach_dist_right;
     landing_dist_lead = landing_dist_left;
     approach_dist_lead = approach2_dist_left;
     landing_dist_trail = landing2_dist_right;
-else Lead_foot == 'Right';
+elseif strcmp(Lead_foot, 'Right') == 1
     approach_dist_trail = approach_dist_left;
     landing_dist_lead = landing_dist_right;
     approach_dist_lead = approach2_dist_right;
@@ -292,11 +298,42 @@ end
 
 trial = cellstr(trial_name);
 
+disp(strcmp(Lead_foot, 'Left'))
+
+if strcmp(Lead_foot, 'Left') == 1
+    obs_start_frame = ltoez_min_frame;
+    obs_end_frame = rheez_min_frame;
+elseif strcmp(Lead_foot, 'Right') == 1
+    obs_start_frame = rtoez_min_frame;
+    obs_end_frame = lheez_min_frame;
+
+end
+
+lead_step_length = landing_dist_lead + approach_dist_lead;
+trail_step_length = approach_dist_trail + landing_dist_trail;
+
+disp(lheex(lheez_min_frame,1));
+disp(ltoex(ltoez_min_frame, 1));
+disp(rheex(rheez_min_frame,1));
+
+%% Step Width
+if strcmp(Lead_foot, 'Left') == 1
+    lead_step_width = abs(lheex(lheez_min_frame,1) - ltoex(ltoez_min_frame, 1));
+    trail_step_width = abs(rheex(rheez_min_frame,1) - rtoex(rtoez_min_frame, 1));
+elseif strcmp(Lead_foot, 'Right') == 1
+    trail_step_width = abs(lheex(lheez_min_frame,1) - ltoex(ltoez_min_frame, 1));
+    lead_step_width = abs(rheex(rheez_min_frame,1) - rtoex(rtoez_min_frame, 1));
+end
+
+
+
+
 % Combine all data
 OBS_data(1, :) = [trial Lead_foot approach_dist_trail landing_dist_lead...
     approach_dist_lead landing_dist_trail...
     Lead_toe_clearance Trail_toe_clearance...
-    Lead_heel_clearance Trail_heel_clearance obs1z_pos];
+    Lead_heel_clearance Trail_heel_clearance obs1z_pos obs_start_frame obs_end_frame...
+    lead_step_length trail_step_length lead_step_width trail_step_width];
 
     
 
