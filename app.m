@@ -27,7 +27,7 @@ function app()
     % Create a text field for Frame Rate input
     lblFrameRate = uilabel(fig, 'Text', 'Frame Rate:', 'Position', [50, 80, 80, 22]);
     txtFrameRate = uieditfield(fig, 'numeric', 'Position', [130, 80, 100, 22]);
-    txtFrameRate.Value = 120;  % Default value is 100
+    txtFrameRate.Value = 100;  % Default value is 100
 
 end
 
