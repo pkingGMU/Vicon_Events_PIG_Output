@@ -3,18 +3,32 @@
 function app()
     
     clc
-    close all hidden
+    close all hidden;
+    clear global r01
+
+    %%% Main global variable struct %%%
+    global r01
+
+    r01.intern.name = 'GMU SMART Lab';
+    r01.intern.version = 0.01;
+    versiontxt = num2str(r01.intern.version,'%3.2f');
+    r01.intern.versiontxt = ['V',versiontxt(1:3),'.',versiontxt(4:end)];
+    r01.intern.version_datestr = '2025-03-19';
     
-    % Local imports
-    addpath(genpath('Functions'))
-    addpath(genpath('Functions/Gait_Events'))
-    addpath(genpath('Functions/Gait_Events_Strikes'))
-    addpath(genpath('Functions/Obstacle_Crossing'))
-    addpath(genpath('Functions/R01_Analysis'))
-    addpath(genpath('Gait_Analysis_Code'))
-    addpath(genpath('Gait_Analysis_Data'))
-    addpath(genpath('Gait_Obstacle'))
-    addpath(genpath('Gait_Preprocess'))
+    file = which('app.m');
+    
+    if isempty(file)
+        errormessage('Can''t find R01 Installation. Change to R01 install directory');
+        return;
+    end
+    
+    % Local Import
+    r01.intern.install_dir = fileparts(file);
+    addpath(genpath(r01.intern.install_dir));
+
+    r01preset;
+
+    
 
     % Create a figure for the UI
     fig = uifigure('Name', 'Data Processing App', 'Position', [100, 100, 300, 300]);
