@@ -1,7 +1,9 @@
-function [proc_tables] = obstacle_arrange_tables(folder, choice, fr)
+function [proc_tables, total_OBS] = obstacle_arrange_tables(folder, choice, fr, total_OBS)
     %%%
     % Function specifically designed for looking at obstacle crossing data
     %%%
+
+    
     
     
     %%% Folder conversion %%%
@@ -81,8 +83,12 @@ function [proc_tables] = obstacle_arrange_tables(folder, choice, fr)
         proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
 
         OBS_Data(file, :) = obstacle_analysis(proc_tables, folder, fr, file_name_short);
+
+        
                 
     end
+
+    total_OBS = [total_OBS; OBS_Data];
 
 
     %%% Obstacle Crossing %%%
@@ -109,7 +115,7 @@ function [proc_tables] = obstacle_arrange_tables(folder, choice, fr)
     %     , 'Trail Step Width', 'LMoS_AP_hs','RMoS_AP_hs','LMoS_ML_hs','RMoS_ML_hs','LMoS_AP_to','RMoS_AP_to',...
     %     'LMoS_ML_to','RMoS_ML_to'};
 
-    headers = {'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
+    headers = {'Subject', 'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
         'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
         'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
         'Obstacle Height', 'Start', 'End', 'Lead Step Length', 'Trail Step Length', 'Lead Step Width'...
