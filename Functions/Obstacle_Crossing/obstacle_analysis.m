@@ -186,6 +186,8 @@ for ll = lheez_max_frame:(length(lheez)-1)
     end
 end
 
+
+
 nn=1;
 for ll = rheez_max_frame:(length(rheez)-1)
     if rheez(ll,1) > rheez((ll+1),1)
@@ -351,6 +353,7 @@ end
 % *************************************************************************
 
 trial = cellstr(trial_name);
+subject = cellstr(subject);
 
 disp(strcmp(Lead_foot, 'Left'))
 
@@ -446,8 +449,8 @@ LAnk_Vec_double_trail_after = [lank_ap(double_trail_after);lank_ml(double_trail_
 dt = 1/fr;
 
 for i = 1:length(COM_AP)-1
-    CoM_vel_AP(i,1) = (COM_AP(i+1)-COM_AP(i))/dt;
-    CoM_vel_ML(i,1) = (COM_ML(i+1)-COM_ML(i))/dt;
+    CoM_vel_AP(i+1,1) = (COM_AP(i+1)-COM_AP(i))/dt;
+    CoM_vel_ML(i+1,1) = (COM_ML(i+1)-COM_ML(i))/dt;
 end
 
 if hs_foot == 1 % left heel strike/gc
@@ -473,14 +476,14 @@ if hs_foot == 1 % left heel strike/gc
 
     %acl_MoS(CoM_Vec,ank_vec, CoM, CoM_vel, BoS)
 
-    L_MoS_AP_hs = calc_MoS(CoM_Vec_at_hs,LAnk_Vec_at_hs,COM_AP(hs),CoM_vel_AP(hs),LBoS_AP_hs);
-    R_MoS_AP_hs = calc_MoS(CoM_Vec_at_ohs,RAnk_Vec_at_ohs,COM_AP(opp_hs),CoM_vel_AP(opp_hs),RBoS_AP_hs);
-    L_MoS_ML_hs = calc_MoS(CoM_Vec_at_hs,LAnk_Vec_at_hs,COM_ML(hs),CoM_vel_ML(hs),LBoS_ML_hs);
-    R_MoS_ML_hs = calc_MoS(CoM_Vec_at_ohs,RAnk_Vec_at_ohs,COM_ML(opp_hs),CoM_vel_ML(opp_hs),RBoS_ML_hs);
-    L_MoS_AP_to = calc_MoS(CoM_Vec_at_to,LAnk_Vec_at_to,COM_AP(to),CoM_vel_AP(to),LBoS_AP_to);
-    R_MoS_AP_to = calc_MoS(CoM_Vec_at_oto,RAnk_Vec_at_oto,COM_AP(opp_to),CoM_vel_AP(opp_to),RBoS_AP_to);
-    L_MoS_ML_to = calc_MoS(CoM_Vec_at_to,LAnk_Vec_at_to,COM_ML(to),CoM_vel_ML(to),LBoS_ML_to);
-    R_MoS_ML_to = calc_MoS(CoM_Vec_at_oto,RAnk_Vec_at_oto,COM_ML(opp_to),CoM_vel_ML(opp_to),RBoS_ML_to);
+    % L_MoS_AP_hs = calc_MoS(CoM_Vec_at_hs,LAnk_Vec_at_hs,COM_AP(hs),CoM_vel_AP(hs),LBoS_AP_hs);
+    % R_MoS_AP_hs = calc_MoS(CoM_Vec_at_ohs,RAnk_Vec_at_ohs,COM_AP(opp_hs),CoM_vel_AP(opp_hs),RBoS_AP_hs);
+    % L_MoS_ML_hs = calc_MoS(CoM_Vec_at_hs,LAnk_Vec_at_hs,COM_ML(hs),CoM_vel_ML(hs),LBoS_ML_hs);
+    % R_MoS_ML_hs = calc_MoS(CoM_Vec_at_ohs,RAnk_Vec_at_ohs,COM_ML(opp_hs),CoM_vel_ML(opp_hs),RBoS_ML_hs);
+    % L_MoS_AP_to = calc_MoS(CoM_Vec_at_to,LAnk_Vec_at_to,COM_AP(to),CoM_vel_AP(to),LBoS_AP_to);
+    % R_MoS_AP_to = calc_MoS(CoM_Vec_at_oto,RAnk_Vec_at_oto,COM_AP(opp_to),CoM_vel_AP(opp_to),RBoS_AP_to);
+    % L_MoS_ML_to = calc_MoS(CoM_Vec_at_to,LAnk_Vec_at_to,COM_ML(to),CoM_vel_ML(to),LBoS_ML_to);
+    % R_MoS_ML_to = calc_MoS(CoM_Vec_at_oto,RAnk_Vec_at_oto,COM_ML(opp_to),CoM_vel_ML(opp_to),RBoS_ML_to);
 
     L_MoS_AP_double_before = calc_MoS(CoM_Vec_double_lead_before,LAnk_Vec_double_lead_before,COM_AP(double_lead_before),CoM_vel_AP(double_lead_before),LBoS_AP_double_lead_before);
     R_MoS_AP_double_before = calc_MoS(CoM_Vec_double_trail_before,RAnk_Vec_double_trail_before,COM_AP(double_trail_before),CoM_vel_AP(double_trail_before),RBoS_AP_double_trail_before);
@@ -501,19 +504,36 @@ else % right leg heelstrike
     RBoS_AP_to = rtoe_ap(to);
     RBoS_ML_to = rank_ml(to);
 
-    L_MoS_AP_hs = calc_MoS(CoM_Vec_at_ohs,LAnk_Vec_at_ohs,COM_AP(opp_hs),CoM_vel_AP(opp_hs),LBoS_AP_hs);
-    R_MoS_AP_hs = calc_MoS(CoM_Vec_at_hs,RAnk_Vec_at_hs,COM_AP(hs),CoM_vel_AP(hs),RBoS_AP_hs);
-    L_MoS_ML_hs = calc_MoS(CoM_Vec_at_ohs,LAnk_Vec_at_ohs,COM_ML(opp_hs),CoM_vel_ML(opp_hs),LBoS_ML_hs);
-    R_MoS_ML_hs = calc_MoS(CoM_Vec_at_hs,RAnk_Vec_at_hs,COM_ML(hs),CoM_vel_ML(hs),RBoS_ML_hs);
-    L_MoS_AP_to = calc_MoS(CoM_Vec_at_oto,LAnk_Vec_at_oto,COM_AP(opp_to),CoM_vel_AP(opp_to),LBoS_AP_to);
-    R_MoS_AP_to = calc_MoS(CoM_Vec_at_to,RAnk_Vec_at_to,COM_AP(to),CoM_vel_AP(to),RBoS_AP_to);
-    L_MoS_ML_to = calc_MoS(CoM_Vec_at_oto,LAnk_Vec_at_oto,COM_ML(opp_to),CoM_vel_ML(opp_to),LBoS_ML_to);
-    R_MoS_ML_to = calc_MoS(CoM_Vec_at_to,RAnk_Vec_at_to,COM_ML(to),CoM_vel_ML(to),RBoS_ML_to);
+    RBoS_AP_double_lead_before = rtoe_ap(double_lead_before);
+    RBoS_ML_double_lead_before = rank_ml(double_lead_before);
+    LBoS_AP_double_trail_before = ltoe_ap(double_trail_before);
+    LBoS_ML_double_trail_before = lank_ml(double_trail_before);
+    RBoS_AP_double_lead_after = rtoe_ap(double_lead_after);
+    RBoS_ML_double_lead_after = rank_ml(double_lead_after);
+    LBoS_AP_double_trail_after = ltoe_ap(double_trail_after);
+    LBoS_ML_double_trail_after = lank_ml(double_trail_after);
 
-    
+    % L_MoS_AP_hs = calc_MoS(CoM_Vec_at_ohs,LAnk_Vec_at_ohs,COM_AP(opp_hs),CoM_vel_AP(opp_hs),LBoS_AP_hs);
+    % R_MoS_AP_hs = calc_MoS(CoM_Vec_at_hs,RAnk_Vec_at_hs,COM_AP(hs),CoM_vel_AP(hs),RBoS_AP_hs);
+    % L_MoS_ML_hs = calc_MoS(CoM_Vec_at_ohs,LAnk_Vec_at_ohs,COM_ML(opp_hs),CoM_vel_ML(opp_hs),LBoS_ML_hs);
+    % R_MoS_ML_hs = calc_MoS(CoM_Vec_at_hs,RAnk_Vec_at_hs,COM_ML(hs),CoM_vel_ML(hs),RBoS_ML_hs);
+    % L_MoS_AP_to = calc_MoS(CoM_Vec_at_oto,LAnk_Vec_at_oto,COM_AP(opp_to),CoM_vel_AP(opp_to),LBoS_AP_to);
+    % R_MoS_AP_to = calc_MoS(CoM_Vec_at_to,RAnk_Vec_at_to,COM_AP(to),CoM_vel_AP(to),RBoS_AP_to);
+    % L_MoS_ML_to = calc_MoS(CoM_Vec_at_oto,LAnk_Vec_at_oto,COM_ML(opp_to),CoM_vel_ML(opp_to),LBoS_ML_to);
+    % R_MoS_ML_to = calc_MoS(CoM_Vec_at_to,RAnk_Vec_at_to,COM_ML(to),CoM_vel_ML(to),RBoS_ML_to);
+
+    R_MoS_AP_double_before = calc_MoS(CoM_Vec_double_lead_before,RAnk_Vec_double_lead_before,COM_AP(double_lead_before),CoM_vel_AP(double_lead_before),RBoS_AP_double_lead_before);
+    L_MoS_AP_double_before = calc_MoS(CoM_Vec_double_trail_before,LAnk_Vec_double_trail_before,COM_AP(double_trail_before),CoM_vel_AP(double_trail_before),LBoS_AP_double_trail_before);
+    R_MoS_ML_double_before = calc_MoS(CoM_Vec_double_lead_before,RAnk_Vec_double_lead_before,COM_ML(double_lead_before),CoM_vel_ML(double_lead_before),RBoS_ML_double_lead_before);
+    L_MoS_ML_double_before = calc_MoS(CoM_Vec_double_trail_before,LAnk_Vec_double_trail_before,COM_ML(double_trail_before),CoM_vel_ML(double_trail_before),LBoS_ML_double_trail_before);
+    R_MoS_AP_double_after = calc_MoS(CoM_Vec_double_lead_after,RAnk_Vec_double_lead_after,COM_AP(double_lead_after),CoM_vel_AP(double_lead_after),RBoS_AP_double_lead_after);
+    L_MoS_AP_double_after = calc_MoS(CoM_Vec_double_trail_after,LAnk_Vec_double_trail_after,COM_AP(double_trail_after),CoM_vel_AP(double_trail_after),LBoS_AP_double_trail_after);
+    R_MoS_ML_double_after = calc_MoS(CoM_Vec_double_lead_after,RAnk_Vec_double_lead_after,COM_ML(double_lead_after),CoM_vel_ML(double_lead_after),RBoS_ML_double_lead_after);
+    L_MoS_ML_double_after = calc_MoS(CoM_Vec_double_trail_after,LAnk_Vec_double_trail_after,COM_ML(double_trail_after),CoM_vel_ML(double_trail_after),LBoS_ML_double_trail_after);
+
 end
 
-mos = [L_MoS_AP_hs R_MoS_AP_hs L_MoS_ML_hs R_MoS_ML_hs L_MoS_AP_to R_MoS_AP_to L_MoS_ML_to R_MoS_ML_to];
+% mos = [L_MoS_AP_hs R_MoS_AP_hs L_MoS_ML_hs R_MoS_ML_hs L_MoS_AP_to R_MoS_AP_to L_MoS_ML_to R_MoS_ML_to];
 double_mos = [L_MoS_AP_double_before R_MoS_AP_double_before L_MoS_ML_double_before R_MoS_ML_double_before L_MoS_AP_double_after...
     R_MoS_AP_double_after L_MoS_ML_double_after R_MoS_ML_double_after];
 
@@ -526,7 +546,7 @@ double_mos = [L_MoS_AP_double_before R_MoS_AP_double_before L_MoS_ML_double_befo
 %     lead_step_length trail_step_length lead_step_width trail_step_width L_MoS_AP_hs...
 %     R_MoS_AP_hs L_MoS_ML_hs R_MoS_ML_hs L_MoS_AP_to R_MoS_AP_to L_MoS_ML_to R_MoS_ML_to];
 
-OBS_data(1, :) = [trial Lead_foot approach_dist_trail landing_dist_lead...
+OBS_data(1, :) = [subject trial Lead_foot approach_dist_trail landing_dist_lead...
     approach_dist_lead landing_dist_trail...
     Lead_toe_clearance Trail_toe_clearance...
     Lead_heel_clearance Trail_heel_clearance obs1z_pos obs_start_frame obs_end_frame...
