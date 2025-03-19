@@ -1,6 +1,8 @@
 function r01preset
 global r01
 
+r01.files.file_list = {};
+
 
 r01.intern.sessionlog = {};
 r01.intern.prevfile = [];
