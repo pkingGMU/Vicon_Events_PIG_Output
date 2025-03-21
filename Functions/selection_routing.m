@@ -1,5 +1,7 @@
 function selection_routing(outcome_selection, fr)
 
+    global r01
+
     switch outcome_selection
         case 'Gait Events'
             [folderNames, dataPath, choice] = folder_names(1);
@@ -14,15 +16,26 @@ function selection_routing(outcome_selection, fr)
 
                 % If OK and made a selection
                 if ok
-                    selectedFolders = fullfile(dataPath, folderNames(selection));
+                    selected_folders = fullfile(dataPath, folderNames(selection));
                     disp('Selected folders for processing:');
-                    disp(selectedFolders);
+                    disp(selected_folders);
                 else
                     disp('No folders selected.');
                 end
             end
+                % try
+                % 
+                %     selected_folders = r01.files.ready_to_process;
+                % 
+                % catch
+                % 
+                % end
+                % 
+                % choice = questdlg('Is this treadmill or overground walking?', ...
+                %     'Select Gait Type ', ...
+                %     'Treadmill', 'Overground', 'Cancel', 'Treadmill');
             
-                ge_process(selectedFolders, choice, fr)
+                ge_process(selected_folders, choice, fr)
         case 'Gait Events & Clean Force Strikes'
             [folderNames, dataPath, choice] = folder_names(1);
 
