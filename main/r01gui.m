@@ -19,14 +19,40 @@ r01.gui.menu.menu_1b2 = uimenu(r01.gui.menu.menu_1b,'Label','Single Subject','Ca
 r01.gui.menu.menu_1b3 = uimenu(r01.gui.menu.menu_1b,'Label','Multiple Trials','Callback','import_data(''multiple_trials'');');
 r01.gui.menu.menu_1b4 = uimenu(r01.gui.menu.menu_1b,'Label','Multiple Subjects','Callback','import_data(''multiple_subjects'');');
 
-% Panels %
-r01.gui.file_list_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Selected Subjects", "Scrollable","on");
-test_pos = r01.gui.file_list_panel.Position;
-r01.gui.file_list_panel.Position = [.02 .05 .1 .2];
+% File Panels %
+r01.gui.file_list_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Trials", "Scrollable","on");
+r01.gui.subject_list_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Subjects", "Scrollable","on");
+r01.gui.ondeck_panel = uipanel(r01.gui.fig_main, "Units", "normalized", "Title", "Ready To Process", "Scrollable", "on");
+
+r01.gui.subject_list_panel.Position = [.02 .35 .1 .25];
+r01.gui.file_list_panel.Position = [.02 .05 .1 .25];
+r01.gui.ondeck_panel.Position = [.15, .05, .1, .55];
+
+% Drop Down For Trial Panel %
+r01.gui.file_list_dropdown = uicontrol(r01.gui.file_list_panel, 'Units', 'normalized', 'Style', 'listbox', 'String', r01.files.file_list, "Max", 40, "Min", 1);
+r01.gui.file_list_dropdown.Position = [.02 .25 .9 .7];
 
 % Drop Down For Subject Panel %
-r01.gui.file_list_dropdown = uicontrol(r01.gui.file_list_panel, 'Units', 'normalized', 'Style', 'listbox', 'String', r01.files.file_list);
-r01.gui.file_list_dropdown.Position = [.02 .05 1 1];
+r01.gui.subject_list_dropdown = uicontrol(r01.gui.subject_list_panel, 'Units', 'normalized', 'Style', 'listbox', 'String', r01.files.file_list);
+r01.gui.subject_list_dropdown.Position = [.02 .25 .9 .7];
+
+% Drop Down for On Deck Files %
+r01.gui.ondeck_dropdown = uicontrol(r01.gui.ondeck_panel, "Units","normalized", "Style", "listbox", "String", r01.files.file_list);
+r01.gui.ondeck_dropdown.Position = [.02 .02 .9 .9];
+
+% Buttons %
+r01.gui.subject_list_select = uicontrol(r01.gui.subject_list_panel, "Style","pushbutton","String", "Select", 'Callback', 'update_trial_list()');
+r01.gui.trial_list_select = uicontrol(r01.gui.file_list_panel, "Style","pushbutton","String", "Select", "Callback", 'update_ondeck()');
+
+% Processing Panels %
+r01.gui.process_area = uipanel(r01.gui.fig_main, "Title", "Parsing and Processing", "Units", "normalized", "Scrollable","on");
+r01.gui.process_area.Position = [.30 .5 .1 .1];
+
+% Button for Analyze %
+r01.gui.process_button = uicontrol(r01.gui.process_area, "Style","pushbutton", "String", "Select", "Callback", 'process_callback()');
+%r01.gui.process_button.Position = [0,0,1,1];
+
+
 %--Oldfile-list
 % if ~isempty(r01.intern.prevfile)
 %     for i = 1:length(r01.intern.prevfile)
