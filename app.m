@@ -5,6 +5,8 @@ function app()
     clc
     close all hidden;
     clear global r01
+    
+    
 
     %%% Main global variable struct %%%
     global r01
@@ -25,6 +27,9 @@ function app()
     % Local Import
     r01.intern.install_dir = fileparts(file);
     addpath(genpath(r01.intern.install_dir));
+
+    clear import_data
+    clear update_ondeck
 
     r01preset;
 
