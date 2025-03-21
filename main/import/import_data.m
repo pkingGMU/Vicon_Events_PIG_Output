@@ -25,7 +25,16 @@ switch type_selection
         if ismember(files, file_list)
 
         else
-            file_list = [file_list files];
+
+            path_parts = strsplit(files{1}, {'/', '\'});
+            subject_name = path_parts(end - 1);
+            trial_file_name = path_parts(end);
+            trial_name = strsplit(trial_file_name{1}, '.csv');
+            trial_name = trial_name{1};
+
+
+
+            file_list = [file_list; [files, subject_name, trial_name, trial_file_name]];
             disp(file_list);
         end
         
@@ -43,7 +52,15 @@ switch type_selection
             if ismember(file_name, file_list)
 
             else
-                file_list = [file_list file_name];
+
+                path_parts = strsplit(file_name, {'/', '\'});
+                subject_name = path_parts(end - 1);
+                trial_file_name = path_parts(end);
+                trial_name = strsplit(trial_file_name{1}, '.csv');
+                trial_name = trial_name{1};
+
+                file_list = [file_list; [file_name, subject_name, trial_name, trial_file_name]];
+
                 disp(file_list);
             end
 
@@ -58,7 +75,15 @@ switch type_selection
             if ismember(file_name, file_list)
 
             else
-                file_list = [file_list file_name];
+
+                path_parts = strsplit(file_name, {'/', '\'});
+                subject_name = path_parts(end - 1);
+                trial_file_name = path_parts(end);
+                trial_name = strsplit(trial_file_name{1}, '.csv');
+                trial_name = trial_name{1};
+
+                file_list = [file_list; [file_name, subject_name, trial_name, trial_file_name]];
+
                 disp(file_list);
             end
 
@@ -83,7 +108,15 @@ switch type_selection
                 if ismember(file_name, file_list)
     
                 else
-                    file_list = [file_list file_name];
+
+                    path_parts = strsplit(file_name, {'/', '\'});
+                    subject_name = path_parts(end - 1);
+                    trial_file_name = path_parts(end);
+                    trial_name = strsplit(trial_file_name{1}, '.csv');
+                    trial_name = trial_name(1);
+
+                    file_list = [file_list; [file_name, subject_name, trial_name, trial_file_name]];
+
                     disp(file_list);
                 end
 
@@ -106,6 +139,11 @@ else
 end
 
 r01.files.file_list = file_list;
-set(r01.gui.file_list_dropdown, 'String', r01.files.file_list)
+
+subject_update_list = unique(r01.files.file_list(:, 2));
+r01.files.subjects = subject_update_list;
+ 
+set(r01.gui.subject_list_dropdown, 'String', subject_update_list)
 
 
+%%% Update Trial List
