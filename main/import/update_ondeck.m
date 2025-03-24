@@ -2,7 +2,7 @@ function update_ondeck
     
     global r01
     persistent ready_list
-    persistent ready_list_csv
+    persistent ready_list_full
 
     if isempty(ready_list)
         ready_list = {};
@@ -20,13 +20,13 @@ function update_ondeck
         if ~ismember(pulled_list(row, :), ready_list)
             
             ready_list = [ready_list pulled_list(row, 3)];
-            ready_list_csv = [ready_list_csv pulled_list(row, 1)]
+            ready_list_full = [ready_list_full; [pulled_list(row, :)]]
 
         end
 
     end
 
-    r01.files.ready_to_process = ready_list_csv;
+    r01.files.ready_to_process = ready_list_full;
 
     set(r01.gui.ondeck_dropdown, 'String', ready_list);
 

@@ -1,4 +1,4 @@
-function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
+function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
     %%%
     % Function specifically designed for ONLY looking for Gait Events. We
     % take in a folder which is generally the data folder. It will parse
@@ -12,25 +12,8 @@ function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
     % for worse computers. 
     %%%
     
-    
-    %%% Folder conversion %%%
-    % Convert to char
-    folder = char(folder);
-    % File pattern is equal to our folder directory + a csv file 
-    filePattern = fullfile(folder, '*.csv');
-    % files is an array of all the files in our chosen directory with the csv extension
-    files = dir(filePattern);
-
-    %%% Get Subject Name %%%
-    % Easy naming convention
-    % Regex to get subject name
-    subject = char(folder);
-    parts = strsplit(subject, 'Data');
-    subject_name = parts{2};
-    subject_name = regexprep(subject_name, '[\\/]', '');
-    % Display subject for debugging
-    subject =  'sub' + string(subject_name);
-    subject = regexprep(subject, ' ', '_');
+    global r01
+   
     
     %%% Loop through all file names in the files array
     
@@ -40,9 +23,7 @@ function [proc_tables, event_table] = ge_arrange_tables(folder, choice, fr)
     % The second pass file = 2
     % Etc.....
     for file = 1:numel(files)
-        
-        
-        
+
         % Set temp variable to the nth file in our list of files
         file_name = fullfile(folder, files(file).name);
         
