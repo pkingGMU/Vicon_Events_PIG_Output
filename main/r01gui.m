@@ -38,7 +38,10 @@ r01.gui.subject_list_dropdown.Position = [.02 .25 .9 .7];
 
 % Drop Down for On Deck Files %
 r01.gui.ondeck_dropdown = uicontrol(r01.gui.ondeck_panel, "Units","normalized", "Style", "listbox", "String", r01.files.file_list);
-r01.gui.ondeck_dropdown.Position = [.02 .02 .9 .9];
+r01.gui.ondeck_dropdown.Position = [.05 .08 .9 .9];
+
+% Remove File from Ready To Process %
+r01.gui.ondeck_remove = uicontrol(r01.gui.ondeck_panel, "Style","pushbutton","String", "Remove", 'Callback', 'remove_rtp()');
 
 % Buttons %
 r01.gui.subject_list_select = uicontrol(r01.gui.subject_list_panel, "Style","pushbutton","String", "Select", 'Callback', 'update_trial_list()');
@@ -48,40 +51,33 @@ r01.gui.trial_list_select = uicontrol(r01.gui.file_list_panel, "Style","pushbutt
 r01.gui.process_area = uipanel(r01.gui.fig_main, "Title", "Parsing and Processing", "Units", "normalized", "Scrollable","on");
 r01.gui.process_area.Position = [.30 .5 .1 .1];
 
+% Trial Info Panel %
+r01.gui.info_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Trial Info", "Scrollable","on");
+r01.gui.info_panel.Position = [.02 .78 .2 .2];
+
 % Button for Analyze %
 r01.gui.process_button = uicontrol(r01.gui.process_area, "Style","pushbutton", "String", "Select", "Callback", 'process_callback()');
 %r01.gui.process_button.Position = [0,0,1,1];
 
+% Force Plate Input -- Test -- %
+r01.gui.force_input = uipanel(r01.gui.fig_main, "Title", "Force Plate Input", "Units", "normalized", "Scrollable", "on");
+r01.gui.force_input.Position = [.24 .78 .2 .2];
 
-%--Oldfile-list
-% if ~isempty(r01.intern.prevfile)
-%     for i = 1:length(r01.intern.prevfile)
-%         if i == 1
-%             r01.gui.menu.menu_of(i) = uimenu(r01.gui.menu.menu_1,'Label',r01.intern.prevfile(i).filename,'Callback','open_r01file(1)','Separator','on');
-%         else
-%             r01.gui.menu.menu_of(i) = uimenu(r01.gui.menu.menu_1,'Label',r01.intern.prevfile(i).filename,'Callback',['open_r01file(',num2str(i),')']);
-%         end
-%     end
-% end
+% Force Plate Fields -- Test -- %
+r01.gui.user_frame = uicontrol(r01.gui.force_input, "Units", "normalized", "Style", "edit", "String", "Enter Potential Clean Foot Strikes (Frame, Foot, Frame, Foot)");
+r01.gui.user_frame.Position = [.1 0 .8 .2];
 
+r01.gui.user_num_plates = uicontrol(r01.gui.force_input, "Units", "normalized", "Style", "edit", "String", "Enter Number of Plates");
+r01.gui.user_num_plates.Position = [.1 .3 .8 .2];
+
+r01.gui.user_prefix_plates = uicontrol(r01.gui.force_input, "Units", "normalized", "Style", "edit", "String", "Force Plate Prefix (f_, force, etc.)");
+r01.gui.user_prefix_plates.Position = [.1 .6 .8 .2];
 %-Info
 r01.gui.menu.menu_7 =  uimenu(r01.gui.fig_main,'Label','Info');
 % r01.gui.menu.menu_7a = uimenu(r01.gui.menu.menu_7,'Label','r01lab Website','Callback','web(''www.r01lab.de'')');
 %r01.gui.menu.menu_7b = uimenu(r01.gui.menu.menu_7,'Label','Documentation','Callback','web(''www.r01lab.de/download/r01lab_Documentation.pdf'',''-browser'')');
 r01.gui.menu.menu_7c = uimenu(r01.gui.menu.menu_7,'Label','Check for updates','Callback','version_check');
 r01.gui.menu.menu_7d = uimenu(r01.gui.menu.menu_7,'Label','About r01lab','Callback','r01logo','Separator','on');
-
-%Overview (= Data Display)
-% dy = .78;
-% r01.gui.overview.ax = axes('Units','normalized','Position',[.05 dy .87 .18],'ButtonDownFcn','r01_click(1)');
-% set(r01.gui.overview.ax,'XLim',[0,60],'YLim',[0,20],'Color',[.9 .9 .9]);
-% set(get(r01.gui.overview.ax,'YLabel'),'String','SC [\muS]')
-% set(get(r01.gui.overview.ax,'XLabel'),'String','Time [sec]')
-% 
-% r01.gui.overview.edit_max = uicontrol('Units','normalized','Style','edit','Position',[.94 dy+.155 .04 .025],'String','20','Callback','edits_cb(4)');
-% r01.gui.overview.edit_min = uicontrol('Units','normalized','Style','edit','Position',[.94 dy .04 .025],'String','0','Callback','edits_cb(4)');
-% r01.gui.overview.text_max = uicontrol('Units','normalized','Style','text','Position',[.94 dy+.095 .04 .025],'String','-','HorizontalAlignment','center','BackgroundColor',r01.gui.col.fig);
-% r01.gui.overview.text_min = uicontrol('Units','normalized','Style','text','Position',[.94 dy+.065 .04 .025],'String','-','HorizontalAlignment','center','BackgroundColor',r01.gui.col.fig);
 
 
 x1 = .05; x2 = .7; x3 = .75; x4 = .98;
