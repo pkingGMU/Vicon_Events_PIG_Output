@@ -5,5 +5,8 @@ function [subjects] = ge_process(files_list, choice, fr)
 
     
         [proc_tables] = ge_arrange_tables(files_list, choice, fr);
+
+         add2log(0,['>>>> ', 'Found Gait Events for Selected Trials'],1,1);
+
     
 end
