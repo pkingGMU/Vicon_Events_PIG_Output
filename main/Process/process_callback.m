@@ -1,4 +1,6 @@
 function process_callback
+
+    global r01
     
     frameRate = 100;
 
@@ -14,6 +16,7 @@ function process_callback
 
     selection_routing(outcome_selection, frameRate);
 
+    
     disp("Finished!")
 
 end
