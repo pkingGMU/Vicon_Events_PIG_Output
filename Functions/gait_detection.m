@@ -7,6 +7,8 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     frame_start = frame_values(1);
 
     FR = fr;
+
+    
     
     switch choice
         case 'Overground'

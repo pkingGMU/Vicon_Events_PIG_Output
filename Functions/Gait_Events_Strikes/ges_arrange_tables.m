@@ -1,49 +1,23 @@
-function [proc_tables, event_table] = ges_arrange_tables(folder, choice, fr)
+function [proc_tables, event_table] = ges_arrange_tables(files, choice, fr)
     %%%
     % 
     %%%
     
-    %%% Make an array of the file names
-    
-    % Convert to char
-    folder = char(folder);
+    global r01
 
-    %folder = fullfile(folder.folder, folder.name);
-    
-    % File pattern is equal to our folder directory + a csv file 
-    filePattern = fullfile(folder, '*.csv');
-    % files is an array of all the files in our chosen directory with the csv extension
-    files = dir(filePattern);
 
-    %%% Get Subject Name %%%
-    % Easy naming convention
-    % Regex to get subject name
-    subject = char(folder);
-    parts = strsplit(subject, 'Data');
-    subject_name = parts{2};
-    subject_name = regexprep(subject_name, '[\\/]', '');
-    % Display subject for debugging
-    subject =  'sub' + string(subject_name);
-    subject = regexprep(subject, ' ', '_');
     
-    %%% Loop through all file names in the files array
     
-    % We loop through the amount of times there are files and set the
-    % variable file = to which loop we'er on.
-    % The first pass file = 1
-    % The second pass file = 2
-    % Etc.....
+
     for file = 1:numel(files)
         
         
         
-        % Set temp variable to the nth file in our list of files
-        file_name = fullfile(folder, files(file).name);
+        csv_name = files{file, 1};
+ 
+        file_name_short = strrep(erase(files{file, 3}, ".csv"), ' ', '_');
+        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '');
         
-        % A shorted file name without the csv extension
-        file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_');
-        % Remove any unnecessary numbers
-        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '')
         
         % Debugging
         disp(file_name_short)
@@ -52,14 +26,14 @@ function [proc_tables, event_table] = ges_arrange_tables(folder, choice, fr)
         
         % All of these options are to ensure every csv is imported
         % correctly and every variable is type char
-        opts = detectImportOptions(file_name);
+        opts = detectImportOptions(csv_name);
         opts = setvartype(opts, 'char');
         opts.VariableNamingRule = 'preserve';
         opts = setvaropts(opts, 'Type', 'char');
         opts.DataLines = [1 Inf];
         
 
-        full_data_table = readtable(file_name, opts);
+        full_data_table = readtable(csv_name, opts);
 
         full_data_table.Properties.VariableNames{3} = 'Var3';
         
@@ -103,7 +77,7 @@ function [proc_tables, event_table] = ges_arrange_tables(folder, choice, fr)
         
 
         % Define the subject
-        [~,subject_id, ~] = fileparts(folder);
+        subject_id = files{file, 2};
         
         % Find max length of events
         max_left = max([length(lhs), length(lto)]);
@@ -234,7 +208,7 @@ function [proc_tables, event_table] = ges_arrange_tables(folder, choice, fr)
         
         %%% Create Excel
         % Existing data
-        existing_data = readcell(file_name);
+        existing_data = readcell(csv_name);
         
         fprintf("Debug 1")
 
