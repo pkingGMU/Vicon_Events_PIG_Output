@@ -1,50 +1,37 @@
 function selection_routing(outcome_selection, fr)
 
+    global r01
+
     switch outcome_selection
         case 'Gait Events'
-            [folderNames, dataPath, choice] = folder_names(1);
+           
+                try
 
-            % Display list dialog to select subject folders
-            if isempty(folderNames)
-                uialert(uifigure, 'No folders found in Data directory.', 'Folder Error');
-            else
-                [selection, ok] = listdlg('PromptString', 'Select Subject Folders:', ...
-                                          'SelectionMode', 'multiple', ...
-                                          'ListString', folderNames);
+                    selected_folders = r01.files.ready_to_process;
 
-                % If OK and made a selection
-                if ok
-                    selectedFolders = fullfile(dataPath, folderNames(selection));
-                    disp('Selected folders for processing:');
-                    disp(selectedFolders);
-                else
-                    disp('No folders selected.');
+                catch
+
                 end
-            end
+
+                choice = questdlg('Is this treadmill or overground walking?', ...
+                    'Select Gait Type ', ...
+                    'Treadmill', 'Overground', 'Cancel', 'Treadmill');
             
-                ge_process(selectedFolders, choice, fr)
+                ge_process(selected_folders, choice, fr)
         case 'Gait Events & Clean Force Strikes'
-            [folderNames, dataPath, choice] = folder_names(1);
+            try
 
-            % Display list dialog to select subject folders
-            if isempty(folderNames)
-                uialert(uifigure, 'No folders found in Data directory.', 'Folder Error');
-            else
-                [selection, ok] = listdlg('PromptString', 'Select Subject Folders:', ...
-                                          'SelectionMode', 'multiple', ...
-                                          'ListString', folderNames);
+                    selected_folders = r01.files.ready_to_process;
 
-                % If OK and made a selection
-                if ok
-                    selectedFolders = fullfile(dataPath, folderNames(selection));
-                    disp('Selected folders for processing:');
-                    disp(selectedFolders);
-                else
-                    disp('No folders selected.');
+                catch
+
                 end
-            end
+
+                choice = questdlg('Is this treadmill or overground walking?', ...
+                    'Select Gait Type ', ...
+                    'Treadmill', 'Overground', 'Cancel', 'Treadmill');
             
-                ges_process(selectedFolders, choice, fr)
+                ges_process(selected_folders, choice, fr)
         case 'R01 Analysis'
             dataPath = fullfile(pwd, 'Output/', 'Gait_Events_Strikes/', 'Overground');
     
@@ -130,6 +117,8 @@ function selection_routing(outcome_selection, fr)
             end
 
             mos_process(selectedFolders, selection, choice, fr)
+
+        
 
         otherwise
             
