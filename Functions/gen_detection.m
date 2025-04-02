@@ -3,6 +3,12 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     % devices_data_table: Table containing the force plate data (z1, z2, z3, z4 columns).
     % gait_events_tables: Table containing the timing data (frames of interest in the first column and event types).
     
+    global r01
+
+    frame_list = r01.gui.user_frame.String;
+    num_plates = r01.gui.user_num_plates.String;
+    plate_prefix = r01.gui.user_prefix_plates.String;
+
     % Sort gait_events_tables by cycle
     gait_events_tables = sortrows(gait_events_tables, 'Time (s)');
 
