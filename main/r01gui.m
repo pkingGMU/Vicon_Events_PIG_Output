@@ -29,12 +29,16 @@ r01.gui.file_list_panel.Position = [.02 .05 .1 .25];
 r01.gui.ondeck_panel.Position = [.15, .05, .1, .55];
 
 % Drop Down For Trial Panel %
-r01.gui.file_list_dropdown = uicontrol(r01.gui.file_list_panel, 'Units', 'normalized', 'Style', 'listbox', 'String', r01.files.file_list, "Max", 40, "Min", 1);
+r01.gui.file_list_dropdown = uicontrol(r01.gui.file_list_panel, 'Units', 'normalized', 'Style', 'listbox', 'String', r01.files.file_list, 'Callback', @update_trial_text, 'Max', 40, 'Min', 1);
 r01.gui.file_list_dropdown.Position = [.02 .25 .9 .7];
 
+
+
+
 % Drop Down For Subject Panel %
-r01.gui.subject_list_dropdown = uicontrol(r01.gui.subject_list_panel, 'Units', 'normalized', 'Style', 'listbox', 'String', r01.files.file_list);
+r01.gui.subject_list_dropdown = uicontrol(r01.gui.subject_list_panel, 'Units', 'normalized', 'Style', 'listbox', 'String', r01.files.file_list, 'Callback', @update_subject_text);
 r01.gui.subject_list_dropdown.Position = [.02 .25 .9 .7];
+
 
 % Drop Down for On Deck Files %
 r01.gui.ondeck_dropdown = uicontrol(r01.gui.ondeck_panel, "Units","normalized", "Style", "listbox", "String", r01.files.file_list);
@@ -53,7 +57,58 @@ r01.gui.process_area.Position = [.30 .5 .1 .1];
 
 % Trial Info Panel %
 r01.gui.info_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Trial Info", "Scrollable","on");
-r01.gui.info_panel.Position = [.02 .78 .2 .2];
+r01.gui.info_panel.Position = [.02 .78 .1 .2];
+
+% Trial Info Trial Name %
+r01.gui.info_panel_name = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'No Trial Selected', 'HorizontalAlignment', 'center', 'FontSize', 12);
+r01.gui.info_panel_name.Position = [.1 .85 .8 .1];
+
+% Subject Info Test 1 Check %
+r01.gui.trial_panel_test1 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_test1.Position = [.1 .75 .8 .1];
+% Subject Info Test 2 Check %
+r01.gui.trial_panel_test2 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_test2.Position = [.1 .65 .8 .1];
+% Subject Info Test 3 Check %
+r01.gui.trial_panel_test3 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_test3.Position = [.1 .55 .8 .1];
+% Subject Info Test 4 Check %
+r01.gui.trial_panel_test4 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_test4.Position = [.1 .45 .8 .1];
+% Subject Info Test 5 Check %
+r01.gui.trial_panel_test5 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_test5.Position = [.1 .35 .8 .1];
+% Subject Info Test 6 Check %
+r01.gui.trial_panel_test6 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_test6.Position = [.1 .25 .8 .1];
+
+
+% Subject Info Panel %
+r01.gui.subject_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Subject Info", "Scrollable","on");
+r01.gui.subject_panel.Position = [.12 .78 .1 .2];
+
+% Subject Info Subject Name %
+r01.gui.subject_panel_name = uicontrol(r01.gui.subject_panel, 'Units','normalized', 'Style', 'text', 'String', 'No Subject Selected', 'HorizontalAlignment', 'center', 'FontSize', 12);
+r01.gui.subject_panel_name.Position = [.1 .85 .8 .1];
+
+% Subject Info Test 1 Check %
+r01.gui.subject_panel_test1 = uicontrol(r01.gui.subject_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.subject_panel_test1.Position = [.1 .75 .8 .1];
+% Subject Info Test 2 Check %
+r01.gui.subject_panel_test2 = uicontrol(r01.gui.subject_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.subject_panel_test2.Position = [.1 .65 .8 .1];
+% Subject Info Test 3 Check %
+r01.gui.subject_panel_test3 = uicontrol(r01.gui.subject_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.subject_panel_test3.Position = [.1 .55 .8 .1];
+% Subject Info Test 4 Check %
+r01.gui.subject_panel_test4 = uicontrol(r01.gui.subject_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.subject_panel_test4.Position = [.1 .45 .8 .1];
+% Subject Info Test 5 Check %
+r01.gui.subject_panel_test5 = uicontrol(r01.gui.subject_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.subject_panel_test5.Position = [.1 .35 .8 .1];
+% Subject Info Test 6 Check %
+r01.gui.subject_panel_test6 = uicontrol(r01.gui.subject_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.subject_panel_test6.Position = [.1 .25 .8 .1];
 
 % Button for Analyze %
 r01.gui.process_button = uicontrol(r01.gui.process_area, "Style","pushbutton", "String", "Select", "Callback", 'process_callback()');
@@ -140,5 +195,7 @@ r01.gui.infobox = uicontrol('Units','normalized','Style','listbox','Position',[x
 m_version = version;
 if str2double(m_version(1:3)) > 7.4
     maxfig(r01.gui.fig_main,1);
+end
+
 end
 
