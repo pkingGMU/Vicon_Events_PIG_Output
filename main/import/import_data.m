@@ -32,6 +32,8 @@ switch type_selection
             trial_name = strsplit(trial_file_name{1}, '.csv');
             trial_name = trial_name{1};
 
+            
+
 
 
             file_list = [file_list; [files, subject_name, trial_name, trial_file_name]];
@@ -138,7 +140,9 @@ else
 
 end
 
-r01.files.file_list = file_list;
+
+
+r01.files.file_list = cellfun(@strtrim, file_list, 'UniformOutput', false);
 
 subject_update_list = unique(r01.files.file_list(:, 2));
 r01.files.subjects = subject_update_list;
