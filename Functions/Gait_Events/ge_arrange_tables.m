@@ -40,6 +40,10 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
         
         % Debugging
         disp(file_name_short)
+        full_trial_list = r01.files.file_list;
+        file_list_idx = find(cellfun(@(i) isequal(full_trial_list(i, :), files), num2cell(1:size(full_trial_list, 1))));
+
+        r01.files.file_list(file_list_idx, 5) = {file_name_short};
 
         % Make a full data table with the file name we'er on
         
