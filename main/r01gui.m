@@ -6,6 +6,8 @@ global r01
 r01.gui.fig_main = figure('Units','normalized','Position',[.00 .03 1 .92],'Name',[r01.intern.name,' ',r01.intern.versiontxt],'KeyPressFcn','r01_keypress',...
     'MenuBar','none','NumberTitle','off','Color',r01.gui.col.fig,'CloseRequestFcn','exit_r01');  %,'outerposition',[0 0 1 1]
 
+
+
 r01.gui.menu.menu_1  = uimenu(r01.gui.fig_main,'Label','File');
 r01.gui.menu.menu_1a = uimenu(r01.gui.menu.menu_1,'Label','Open','Callback','open_r01file;','Accelerator','o');   %
 r01.gui.menu.menu_1b = uimenu(r01.gui.menu.menu_1,'Label','Import Data...'); %,'Accelerator','i'
@@ -21,18 +23,20 @@ r01.gui.menu.menu_1b4 = uimenu(r01.gui.menu.menu_1b,'Label','Multiple Subjects',
 
 % File Panels %
 r01.gui.file_list_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Trials", "Scrollable","on");
-r01.gui.subject_list_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Subjects", "Scrollable","on");
-r01.gui.ondeck_panel = uipanel(r01.gui.fig_main, "Units", "normalized", "Title", "Ready To Process", "Scrollable", "on");
-
-r01.gui.subject_list_panel.Position = [.02 .35 .1 .25];
 r01.gui.file_list_panel.Position = [.02 .05 .1 .25];
-r01.gui.ondeck_panel.Position = [.15, .05, .1, .55];
+
+r01.gui.subject_list_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Subjects", "Scrollable","on");
+r01.gui.subject_list_panel.Position = [.02 .35 .1 .25];
+
+r01.gui.ondeck_panel = uipanel(r01.gui.fig_main, "Units", "normalized", "Title", "Ready To Process", "Scrollable", "on");
+r01.gui.ondeck_panel.Position = [.12, .05, .1, .55];
+
+
+
 
 % Drop Down For Trial Panel %
 r01.gui.file_list_dropdown = uicontrol(r01.gui.file_list_panel, 'Units', 'normalized', 'Style', 'listbox', 'String', r01.files.file_list, 'Callback', @update_trial_text, 'Max', 40, 'Min', 1);
 r01.gui.file_list_dropdown.Position = [.02 .25 .9 .7];
-
-
 
 
 % Drop Down For Subject Panel %
@@ -53,7 +57,8 @@ r01.gui.trial_list_select = uicontrol(r01.gui.file_list_panel, "Style","pushbutt
 
 % Processing Panels %
 r01.gui.process_area = uipanel(r01.gui.fig_main, "Title", "Parsing and Processing", "Units", "normalized", "Scrollable","on");
-r01.gui.process_area.Position = [.30 .5 .1 .1];
+%r01.gui.process_area.Position = [.30 .5 .1 .1];
+r01.gui.process_area.Position = [.7 .5 .1 .1];
 
 % Trial Info Panel %
 r01.gui.info_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Trial Info", "Scrollable","on");
@@ -63,22 +68,22 @@ r01.gui.info_panel.Position = [.02 .78 .1 .2];
 r01.gui.info_panel_name = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'No Trial Selected', 'HorizontalAlignment', 'center', 'FontSize', 12);
 r01.gui.info_panel_name.Position = [.1 .85 .8 .1];
 
-% Subject Info Test 1 Check %
-r01.gui.trial_panel_test1 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
-r01.gui.trial_panel_test1.Position = [.1 .75 .8 .1];
-% Subject Info Test 2 Check %
-r01.gui.trial_panel_test2 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
-r01.gui.trial_panel_test2.Position = [.1 .65 .8 .1];
-% Subject Info Test 3 Check %
+% Trial Info Test 1 Check %
+r01.gui.trial_panel_gait_check = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_gait_check.Position = [.1 .75 .8 .1];
+% Trial Info Test 2 Check %
+r01.gui.trial_panel_gait_force_check = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_gait_force_check.Position = [.1 .65 .8 .1];
+% Trial Info Test 3 Check %
 r01.gui.trial_panel_test3 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
 r01.gui.trial_panel_test3.Position = [.1 .55 .8 .1];
-% Subject Info Test 4 Check %
+% Trial Info Test 4 Check %
 r01.gui.trial_panel_test4 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
 r01.gui.trial_panel_test4.Position = [.1 .45 .8 .1];
-% Subject Info Test 5 Check %
+% Trial Info Test 5 Check %
 r01.gui.trial_panel_test5 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
 r01.gui.trial_panel_test5.Position = [.1 .35 .8 .1];
-% Subject Info Test 6 Check %
+% Trial Info Test 6 Check %
 r01.gui.trial_panel_test6 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
 r01.gui.trial_panel_test6.Position = [.1 .25 .8 .1];
 
@@ -116,7 +121,7 @@ r01.gui.process_button = uicontrol(r01.gui.process_area, "Style","pushbutton", "
 
 % Force Plate Input -- Test -- %
 r01.gui.force_input = uipanel(r01.gui.fig_main, "Title", "Force Plate Input", "Units", "normalized", "Scrollable", "on");
-r01.gui.force_input.Position = [.24 .78 .2 .2];
+r01.gui.force_input.Position = [.24 .38 .2 .22];
 
 % Force Plate Fields -- Test -- %
 r01.gui.user_frame = uicontrol(r01.gui.force_input, "Units", "normalized", "Style", "edit", "String", "Enter Potential Clean Foot Strikes (Frame, Foot, Frame, Foot)");
@@ -127,6 +132,43 @@ r01.gui.user_num_plates.Position = [.1 .3 .8 .2];
 
 r01.gui.user_prefix_plates = uicontrol(r01.gui.force_input, "Units", "normalized", "Style", "edit", "String", "Force Plate Prefix (f_, force, etc.)");
 r01.gui.user_prefix_plates.Position = [.1 .6 .8 .2];
+
+% %% Tag Editor Panel %%
+% r01.gui.tag_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Tag Editor", "Scrollable", "on");
+% r01.gui.tag_panel.Position = [.25 .05 .2 .45];
+% 
+% % Selected File/Trial Label
+% r01.gui.tag_selected_label = uicontrol(r01.gui.tag_panel, 'Style', 'text', 'Units', 'normalized', ...
+%     'String', 'Selected Trial:', 'HorizontalAlignment', 'left', 'FontSize', 10);
+% r01.gui.tag_selected_label.Position = [.05 .9 .9 .05];
+% 
+% % Display selected filename
+% r01.gui.tag_selected_text = uicontrol(r01.gui.tag_panel, 'Style', 'text', 'Units', 'normalized', ...
+%     'String', 'None', 'HorizontalAlignment', 'center', 'FontSize', 10, 'BackgroundColor', [1 1 1]);
+% r01.gui.tag_selected_text.Position = [.05 .85 .9 .05];
+% 
+% % Listbox for tags
+% r01.gui.tag_listbox = uicontrol(r01.gui.tag_panel, 'Style', 'listbox', 'Units', 'normalized', ...
+%     'String', {}, 'Max', 10, 'Min', 1, 'FontSize', 10);
+% r01.gui.tag_listbox.Position = [.05 .4 .9 .4];
+% 
+% % Edit field to add tag
+% r01.gui.tag_edit = uicontrol(r01.gui.tag_panel, 'Style', 'edit', 'Units', 'normalized', ...
+%     'String', '', 'FontSize', 10);
+% r01.gui.tag_edit.Position = [.05 .32 .65 .05];
+% 
+% % Add tag button
+% r01.gui.tag_add_btn = uicontrol(r01.gui.tag_panel, 'Style', 'pushbutton', 'Units', 'normalized', ...
+%     'String', 'Add Tag', 'Callback', 'add_tag_callback();');
+% r01.gui.tag_add_btn.Position = [.72 .32 .23 .05];
+% 
+% % Remove selected tag button
+% r01.gui.tag_remove_btn = uicontrol(r01.gui.tag_panel, 'Style', 'pushbutton', 'Units', 'normalized', ...
+%     'String', 'Remove Selected', 'Callback', 'remove_tag_callback();');
+% r01.gui.tag_remove_btn.Position = [.05 .25 .9 .05];
+
+
+
 %-Info
 r01.gui.menu.menu_7 =  uimenu(r01.gui.fig_main,'Label','Info');
 % r01.gui.menu.menu_7a = uimenu(r01.gui.menu.menu_7,'Label','r01lab Website','Callback','web(''www.r01lab.de'')');
