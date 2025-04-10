@@ -1,0 +1,19 @@
+function load_session
+
+global r01
+
+[filename, pathname] = uigetfile(' *.mat','Choose a Session file');
+
+if all(filename == 0) || all(pathname == 0) %Cancel
+    return
+end
+file = fullfile(pathname, filename);
+
+%Try to open file
+try
+    r01session = load(file, '-mat');
+ 
+catch
+    add2log(0,['Unable to open ',file],1,1,0,1,0,1);
+    return;
+end
