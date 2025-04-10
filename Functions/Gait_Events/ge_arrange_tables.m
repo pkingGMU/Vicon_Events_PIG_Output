@@ -13,6 +13,7 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
     %%%
     
     global r01
+    clear file
    
     
     %%% Loop through all file names in the files array
@@ -22,7 +23,7 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
     % The first pass file = 1
     % The second pass file = 2
     % Etc.....
-    for file = 1:numel(files)
+    for file = 1:height(files)
 
         % % Set temp variable to the nth file in our list of files
         % file_name = fullfile(folder, files(file).name);
@@ -34,12 +35,12 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
         
         csv_name = files{file, 1};
  
-        file_name_short = strrep(erase(files{file, 3}, ".csv"), ' ', '_');
-        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '');
+        file_name_short_prefix = strrep(erase(files{file, 3}, ".csv"), ' ', '_');
+        file_name_short = regexprep(file_name_short_prefix, '^[^a-zA-Z]+', '');
         
         
         % Debugging
-        disp(file_name_short)
+        disp(file_name_short_prefix)
         full_trial_list = r01.files.file_list;
         file_list_idx = find(cellfun(@(i) isequal(full_trial_list(i, :), files), num2cell(1:size(full_trial_list, 1))));
 
@@ -247,7 +248,7 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
         end
 
         % Determine File Name
-        new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
+        new_excel_filename = strcat(file_name_short_prefix, '_events', '.xlsx');
         new_full_file_path = fullfile(excel_folder, new_excel_filename);
         
         % Check if the file already exists

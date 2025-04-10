@@ -9,18 +9,22 @@ function [proc_tables, event_table] = ges_arrange_tables(files, choice, fr)
     
     
 
-    for file = 1:numel(files)
+    for file = 1:height(files)
         
         
         
         csv_name = files{file, 1};
  
-        file_name_short = strrep(erase(files{file, 3}, ".csv"), ' ', '_');
-        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '');
+        file_name_short_prefix = strrep(erase(files{file, 3}, ".csv"), ' ', '_');
+        file_name_short = regexprep(file_name_short_prefix, '^[^a-zA-Z]+', '');
         
         
         % Debugging
         disp(file_name_short)
+        full_trial_list = r01.files.file_list;
+        file_list_idx = find(cellfun(@(i) isequal(full_trial_list(i, :), files), num2cell(1:size(full_trial_list, 1))));
+
+        r01.files.file_list(file_list_idx, 5) = {file_name_short};
 
         % Make a full data table with the file name we'er on
         
@@ -277,7 +281,7 @@ function [proc_tables, event_table] = ges_arrange_tables(files, choice, fr)
         end
 
         % Determine File Name
-        new_excel_filename = strcat(file_name_short, '_events', '.xlsx');
+        new_excel_filename = strcat(file_name_short_prefix, '_events', '.xlsx');
         new_full_file_path = fullfile(excel_folder, new_excel_filename);
         new_full_file_path_2 = fullfile(excel_folder_2, new_excel_filename);
         
