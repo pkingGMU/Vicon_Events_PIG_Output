@@ -12,14 +12,17 @@ r01.gui.menu.menu_1  = uimenu(r01.gui.fig_main,'Label','File');
 r01.gui.menu.menu_1a = uimenu(r01.gui.menu.menu_1,'Label','Open','Callback','open_r01file;','Accelerator','o');   %
 r01.gui.menu.menu_1b = uimenu(r01.gui.menu.menu_1,'Label','Import Data...'); %,'Accelerator','i'
 r01.gui.menu.menu_1d = uimenu(r01.gui.menu.menu_1,'Label','Export Data...');
-r01.gui.menu.menu_1e = uimenu(r01.gui.menu.menu_1,'Label','Save','Callback','save_r01file','Accelerator','s','Separator','on');
-r01.gui.menu.menu_1f = uimenu(r01.gui.menu.menu_1,'Label','Save as...','Callback','save_r01file(1)');
+r01.gui.menu.saveas_session = uimenu(r01.gui.menu.menu_1, 'Label', 'Save Session As', 'Callback', 'save_session(1)');
+r01.gui.menu.save_session = uimenu(r01.gui.menu.menu_1, 'Label', 'Save Session', 'Callback', 'save_session()');
+r01.gui.menu.load_session = uimenu(r01.gui.menu.menu_1, 'Label', 'Load Session', 'Callback', 'load_session()');
 r01.gui.menu.menu_1g = uimenu(r01.gui.menu.menu_1,'Label','Exit','Callback','exit_r01','Accelerator','x','Separator','on');
 
 r01.gui.menu.menu_1b1 = uimenu(r01.gui.menu.menu_1b,'Label','Single Trial','Callback','import_data(''single_trial'');');
 r01.gui.menu.menu_1b2 = uimenu(r01.gui.menu.menu_1b,'Label','Single Subject','Callback','import_data(''single_subject'');');
 r01.gui.menu.menu_1b3 = uimenu(r01.gui.menu.menu_1b,'Label','Multiple Trials','Callback','import_data(''multiple_trials'');');
 r01.gui.menu.menu_1b4 = uimenu(r01.gui.menu.menu_1b,'Label','Multiple Subjects','Callback','import_data(''multiple_subjects'');');
+
+
 
 % File Panels %
 r01.gui.file_list_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Trials", "Scrollable","on");

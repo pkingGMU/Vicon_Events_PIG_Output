@@ -2,7 +2,7 @@ function process_callback
 
     global r01
     
-    frameRate = 100;
+    frameRate = 120;
 
     possible_outcomes = ["Gait Events", "Gait Events & Clean Force Strikes", "R01 Analysis", ...
         "Obstacle Crossing Outcomes", "Margin Of Stability"];
