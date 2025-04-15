@@ -22,7 +22,7 @@ function update_ondeck
     
         
     
-        set(r01.gui.ondeck_dropdown, 'String', r01.files.ready_to_process(:, 3));
+        set(r01.gui.ondeck_dropdown, 'String', strcat(r01.files.ready_to_process(:, 2), ' |', r01.files.ready_to_process(:, 3)));
 
     catch
         disp('List empty')
