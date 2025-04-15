@@ -69,14 +69,14 @@ r01.gui.info_panel_name = uicontrol(r01.gui.info_panel, 'Units','normalized', 'S
 r01.gui.info_panel_name.Position = [.1 .85 .8 .1];
 
 % Trial Info Test 1 Check %
-r01.gui.trial_panel_gait_check = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_gait_check = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Gait', 'HorizontalAlignment', 'left', 'FontSize', 12);
 r01.gui.trial_panel_gait_check.Position = [.1 .75 .8 .1];
 % Trial Info Test 2 Check %
-r01.gui.trial_panel_gait_force_check = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_gait_force_check = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Gait/Force', 'HorizontalAlignment', 'left', 'FontSize', 12);
 r01.gui.trial_panel_gait_force_check.Position = [.1 .65 .8 .1];
 % Trial Info Test 3 Check %
-r01.gui.trial_panel_test3 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
-r01.gui.trial_panel_test3.Position = [.1 .55 .8 .1];
+r01.gui.trial_panel_r01_check = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'R01', 'HorizontalAlignment', 'left', 'FontSize', 12);
+r01.gui.trial_panel_r01_check.Position = [.1 .55 .8 .1];
 % Trial Info Test 4 Check %
 r01.gui.trial_panel_test4 = uicontrol(r01.gui.info_panel, 'Units','normalized', 'Style', 'text', 'String', 'Test Not Checked', 'HorizontalAlignment', 'left', 'FontSize', 12);
 r01.gui.trial_panel_test4.Position = [.1 .45 .8 .1];
@@ -119,19 +119,46 @@ r01.gui.subject_panel_test6.Position = [.1 .25 .8 .1];
 r01.gui.process_button = uicontrol(r01.gui.process_area, "Style","pushbutton", "String", "Select", "Callback", 'process_callback()');
 %r01.gui.process_button.Position = [0,0,1,1];
 
-% Force Plate Input -- Test -- %
+% Force Plate Input Panel
 r01.gui.force_input = uipanel(r01.gui.fig_main, "Title", "Force Plate Input", "Units", "normalized", "Scrollable", "on");
 r01.gui.force_input.Position = [.24 .38 .2 .22];
 
-% Force Plate Fields -- Test -- %
-r01.gui.user_frame = uicontrol(r01.gui.force_input, "Units", "normalized", "Style", "edit", "String", "Enter Potential Clean Foot Strikes (Frame, Foot, Frame, Foot)");
-r01.gui.user_frame.Position = [.1 0 .8 .2];
+% Text & Input for Prefix
+r01.gui.txt_prefix_plates = uicontrol(r01.gui.force_input, ...
+    "Style", "text", "Units", "normalized", ...
+    "String", "Force Plate Prefix (f_, force, etc.)", ...
+    "HorizontalAlignment", "left", ...
+    "Position", [.1 .8 .8 .1]);
 
-r01.gui.user_num_plates = uicontrol(r01.gui.force_input, "Units", "normalized", "Style", "edit", "String", "Enter Number of Plates");
-r01.gui.user_num_plates.Position = [.1 .3 .8 .2];
+r01.gui.user_prefix_plates = uicontrol(r01.gui.force_input, ...
+    "Style", "edit", "Units", "normalized", ...
+    "String", "", ...
+    "Position", [.1 .7 .8 .1]);
 
-r01.gui.user_prefix_plates = uicontrol(r01.gui.force_input, "Units", "normalized", "Style", "edit", "String", "Force Plate Prefix (f_, force, etc.)");
-r01.gui.user_prefix_plates.Position = [.1 .6 .8 .2];
+% Text & Input for Number of Plates
+r01.gui.txt_num_plates = uicontrol(r01.gui.force_input, ...
+    "Style", "text", "Units", "normalized", ...
+    "String", "Enter Number of Plates", ...
+    "HorizontalAlignment", "left", ...
+    "Position", [.1 .55 .8 .1]);
+
+r01.gui.user_num_plates = uicontrol(r01.gui.force_input, ...
+    "Style", "edit", "Units", "normalized", ...
+    "String", "", ...
+    "Position", [.1 .45 .8 .1]);
+
+% Text & Input for Frame Foot Strikes
+r01.gui.txt_user_frame = uicontrol(r01.gui.force_input, ...
+    "Style", "text", "Units", "normalized", ...
+    "String", "Enter Potential Clean Foot Strikes (Frame, Foot, Frame, Foot)", ...
+    "HorizontalAlignment", "left", ...
+    "Position", [.1 .3 .8 .1]);
+
+r01.gui.user_frame = uicontrol(r01.gui.force_input, ...
+    "Style", "edit", "Units", "normalized", ...
+    "String", "", ...
+    "Position", [.1 .2 .8 .1]);
+
 
 % %% Tag Editor Panel %%
 % r01.gui.tag_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Tag Editor", "Scrollable", "on");
