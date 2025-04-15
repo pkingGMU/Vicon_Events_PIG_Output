@@ -65,18 +65,18 @@ function update_trial_text(src, ~)
         set(r01.gui.trial_panel_gait_force_check, 'ForegroundColor', 'Black');
         r01.gui.trial_panel_gait_force_check.String = 'Gait Force: Run';
 
-        set(r01.gui.trial_panel_gait_check, 'BackgroundColor', 'green');
-        set(r01.gui.trial_panel_gait_check, 'ForegroundColor', 'Black');
-        r01.gui.trial_panel_gait_check.String = 'Gait: Run';
+        % set(r01.gui.trial_panel_gait_check, 'BackgroundColor', 'green');
+        % set(r01.gui.trial_panel_gait_check, 'ForegroundColor', 'Black');
+        % r01.gui.trial_panel_gait_check.String = 'Gait: Run';
         
     else
         set(r01.gui.trial_panel_gait_force_check, 'BackgroundColor', 'red');
         set(r01.gui.trial_panel_gait_force_check, 'ForegroundColor', 'Black');
         r01.gui.trial_panel_gait_force_check.String = 'Gait Force: Not Run';
 
-        set(r01.gui.trial_panel_gait_check, 'BackgroundColor', 'red');
-        set(r01.gui.trial_panel_gait_check, 'ForegroundColor', 'Black');
-        r01.gui.trial_panel_gait_check.String = 'Gait: Not Run';
+        % set(r01.gui.trial_panel_gait_check, 'BackgroundColor', 'red');
+        % set(r01.gui.trial_panel_gait_check, 'ForegroundColor', 'Black');
+        % r01.gui.trial_panel_gait_check.String = 'Gait: Not Run';
     end
 
 

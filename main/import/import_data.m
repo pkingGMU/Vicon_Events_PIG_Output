@@ -78,7 +78,7 @@ switch type_selection
 
             else
 
-                path_parts = strsplit(file_name, {'/', '\'});
+                path_parts = strsplit(file_name{1}, {'/', '\'});
                 subject_name = path_parts(end - 1);
                 trial_file_name = path_parts(end);
                 trial_name = strsplit(trial_file_name{1}, '.csv');

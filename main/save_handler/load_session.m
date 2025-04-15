@@ -4,9 +4,13 @@ global r01
 
 [filename, pathname] = uigetfile(' *.mat','Choose a Session file');
 
+r01.file.filename = filename;
+r01.file.pathname = pathname;
+
 if all(filename == 0) || all(pathname == 0) %Cancel
     return
 end
+
 file = fullfile(pathname, filename);
 
 %Try to open file

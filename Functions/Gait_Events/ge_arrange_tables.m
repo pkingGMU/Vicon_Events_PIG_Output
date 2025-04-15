@@ -94,6 +94,7 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
         [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table, proc_tables.(file_name_short).devices_data_table, choice, fr);
 
         if failed == true
+                add2log(0,['>>>> ', strcat(file_name_short_prefix, ' Failed due to not enough gait events')],1,1);
             continue
         end
        
