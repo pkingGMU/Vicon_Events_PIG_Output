@@ -82,33 +82,25 @@ function update_trial_text(src, ~)
     % R01 Analysis Check %
 
     r01_path = '';
-    gait_force_fld_search = {fullfile(pwd, 'Output', 'Gait_Events_Strikes', 'Overground', idx{2})...
-        fullfile(pwd, 'Output', 'Gait_Events_Strikes', 'Treadmill', idx{2})};
+    r01_fld_search = {fullfile(pwd, 'Output', 'R01_Analysis', 'Overground', idx{2}, strcat(idx{3}, '_events'))...
+        fullfile(pwd, 'Output', 'R01_Analysis', 'Treadmill', idx{2}, strcat(idx{3}, '_events'))};
 
-    for i = 1:length(gait_force_fld_search)
-        gait_force_candidate = fullfile(gait_force_fld_search{i}, file_name);
-        if isfile(gait_force_candidate)
-            gait_force_path = gait_force_candidate;
+    for i = 1:length(r01_fld_search)
+        r01_candidate = fullfile(r01_fld_search{i}, file_name);
+        if isfile(r01_candidate)
+            r01_path = r01_candidate;
             break;
         end
     end
-    if ~isempty(gait_force_path)
-        set(r01.gui.trial_panel_gait_force_check, 'BackgroundColor', 'green');
-        set(r01.gui.trial_panel_gait_force_check, 'ForegroundColor', 'Black');
-        r01.gui.trial_panel_gait_force_check.String = 'Gait Force: Run';
+    if ~isempty(r01_path)
+        set(r01.gui.trial_panel_r01_check, 'BackgroundColor', 'green');
+        set(r01.gui.trial_panel_r01_check, 'ForegroundColor', 'Black');
+        r01.gui.trial_panel_r01_check.String = 'R01 Analysis: Run';
 
-        set(r01.gui.trial_panel_gait_check, 'BackgroundColor', 'green');
-        set(r01.gui.trial_panel_gait_check, 'ForegroundColor', 'Black');
-        r01.gui.trial_panel_gait_check.String = 'Gait: Run';
-        
     else
-        set(r01.gui.trial_panel_gait_force_check, 'BackgroundColor', 'red');
-        set(r01.gui.trial_panel_gait_force_check, 'ForegroundColor', 'Black');
-        r01.gui.trial_panel_gait_force_check.String = 'Gait Force: Not Run';
-
-        set(r01.gui.trial_panel_gait_check, 'BackgroundColor', 'red');
-        set(r01.gui.trial_panel_gait_check, 'ForegroundColor', 'Black');
-        r01.gui.trial_panel_gait_check.String = 'Gait: Not Run';
+        set(r01.gui.trial_panel_r01_check, 'BackgroundColor', 'red');
+        set(r01.gui.trial_panel_r01_check, 'ForegroundColor', 'Black');
+        r01.gui.trial_panel_r01_check.String = 'R01 Analysis: Not Run';        
     end
 
 
