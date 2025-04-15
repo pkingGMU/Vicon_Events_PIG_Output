@@ -16,6 +16,8 @@ function app()
     versiontxt = num2str(r01.intern.version,'%3.2f');
     r01.intern.versiontxt = ['V',versiontxt(1:3),'.',versiontxt(4:end)];
     r01.intern.version_datestr = '2025-03-19';
+    r01.files.ready_to_process = [];
+    r01.files.master_file_list = [];
     
     file = which('app.m');
     

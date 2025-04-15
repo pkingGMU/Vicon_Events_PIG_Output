@@ -13,18 +13,19 @@ function update_trial_list
     
         trial_list_idx = find(ismember(full_trial_list(:,2), subject));
     
-        trial_list = full_trial_list(trial_list_idx, 3);
+        trial_list = full_trial_list(trial_list_idx, :);
     
         r01.files.selected_trials = trial_list;
     
         r01.gui.file_list_dropdown.Value = 1;
     
     
-        set(r01.gui.file_list_dropdown, 'String', trial_list)
+        set(r01.gui.file_list_dropdown, 'String', trial_list(:, 3))
         
     catch
 
         disp('List empty')
+    end
 
 end
 

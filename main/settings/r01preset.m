@@ -15,6 +15,7 @@ r01.gui.eventinfo.showEvent = 0;
 r01.gui.rangeview.fitcomps = [];
 r01.file.open = 0;
 r01.file.filename = '';
+r01.file.pathname = '';
 r01.data.events.event = [];
 r01.data.events.N = 0;
 

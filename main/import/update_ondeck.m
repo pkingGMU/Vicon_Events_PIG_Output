@@ -1,43 +1,32 @@
 function update_ondeck
     
     global r01
-    persistent ready_list
-    persistent ready_list_full
 
-    if isempty(ready_list)
-        ready_list = {};
-    end
-
-    full_trial_list = r01.files.file_list;
+    % trial_list = r01.gui.file_list_dropdown.String;
+    trial_list = r01.files.selected_trials;
 
     value_num = r01.gui.file_list_dropdown.Value;
 
     % Catch if list is empty %
 
     try
-
-        search_values = r01.files.selected_trials(value_num);
-        ready_list_idx = find(ismember(full_trial_list(:,3), search_values) & ismember(full_trial_list(:, 2), r01.files.selected_subject));
         
-        pulled_list = full_trial_list(ready_list_idx, :);
-    
-        for row = 1:height(pulled_list)
-            if ~ismember(pulled_list(row, :), ready_list)
-                
-                ready_list = [ready_list pulled_list(row, 3)];
-                ready_list_full = [ready_list_full; [pulled_list(row, :)]]
-    
-            end
-    
+        if height(r01.files.ready_to_process) < 1
+            r01.files.ready_to_process = trial_list(value_num, :);
+        elseif ismember(trial_list(value_num, 1), r01.files.ready_to_process(:, 1))
+            disp('Exists')
+        elseif height(r01.files.ready_to_process) >= 1
+            r01.files.ready_to_process(end+1, :) = trial_list(value_num, :);
         end
+
     
-        r01.files.ready_to_process = ready_list_full;
+        
     
-        set(r01.gui.ondeck_dropdown, 'String', ready_list);
+        set(r01.gui.ondeck_dropdown, 'String', r01.files.ready_to_process(:, 3));
 
     catch
         disp('List empty')
+    
     end
-
 end
 

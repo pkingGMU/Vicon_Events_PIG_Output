@@ -256,6 +256,7 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
 
     if isempty(flhs)
         disp('Gait_Detection order is not correct')
+        
         failed = true;
     end
 
