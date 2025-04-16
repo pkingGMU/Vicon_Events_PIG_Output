@@ -2,15 +2,38 @@ function remove_rtp
     
     global r01
 
-    ready_list_full = r01.files.ready_to_process;
+    
+    
+    
+    
+    % Catch anytime someone hits the remove button but theres nothing in
+    % the list
 
-    idx_to_remove = r01.gui.ondeck_dropdown.Value;
+    try
+        %ready_list_full = r01.files.ready_to_process;
+        idx_to_remove = r01.gui.ondeck_dropdown.Value;
 
-    ready_list_full(idx_to_remove, :) = [];
+        %ready_list(:, idx_to_remove) = [];
+    
+        r01.files.ready_to_process(idx_to_remove, :) = [];
 
-    r01.files.ready_to_process = ready_list_full;
+        if isempty(r01.files.ready_to_process)
+            set(r01.gui.ondeck_dropdown, 'String', []);
 
-    set(r01.gui.ondeck_dropdown, 'String', ready_list_full(:,3));
+            
+        else
+            
+            if r01.gui.ondeck_dropdown.Value ~= 1
+                r01.gui.ondeck_dropdown.Value = idx_to_remove - 1;
+            end
+            set(r01.gui.ondeck_dropdown, 'String', strcat(r01.files.ready_to_process(:, 2), ' |', r01.files.ready_to_process(:, 3)));
+            
+        end
+    catch
+        disp("No files added")
+
+    end
+    
 
 end
 

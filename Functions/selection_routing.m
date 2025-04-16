@@ -1,31 +1,28 @@
-function selection_routing(outcome_selection, fr)
+function selection_routing(~, event, outcome_selection, fr)
 
     global r01
+
+    try
+        if strcmp(event.Source.Parent.Title, 'Trial Info')
+            selected_folders = r01.files.selected_trial;
+        else
+            selected_folders = r01.files.ready_to_process;
+        end
+        
+
+    catch
+    end
 
     switch outcome_selection
         case 'Gait Events'
            
-                try
-
-                    selected_folders = r01.files.ready_to_process;
-
-                catch
-
-                end
-
                 choice = questdlg('Is this treadmill or overground walking?', ...
                     'Select Gait Type ', ...
                     'Treadmill', 'Overground', 'Cancel', 'Treadmill');
+
             
                 ge_process(selected_folders, choice, fr)
         case 'Gait Events & Clean Force Strikes'
-            try
-
-                    selected_folders = r01.files.ready_to_process;
-
-                catch
-
-                end
 
                 choice = questdlg('Is this treadmill or overground walking?', ...
                     'Select Gait Type ', ...
@@ -33,43 +30,12 @@ function selection_routing(outcome_selection, fr)
             
                 ges_process(selected_folders, choice, fr)
         case 'R01 Analysis'
-            dataPath = fullfile(pwd, 'Output/', 'Gait_Events_Strikes/', 'Overground');
-    
-            % Get a list of folders within the 'Data' directory
-            dirInfo = dir(dataPath);
-            isFolder = [dirInfo.isdir];
-            folderNames = {dirInfo(isFolder).name};
-            
-            % Filter out '.' and '..' which represent current and parent directories
-            folderNames = folderNames(~ismember(folderNames, {'.', '..'}));
-            
-            
+
             choice = questdlg('Is this treadmill or overground walking?', ...
-                'Select Gait Type ', ...
-                'Treadmill', 'Overground', 'Cancel', 'Treadmill');
-            
-                
-            
-
-            % Display list dialog to select subject folders
-            if isempty(folderNames)
-                uialert(uifigure, 'No folders found in Data directory.', 'Folder Error');
-            else
-                [selection, ok] = listdlg('PromptString', 'Select Subject Folders:', ...
-                                          'SelectionMode', 'multiple', ...
-                                          'ListString', folderNames);
-
-                % If OK and made a selection
-                if ok
-                    selectedFolders = fullfile(dataPath, folderNames(selection));
-                    disp('Selected folders for processing:');
-                    disp(selectedFolders);
-                else
-                    disp('No folders selected.');
-                end
-            end
-
-            r01_process(selectedFolders, selection, choice, fr)
+                    'Select Gait Type ', ...
+                    'Treadmill', 'Overground', 'Cancel', 'Treadmill');
+  
+            r01_process(selected_folders, choice, fr)
             
 
         case 'Obstacle Crossing Outcomes'

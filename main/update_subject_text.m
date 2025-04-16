@@ -1,5 +1,14 @@
-function update_trial_list
+% Callback function
+function update_subject_text(src, ~)
+
     global r01
+
+    % Get selected item
+    selectedIdx = src.Value;
+    selectedStr = src.String{selectedIdx};
+
+    % Update the text field
+    r01.gui.subject_panel_name.String = ['Selected: ' selectedStr];
 
     % Catch when the list is empty
     try
@@ -27,5 +36,8 @@ function update_trial_list
         disp('List empty')
     end
 
-end
 
+    
+
+    
+end

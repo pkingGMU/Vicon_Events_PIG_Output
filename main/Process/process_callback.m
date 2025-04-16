@@ -1,8 +1,8 @@
-function process_callback
+function process_callback(src, event, fr)
 
     global r01
     
-    frameRate = 100;
+    
 
     possible_outcomes = ["Gait Events", "Gait Events & Clean Force Strikes", "R01 Analysis", ...
         "Obstacle Crossing Outcomes", "Margin Of Stability"];
@@ -14,7 +14,7 @@ function process_callback
 
     outcome_selection = possible_outcomes(outcome_selection);
 
-    selection_routing(outcome_selection, frameRate);
+    selection_routing(src, event, outcome_selection, fr);
 
     
     disp("Finished!")
