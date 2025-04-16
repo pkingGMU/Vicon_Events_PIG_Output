@@ -22,45 +22,50 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function r01_process(selectedFolders, selection, choice, fr)
+function r01_process(selection, choice, fr)
 
+    global r01
 
-    root_data_dir = pwd; % select your primary data folder
+    gait_exists = 0;
+    gait_force_exists = 0;
+
+    % Check GUI flags
+    if strcmp(r01.gui.trial_panel_gait_check.String, 'Gait: Run')
+        gait_exists = 1;
+    elseif strcmp(r01.gui.trial_panel_gait_check.String, 'Gait Force: Run')
+        gait_force_exists = 1;
+    else
+        disp('Cannot run because gait events need to be detected by either Gait or Gait Force');
+        return;
+    end
+
+    % Directory setup
+    root_data_dir = pwd;
     code_dir = fullfile(pwd, 'Functions', 'R01_Analysis');
     addpath(genpath(code_dir));
-    
 
-    % Handle the response
+    % Set data_dir based on user choice and gait detection status
     switch choice
         case 'Treadmill'
-            % If treadmill - use SDSU code
             type = {'Treadmill'};
-            data_dir = fullfile(pwd, 'Output', 'Gait_Events_Strikes', 'Treadmill');
-            
-    
+            if gait_force_exists
+                data_dir = fullfile(pwd, 'Output', 'Gait_Events_Strikes', 'Treadmill');
+            elseif gait_exists
+                data_dir = fullfile(pwd, 'Output', 'Gait_Events', 'Treadmill');
+            end
         case 'Overground'
-            % If overground - use UF code
             type = {'Overground'};
-            data_dir = fullfile(pwd, 'Output', 'Gait_Events_Strikes', 'Overground');
-            
-
+            if gait_force_exists
+                data_dir = fullfile(pwd, 'Output', 'Gait_Events_Strikes', 'Overground');
+            elseif gait_exists
+                data_dir = fullfile(pwd, 'Output', 'Gait_Events', 'Overground');
+            end
         otherwise
             error('Operation canceled by the user.');
     end
-    
-    % one subject or all subjects? (Select subjects to run)
-    % this is set up so every subject has its own folder
-    d = dir(data_dir);
-    fn = {d.name};
-    % Filter out '.' and '..' which represent current and parent directories
-    fn = fn(~ismember(fn, {'.', '..', '.DS_Store'}));
-    
 
-
-    sub_list_num = selection;
-    
-    % assign subject list number to folder name
-    sub_folder = fn(sub_list_num);
+    % Unique list of subjects
+    subject_names = unique(selection(:, 2));
     
     choice = questdlg('Which axis is anterioposterior for your lab?', ...
         'Select Axis ', ...
@@ -79,7 +84,7 @@ function r01_process(selectedFolders, selection, choice, fr)
     end
     
     % Preallocate final tables:
-    nRows = length(sub_list_num);
+    nRows = length(subject_names);
     
     sub_varNames = {'SubID','Trial','Speed','Cadence','L_StepLength','R_StepLength',...
         'L_StepWidth','R_StepWidth','L_StepTime_pct','R_StepTime_pct','L_SingleSupport','R_SingleSupport',...
@@ -110,49 +115,52 @@ function r01_process(selectedFolders, selection, choice, fr)
     
     av_tab = table('Size',[0, length(av_varTypes)],'VariableTypes',av_varTypes,'VariableNames',av_varNames);
     
-    for each_subject = 1:length(sub_list_num)
+    for each_subject = 1:height(subject_names)
 
         sub_tab = table('Size',[0, length(sub_varTypes)],'VariableTypes',sub_varTypes,'VariableNames',sub_varNames);
 
 
-        sub_name = sub_folder{each_subject};
+        sub_name = subject_names{each_subject};
         % Construct the path to the subject's folder
         
-        subject_path = fullfile(data_dir, sub_folder{each_subject});
-        %subject_path = [data_dir slash_dir sub_folder{each_subject}];
-    
+        subject_path = fullfile(data_dir, sub_name);
+        
         % Check if the folder exists before navigating to it
-        if isfolder(subject_path)
-            % Navigate to that subject folder
-            cd(subject_path);
-        else
-            warning(['Folder does not exist: ', subject_path]);
-            %continue;  % Skip to the next subject if the folder doesn't exist
-        end
+        % if isfolder(subject_path)
+        %     % Navigate to that subject folder
+        %     cd(subject_path);
+        % else
+        %     warning(['Folder does not exist: ', subject_path]);
+        %     %continue;  % Skip to the next subject if the folder doesn't exist
+        % end
     
         % what trials do you want to analyze? (Select trials)
-        f = dir("*.xlsx");
-        fn = {f.name};
-        [trial_list_num,tf] = listdlg('PromptString',{'Select trials to analyze for subject' sub_name},...
-            'SelectionMode','multiple','ListString',fn);
+        % f = dir("*.xlsx");
+        % fn = {f.name};
+        fn_idx = find(ismember(selection(:,2), sub_name));
+    
+        fn = selection(fn_idx, 3);
+    
+        % [trial_list_num,tf] = listdlg('PromptString',{'Select trials to analyze for subject' sub_name},...
+        %     'SelectionMode','multiple','ListString',fn);
     
         % Check if the user selected any trials
-        if tf == 0
-            warning(['No trials selected for subject ', sub_folder{each_subject}, '. Skipping to next subject.']);
-            %continue;
-        end
+        % if tf == 0
+        %     warning(['No trials selected for subject ', subject_names{each_subject}, '. Skipping to next subject.']);
+        %     continue;
+        % end
     
     
         % assign trial list number to trial name
-        trials = fn(trial_list_num);
+        trials = fn;
 
         
     
         % Loop through each selected trial
-        for each_trial = 1:length(trials)
+        for each_trial = 1:height(trials)
             % Construct the full path to the file
             %trial_file = [subject_path slash_dir trials{each_trial}];
-            trial_file = fullfile(subject_path, trials{each_trial});
+            trial_file = fullfile(subject_path, strcat(trials{each_trial}, '_events.xlsx'));
             % Load the trial data
     
             [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
@@ -281,7 +289,14 @@ function r01_process(selectedFolders, selection, choice, fr)
                     
                     %%% UNCOMMENT HERE FOR KINETICS
         
-                    kinetics(g,:) = TreadmillKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,APcol);
+                    % kinetics(g,:) = TreadmillKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,APcol);
+
+                    try
+                        kinetics(g,:)= TreadmillKinetics(subID,frames,camrate,model_text,model_data(mod_rows,:),all_events,APcol);
+                    catch
+                        disp("Missing kinetic info")
+                        kinetics(g,:) = NaN(1,14);
+                    end
                     % col 1 = redistribution ratio (0 = all about ankle, 2 = all about hip)
                     % % col 2 & 3 = peak anterior ground reaction forces (L&R) in % bodyweight
                     % col 4 & 5 = peak vertical ground reaction forces (L&R) in % bodyweight
@@ -422,17 +437,17 @@ function r01_process(selectedFolders, selection, choice, fr)
             
             writetable(sub_full_gc, processed_data_file);
             clearvars -except av_tab sub_tab sub_tab_total slash_dir root_data_dir APcol...
-                code_dir core_dir data_dir each_subject each_trial sub_folder...
+                code_dir core_dir data_dir each_subject each_trial subject_names...
                 sub_list_num sub_loc sub_varTypes subID subject_path trial_file...
                 trial_list_num trials type sub_varNames av_varNames processed_data...
-                trial_nam sub_name
+                trial_nam sub_name selection 
     
         end % end trial loop
     
         % save averages across legs per trial in a subject table
         sub_fn = append(subID,'_EachStep.xlsx');
-        sub_folder_output = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, sub_fn);
-        writetable(sub_tab,sub_folder_output);
+        subject_names_output = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, sub_fn);
+        writetable(sub_tab,subject_names_output);
 
         clearvars sub_tab
     
