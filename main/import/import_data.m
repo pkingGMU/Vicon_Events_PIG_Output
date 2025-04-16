@@ -37,7 +37,7 @@ switch type_selection
 
 
             file_list = [file_list; [files, subject_name, trial_name, trial_file_name]];
-            disp(file_list);
+          
         end
         
 
@@ -63,7 +63,7 @@ switch type_selection
 
                 file_list = [file_list; [file_name, subject_name, trial_name, trial_file_name]];
 
-                disp(file_list);
+               
             end
 
         end
@@ -86,7 +86,7 @@ switch type_selection
 
                 file_list = [file_list; [file_name, subject_name, trial_name, trial_file_name]];
 
-                disp(file_list);
+               
             end
 
         end
@@ -123,7 +123,7 @@ switch type_selection
     
                         file_list = [file_list; [file_name, subject_name, trial_name, trial_file_name]];
     
-                        disp(file_list);
+                        
                     end
     
                 end
@@ -141,13 +141,6 @@ end
 
 
 
-if ~isempty(r01.files.file_list)
-    add2log(1, ['Files added successfully'], 1,1,1,1,0,1);
-else
-    add2log(1, ['Files not selected'], 1,1,1,1,0,1);
-
-end
-
 
 
 r01.files.file_list = cellfun(@strtrim, file_list, 'UniformOutput', false);
@@ -162,6 +155,15 @@ if ~isempty(r01.files.file_list)
 
 
 end
+
+
+if ~isempty(r01.files.file_list)
+    add2log(1, ['Files added successfully'], 1,1,1,1,0,1);
+else
+    add2log(1, ['Files not selected'], 1,1,1,1,0,1);
+
+end
+
 
 
 
