@@ -1,4 +1,4 @@
-function process_callback(fr)
+function process_callback(src, event, fr)
 
     global r01
     
@@ -14,7 +14,7 @@ function process_callback(fr)
 
     outcome_selection = possible_outcomes(outcome_selection);
 
-    selection_routing(outcome_selection, fr);
+    selection_routing(src, event, outcome_selection, fr);
 
     
     disp("Finished!")
