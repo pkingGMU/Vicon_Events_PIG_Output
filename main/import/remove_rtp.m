@@ -17,7 +17,18 @@ function remove_rtp
     
         r01.files.ready_to_process(idx_to_remove, :) = [];
 
-        set(r01.gui.ondeck_dropdown, 'String', r01.files.ready_to_process(:, 3));
+        if isempty(r01.files.ready_to_process)
+            set(r01.gui.ondeck_dropdown, 'String', []);
+
+            
+        else
+            
+            if r01.gui.ondeck_dropdown.Value ~= 1
+                r01.gui.ondeck_dropdown.Value = idx_to_remove - 1;
+            end
+            set(r01.gui.ondeck_dropdown, 'String', strcat(r01.files.ready_to_process(:, 2), ' |', r01.files.ready_to_process(:, 3)));
+            
+        end
     catch
         disp("No files added")
 
