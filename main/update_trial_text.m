@@ -21,6 +21,8 @@ function update_trial_text(src, ~)
 
     idx = full_trial_list(sub_idx & trial_idx, :);
 
+    r01.files.selected_trial = idx;
+
     file_name = split(strcat(idx{3}, '_events.xlsx'));
     
     % Gait Event Check %
