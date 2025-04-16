@@ -1,18 +1,21 @@
-function selection_routing(outcome_selection, fr)
+function selection_routing(~, event, outcome_selection, fr)
 
     global r01
+
+    try
+        if strcmp(event.Source.Parent.Title, 'Trial Info')
+            selected_folders = r01.files.selected_trial;
+        else
+            selected_folders = r01.files.ready_to_process;
+        end
+        
+
+    catch
+    end
 
     switch outcome_selection
         case 'Gait Events'
            
-                try
-
-                    selected_folders = r01.files.ready_to_process;
-
-                catch
-
-                end
-
                 choice = questdlg('Is this treadmill or overground walking?', ...
                     'Select Gait Type ', ...
                     'Treadmill', 'Overground', 'Cancel', 'Treadmill');
@@ -20,13 +23,6 @@ function selection_routing(outcome_selection, fr)
             
                 ge_process(selected_folders, choice, fr)
         case 'Gait Events & Clean Force Strikes'
-            try
-
-                    selected_folders = r01.files.ready_to_process;
-
-                catch
-
-                end
 
                 choice = questdlg('Is this treadmill or overground walking?', ...
                     'Select Gait Type ', ...
@@ -34,12 +30,6 @@ function selection_routing(outcome_selection, fr)
             
                 ges_process(selected_folders, choice, fr)
         case 'R01 Analysis'
-
-          try
-              selected_folders = r01.files.ready_to_process;
-          catch
-
-          end
 
             choice = questdlg('Is this treadmill or overground walking?', ...
                     'Select Gait Type ', ...
