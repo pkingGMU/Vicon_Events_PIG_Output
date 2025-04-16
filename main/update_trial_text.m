@@ -82,11 +82,11 @@ function update_trial_text(src, ~)
     % R01 Analysis Check %
 
     r01_path = '';
-    r01_fld_search = {fullfile(pwd, 'Output', 'R01_Analysis', 'Overground', idx{2}, strcat(idx{3}, '_events'))...
-        fullfile(pwd, 'Output', 'R01_Analysis', 'Treadmill', idx{2}, strcat(idx{3}, '_events'))};
+    r01_fld_search = {fullfile(pwd, 'Output', 'R01_Analysis', 'Overground', idx{2}, idx{3}, strcat(idx{2}, '_', idx{3}, '_EachGaitCycleData.xlsx'))...
+        fullfile(pwd, 'Output', 'R01_Analysis', 'Treadmill', idx{2}, idx{3}, strcat(idx{2}, '_', idx{3}, '_EachGaitCycleData.xlsx'))};
 
     for i = 1:length(r01_fld_search)
-        r01_candidate = fullfile(r01_fld_search{i}, file_name);
+        r01_candidate = r01_fld_search{i};
         if isfile(r01_candidate)
             r01_path = r01_candidate;
             break;
