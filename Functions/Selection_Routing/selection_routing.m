@@ -2,6 +2,8 @@ function selection_routing(~, event, outcome_selection, fr)
 
     global r01
 
+    selected_folders = [];
+
     try
         if strcmp(event.Source.Parent.Title, 'Trial Info')
             selected_folders = r01.files.selected_trial;
@@ -11,6 +13,11 @@ function selection_routing(~, event, outcome_selection, fr)
         
 
     catch
+    end
+    % Make sure there is a trial selected
+    if isempty(selected_folders) == 1
+        add2log(0,"No Trial Selected", 1,0,0,0,0,1);
+        return
     end
 
     switch outcome_selection

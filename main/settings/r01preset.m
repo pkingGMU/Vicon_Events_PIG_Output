@@ -19,6 +19,10 @@ r01.file.pathname = '';
 r01.data.events.event = [];
 r01.data.events.N = 0;
 
+r01.files.ready_to_process = [];
+r01.files.master_file_list = [];
+r01.project_fr = [];
+
 r01.gui.overview.driver = [];
 r01.gui.overview.tonic_component = [];
 r01.gui.overview.phasic = [];
@@ -31,7 +35,7 @@ r01.gui.split = [];
 
 %Default Setting:
 
-%LEDASET
+
 %NNDECO
 r01.set.template = 2;
 r01.set.smoothwin = .2;
