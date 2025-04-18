@@ -1,7 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% UI APPLICATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 function app()
     
+    
+
     clc
     close all hidden;
     clear global r01
@@ -46,6 +47,11 @@ function app()
     r01gui;
 
     add2log(0,['>>>> ',datestr(now,31), ' Session started'],1,1);
+
+
+       
+
+end
 
 
 
