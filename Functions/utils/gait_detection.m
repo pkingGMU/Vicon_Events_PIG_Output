@@ -49,7 +49,7 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
             z_rfocent= 0.5*(z_RHE+z_RTO); % z right foot centre
             
             
-            %% Coordinate-Based Treadmill Algorithm_ EVENTS
+            
             if y_RHE(1,1)<0 && y_LHE(1,1)<0
             
             disp('Top')

@@ -19,7 +19,7 @@ if save_as
     r01.file.filename = filename;
     r01.file.pathname = pathname;
 elseif isempty(r01.file.filename) || isempty(r01.file.pathname)
-    [filename, pathname] = uiputfile([r01.file.filename], 'Save file as ..');
+    [filename, pathname] = uiputfile('*.mat', 'Save file as ..', [r01.file.filename, '.mat']);
     if all(filename == 0) || all(pathname == 0) %Cancel
         return
     end
