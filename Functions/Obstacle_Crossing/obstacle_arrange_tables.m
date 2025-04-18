@@ -1,37 +1,8 @@
-function [proc_tables, total_OBS] = obstacle_arrange_tables(folder, choice, fr, total_OBS)
+function [proc_tables, total_OBS] = obstacle_arrange_tables(folder, fr, total_OBS)
     %%%
     % Function specifically designed for looking at obstacle crossing data
     %%%
 
-    
-    
-    
-    %%% Folder conversion %%%
-    % Convert to char
-    folder = char(folder);
-    % File pattern is equal to our folder directory + a csv file 
-    filePattern = fullfile(folder, '*.csv');
-    % files is an array of all the files in our chosen directory with the csv extension
-    files = dir(filePattern);
-
-    %%% Get Subject Name %%%
-    % Easy naming convention
-    % Regex to get subject name
-    subject = char(folder);
-    parts = strsplit(subject, 'Data');
-    subject_name = parts{2};
-    subject_name = regexprep(subject_name, '[\\/]', '');
-    % Display subject for debugging
-    subject =  'sub' + string(subject_name);
-    subject = regexprep(subject, ' ', '_');
-    
-    %%% Loop through all file names in the files array
-    
-    % We loop through the amount of times there are files and set the
-    % variable file = to which loop we'er on.
-    % The first pass file = 1
-    % The second pass file = 2
-    % Etc.....
     for file = 1:numel(files)
         
         

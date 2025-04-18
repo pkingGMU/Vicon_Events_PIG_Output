@@ -1,16 +1,19 @@
 
-function [subjects] = obstacle_process(subjects_list, choice, fr)
+function [subjects] = obstacle_process(selection, fr)
 % Takes in the list of subjects and arranges the data for each one. Returns
 % the struct 'subjects' for each subject for each file.
 
     total_OBS = [];
 
+    % Unique list of subjects
+    subject_names = unique(selection(:, 2));
+
     % Each subject folder
-    for i = 1:length(subjects_list)
-        subject = subjects_list(i);
+    for i = 1:height(subject_names)
+        subject = subject_names{i};
 
         % Get subject data for subject folder
-        [proc_tables, total_OBS] = obstacle_arrange_tables(subject, choice, fr, total_OBS);
+        [proc_tables, total_OBS] = obstacle_arrange_tables(selection, fr, total_OBS);
 
         %%% new arrange table for Obstacle Crossing?
     

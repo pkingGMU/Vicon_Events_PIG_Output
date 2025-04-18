@@ -21,3 +21,7 @@ catch
     add2log(0,['Unable to open ',file],1,1,0,1,0,1);
     return;
 end
+
+r01 = r01session.r01;
+r01.file_saved = 1;
+
