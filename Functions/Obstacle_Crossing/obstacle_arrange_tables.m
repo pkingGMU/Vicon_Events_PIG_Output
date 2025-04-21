@@ -1,35 +1,38 @@
-function [proc_tables, total_OBS] = obstacle_arrange_tables(folder, fr, total_OBS)
+function [proc_tables, total_OBS] = obstacle_arrange_tables(files, fr, total_OBS)
     %%%
     % Function specifically designed for looking at obstacle crossing data
     %%%
 
-    for file = 1:numel(files)
+    global r01
+    clear file
+
+    for file = 1:height(files)
         
         
         
-        % Set temp variable to the nth file in our list of files
-        file_name = fullfile(folder, files(file).name);
+        csv_name = files{file, 1};
+ 
+        file_name_short_prefix = strrep(erase(files{file, 3}, ".csv"), ' ', '_');
+        file_name_short = regexprep(file_name_short_prefix, '^[^a-zA-Z]+', '');
         
-        % A shorted file name without the csv extension
-        file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_');
-        % Remove any unnecessary numbers
-        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '');
         
         % Debugging
-        disp(file_name_short)
+        disp(file_name_short_prefix)
+        full_trial_list = r01.files.file_list;
+        file_list_idx = find(cellfun(@(i) isequal(full_trial_list(i, :), files), num2cell(1:size(full_trial_list, 1))));
 
-        % Make a full data table with the file name we'er on
+        r01.files.file_list(file_list_idx, 5) = {file_name_short};
         
         % All of these options are to ensure every csv is imported
         % correctly and every variable is type char
-        opts = detectImportOptions(file_name);
+        opts = detectImportOptions(csv_name);
         opts = setvartype(opts, 'char');
         opts.VariableNamingRule = 'preserve';
         opts = setvaropts(opts, 'Type', 'char');
         opts.DataLines = [1 Inf];
         
 
-        full_data_table = readtable(file_name, opts);
+        full_data_table = readtable(csv_name, opts);
 
         full_data_table.Properties.VariableNames{3} = 'Var3';
         

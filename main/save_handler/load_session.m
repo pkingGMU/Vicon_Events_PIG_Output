@@ -18,7 +18,7 @@ file = fullfile(pathname, filename);
 
 %Try to open file
 try
-    
+    clear global r01;
     r01session = load(file, '-mat');
  
 catch
@@ -28,6 +28,9 @@ end
 
 
 
+global r01;
+
 r01 = r01session.r01;
 r01.file_saved = 1;
+
 

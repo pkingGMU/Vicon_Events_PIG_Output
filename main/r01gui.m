@@ -78,21 +78,8 @@ r01.gui.frame_rate_panel.Position = [.5 .5 .05 .1];
 r01.gui.frame_rate_panel_button = uicontrol(r01.gui.frame_rate_panel, ...
     "Style", "pushbutton", "Units", "normalized", ...
     "String", "Submit", ...
-    "Callback", @set_fr,...
+    "Callback", @(src, event) set_fr(src, event),...
     "Position", [.1 .2 .8 .3]);
-
-function set_fr(src, event)
-    val_str = get(r01.gui.frame_rate_panel_box, "String");
-    val_num = str2double(val_str);
-
-    if isnan(val_num) || val_num <= 0
-        msgbox("Please enter a valid positive number for frame rate.", "Invalid Input", "warn");
-    else
-        r01.project_fr = val_num;
-        disp(['Frame rate set to ', num2str(val_num), ' fps.']);
-        add2log(1, ['Frame Rate: ', num2str(val_num), ' fps.'], 1,1,1,1,0,1);
-    end
-end
 
 
 r01.gui.frame_rate_panel_box = uicontrol(r01.gui.frame_rate_panel, ...

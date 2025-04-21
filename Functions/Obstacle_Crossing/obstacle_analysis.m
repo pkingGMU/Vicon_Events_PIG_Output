@@ -1,4 +1,4 @@
-function [OBS_data] = obstacle_analysis(proc_table_struct, subject, fr, trial_name)
+function [OBS_data] = obstacle_analysis(proc_table_struct, file, fr, trial_name)
 %% Program to process obstacle crossing data collected in the MOVE lab at the University of Arkansas.
 % Written by Dr. Abigail Schmitt
 % Edited by Patrick King GMU
