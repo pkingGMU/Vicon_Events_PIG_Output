@@ -43,7 +43,7 @@ function app()
     % Allow for loading
     pause(1);
     delete(r01.gui.fig_logo);
-
+    
     r01gui;
 
     add2log(0,['>>>> ',datestr(now,31), ' Session started'],1,1);

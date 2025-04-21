@@ -11,9 +11,11 @@ function [subjects] = obstacle_process(selection, fr)
     % Each subject folder
     for i = 1:height(subject_names)
         subject = subject_names{i};
-
+        
+        trials = selection(strcmp(selection(:,3), subject), :);
+        keyboard
         % Get subject data for subject folder
-        [proc_tables, total_OBS] = obstacle_arrange_tables(selection, fr, total_OBS);
+        [proc_tables, total_OBS] = obstacle_arrange_tables(trials, fr, total_OBS);
 
         %%% new arrange table for Obstacle Crossing?
     
