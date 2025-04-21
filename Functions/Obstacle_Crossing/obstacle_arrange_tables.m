@@ -15,7 +15,7 @@ function [proc_tables, total_OBS] = obstacle_arrange_tables(files, fr, total_OBS
         file_name_short_prefix = strrep(erase(files{file, 3}, ".csv"), ' ', '_');
         file_name_short = regexprep(file_name_short_prefix, '^[^a-zA-Z]+', '');
         
-        
+        subject = files{file, 2};
         % Debugging
         disp(file_name_short_prefix)
         full_trial_list = r01.files.file_list;
@@ -55,9 +55,12 @@ function [proc_tables, total_OBS] = obstacle_arrange_tables(files, fr, total_OBS
         % Create new data table for Trajectories
         
         proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
-
-        OBS_Data(file, :) = obstacle_analysis(proc_tables, folder, fr, file_name_short);
-
+        try
+            OBS_Data(file, :) = obstacle_analysis(proc_tables, csv_name, fr, file_name_short, subject);
+        catch
+            disp(strcat("Error on File: ", csv_name));
+            continue
+        end
         
                 
     end
@@ -68,7 +71,7 @@ function [proc_tables, total_OBS] = obstacle_arrange_tables(files, fr, total_OBS
     %%% Obstacle Crossing %%%
 
     % SubID = trial_txt(4,1);
-    Subject = char(subject_name);
+    Subject = char(subject);
 
     excel_folder = fullfile(pwd, 'Output', 'Obstacle_Crossing', Subject);
     

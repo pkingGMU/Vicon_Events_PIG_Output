@@ -10,27 +10,20 @@ function [subjects] = obstacle_process(selection, fr)
 
     % Each subject folder
     for i = 1:height(subject_names)
-        subject = subject_names{i};
+        subject = subject_names(i);
         
-        trials = selection(strcmp(selection(:,3), subject), :);
-        keyboard
+        trials = selection(strcmp(selection(:,2), subject), :);
+        
         % Get subject data for subject folder
+        
         [proc_tables, total_OBS] = obstacle_arrange_tables(trials, fr, total_OBS);
+       
 
+                 
         %%% new arrange table for Obstacle Crossing?
-    
-        % Easy naming convention
-        % Regex to get subject name
-        subject = char(subject);
-        parts = strsplit(subject, 'Data');
-        subject_name = parts{2};
-        subject_name = regexprep(subject_name, '[\\/]', '');
 
-        % Display subject for debugging
-        subject =  'sub' + string(subject_name);
-
-        subject = regexprep(subject, ' ', '_');
-
+        subject = strcat('sub_', subject{1});
+        
         subjects.(subject).proc_tables = proc_tables;
 
     end
