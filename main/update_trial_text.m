@@ -108,7 +108,7 @@ function update_trial_text(src, ~)
     % Obstacle Crossing Check %
 
     obstacle_path = '';
-    obstacle_fld_search = {fullfile(pwd, 'Output', 'Obstacle_Crossing', idx{2}, strcat(idx{2}, '.xlsx'))};
+    obstacle_fld_search = {fullfile(pwd, 'Output', 'Obstacle_Crossing', idx{2}, idx{3}, strcat(idx{3}, '.xlsx'))};
     for i = 1:length(obstacle_fld_search)
         obstacle_candidate = obstacle_fld_search{i};
         if isfile(obstacle_candidate)
@@ -116,6 +116,7 @@ function update_trial_text(src, ~)
             break;
         end
     end
+    
     if ~isempty(obstacle_path)
         set(r01.gui.trial_panel_obs_crossing, 'BackgroundColor', 'green');
         set(r01.gui.trial_panel_obs_crossing, 'ForegroundColor', 'Black');

@@ -56,12 +56,43 @@ function [proc_tables, total_OBS] = obstacle_arrange_tables(files, fr, total_OBS
         
         proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
         try
-            OBS_Data(file, :) = obstacle_analysis(proc_tables, csv_name, fr, file_name_short, subject);
+            OBS_Data_Temp = obstacle_analysis(proc_tables, csv_name, fr, file_name_short, subject);
+            OBS_Data(file, :) = OBS_Data_Temp;
         catch
             disp(strcat("Error on File: ", csv_name));
             continue
         end
+
+            % SubID = trial_txt(4,1);
+        Subject = char(subject);
+
+        excel_folder = fullfile(pwd, 'Output', 'Obstacle_Crossing', Subject, file_name_short_prefix);
         
+        % Create directory if it doesn't exist
+        if ~exist(excel_folder, 'dir')
+            mkdir(excel_folder);
+        end
+
+      
+        
+
+        % ***************** Export data to an Excel sheet ***********************
+        % Name the excel sheet: (with file path)
+        fname2 = fullfile(excel_folder, strcat(file_name_short_prefix, '.xlsx'));
+
+        headers = {'Subject', 'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
+                   'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
+                   'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
+                   'Obstacle Height', 'Start', 'End', 'Lead Step Length', 'Trail Step Length', 'Lead Step Width'...
+                   , 'Trail Step Width', 'LMoS_AP_Double_Before','RMoS_AP_Double_Before','LMoS_ML_Double_Before','RMoS_ML_Double_Before','LMoS_AP_Double_After','RMoS_AP_Double_After',...
+                   'LMoS_ML_Double_After','RMoS_ML_Double_After'};
+        Sheeta = string(Subject);
+
+        % Convert OBS_data to a table
+        OBS_table = cell2table(OBS_Data, 'VariableNames', headers);
+
+        writetable(OBS_table, fname2, 'Sheet', Sheeta, 'WriteRowNames', false);
+
                 
     end
 
@@ -85,13 +116,6 @@ function [proc_tables, total_OBS] = obstacle_arrange_tables(files, fr, total_OBS
     % ***************** Export data to an Excel sheet ***********************
     % Name the excel sheet: (with file path)
     fname2 = fullfile(excel_folder, strcat(Subject, '.xlsx'));
-    % headers = {'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
-    %     'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
-    %     'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
-    %     'Obstacle Height', 'Start', 'End', 'Lead Step Length', 'Trail Step Length', 'Lead Step Width'...
-    %     , 'Trail Step Width', 'LMoS_AP_hs','RMoS_AP_hs','LMoS_ML_hs','RMoS_ML_hs','LMoS_AP_to','RMoS_AP_to',...
-    %     'LMoS_ML_to','RMoS_ML_to'};
-
     headers = {'Subject', 'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
         'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
         'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
