@@ -1,64 +1,38 @@
-function [proc_tables, total_OBS] = obstacle_arrange_tables(folder, choice, fr, total_OBS)
+function [proc_tables, total_OBS] = obstacle_arrange_tables(files, fr, total_OBS)
     %%%
     % Function specifically designed for looking at obstacle crossing data
     %%%
 
-    
-    
-    
-    %%% Folder conversion %%%
-    % Convert to char
-    folder = char(folder);
-    % File pattern is equal to our folder directory + a csv file 
-    filePattern = fullfile(folder, '*.csv');
-    % files is an array of all the files in our chosen directory with the csv extension
-    files = dir(filePattern);
+    global r01
+    clear file
 
-    %%% Get Subject Name %%%
-    % Easy naming convention
-    % Regex to get subject name
-    subject = char(folder);
-    parts = strsplit(subject, 'Data');
-    subject_name = parts{2};
-    subject_name = regexprep(subject_name, '[\\/]', '');
-    % Display subject for debugging
-    subject =  'sub' + string(subject_name);
-    subject = regexprep(subject, ' ', '_');
-    
-    %%% Loop through all file names in the files array
-    
-    % We loop through the amount of times there are files and set the
-    % variable file = to which loop we'er on.
-    % The first pass file = 1
-    % The second pass file = 2
-    % Etc.....
-    for file = 1:numel(files)
+    for file = 1:height(files)
         
         
         
-        % Set temp variable to the nth file in our list of files
-        file_name = fullfile(folder, files(file).name);
+        csv_name = files{file, 1};
+ 
+        file_name_short_prefix = strrep(erase(files{file, 3}, ".csv"), ' ', '_');
+        file_name_short = regexprep(file_name_short_prefix, '^[^a-zA-Z]+', '');
         
-        % A shorted file name without the csv extension
-        file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_');
-        % Remove any unnecessary numbers
-        file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '');
-        
+        subject = files{file, 2};
         % Debugging
-        disp(file_name_short)
+        disp(file_name_short_prefix)
+        full_trial_list = r01.files.file_list;
+        file_list_idx = find(cellfun(@(i) isequal(full_trial_list(i, :), files), num2cell(1:size(full_trial_list, 1))));
 
-        % Make a full data table with the file name we'er on
+        r01.files.file_list(file_list_idx, 5) = {file_name_short};
         
         % All of these options are to ensure every csv is imported
         % correctly and every variable is type char
-        opts = detectImportOptions(file_name);
+        opts = detectImportOptions(csv_name);
         opts = setvartype(opts, 'char');
         opts.VariableNamingRule = 'preserve';
         opts = setvaropts(opts, 'Type', 'char');
         opts.DataLines = [1 Inf];
         
 
-        full_data_table = readtable(file_name, opts);
+        full_data_table = readtable(csv_name, opts);
 
         full_data_table.Properties.VariableNames{3} = 'Var3';
         
@@ -81,10 +55,44 @@ function [proc_tables, total_OBS] = obstacle_arrange_tables(folder, choice, fr, 
         % Create new data table for Trajectories
         
         proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
+        try
+            OBS_Data_Temp = obstacle_analysis(proc_tables, csv_name, fr, file_name_short, subject);
+            OBS_Data(file, :) = OBS_Data_Temp;
+        catch
+            disp(strcat("Error on File: ", csv_name));
+            continue
+        end
 
-        OBS_Data(file, :) = obstacle_analysis(proc_tables, folder, fr, file_name_short);
+            % SubID = trial_txt(4,1);
+        Subject = char(subject);
 
+        excel_folder = fullfile(pwd, 'Output', 'Obstacle_Crossing', Subject, file_name_short_prefix);
         
+        % Create directory if it doesn't exist
+        if ~exist(excel_folder, 'dir')
+            mkdir(excel_folder);
+        end
+
+      
+        
+
+        % ***************** Export data to an Excel sheet ***********************
+        % Name the excel sheet: (with file path)
+        fname2 = fullfile(excel_folder, strcat(file_name_short_prefix, '.xlsx'));
+
+        headers = {'Subject', 'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
+                   'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
+                   'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
+                   'Obstacle Height', 'Start', 'End', 'Lead Step Length', 'Trail Step Length', 'Lead Step Width'...
+                   , 'Trail Step Width', 'LMoS_AP_Double_Before','RMoS_AP_Double_Before','LMoS_ML_Double_Before','RMoS_ML_Double_Before','LMoS_AP_Double_After','RMoS_AP_Double_After',...
+                   'LMoS_ML_Double_After','RMoS_ML_Double_After'};
+        Sheeta = string(Subject);
+
+        % Convert OBS_data to a table
+        OBS_table = cell2table(OBS_Data, 'VariableNames', headers);
+
+        writetable(OBS_table, fname2, 'Sheet', Sheeta, 'WriteRowNames', false);
+
                 
     end
 
@@ -94,7 +102,7 @@ function [proc_tables, total_OBS] = obstacle_arrange_tables(folder, choice, fr, 
     %%% Obstacle Crossing %%%
 
     % SubID = trial_txt(4,1);
-    Subject = char(subject_name);
+    Subject = char(subject);
 
     excel_folder = fullfile(pwd, 'Output', 'Obstacle_Crossing', Subject);
     
@@ -108,13 +116,6 @@ function [proc_tables, total_OBS] = obstacle_arrange_tables(folder, choice, fr, 
     % ***************** Export data to an Excel sheet ***********************
     % Name the excel sheet: (with file path)
     fname2 = fullfile(excel_folder, strcat(Subject, '.xlsx'));
-    % headers = {'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
-    %     'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
-    %     'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...
-    %     'Obstacle Height', 'Start', 'End', 'Lead Step Length', 'Trail Step Length', 'Lead Step Width'...
-    %     , 'Trail Step Width', 'LMoS_AP_hs','RMoS_AP_hs','LMoS_ML_hs','RMoS_ML_hs','LMoS_AP_to','RMoS_AP_to',...
-    %     'LMoS_ML_to','RMoS_ML_to'};
-
     headers = {'Subject', 'Trial','Lead Foot','Obstacle_approach_dist_trail','Obstacle_landing_dist_lead',...
         'Obstacle_approach_dist_lead','Obstacle_landing_dist_trail',...
         'Lead_toe_clearance','Trail_toe_clearance','Lead_heel_clearance','Trail_heel_clearance',...

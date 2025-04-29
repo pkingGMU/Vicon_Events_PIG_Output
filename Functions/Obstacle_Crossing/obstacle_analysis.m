@@ -1,4 +1,4 @@
-function [OBS_data] = obstacle_analysis(proc_table_struct, subject, fr, trial_name)
+function [OBS_data] = obstacle_analysis(proc_table_struct, file, fr, trial_name, subject)
 %% Program to process obstacle crossing data collected in the MOVE lab at the University of Arkansas.
 % Written by Dr. Abigail Schmitt
 % Edited by Patrick King GMU
@@ -26,21 +26,7 @@ function [OBS_data] = obstacle_analysis(proc_table_struct, subject, fr, trial_na
 %           This is the horizontal distance between the obstacle and the
 %           heel marker of the trailing foot at foot-strike of the crossing step.
 %
-%% **************Select Directory******************************************
-% Import Data Set
-% Set Directory and use prompt to choose exported files for analysis
-
-%%% Get Subject Name %%%
-% Easy naming convention
-% Regex to get subject name
-subject = char(subject);
-parts = strsplit(subject, 'Data');
-subject_name = parts{2};
-subject_name = regexprep(subject_name, '[\\/]', '');
-% Display subject for debugging
-subject =  'sub' + string(subject_name);
-subject = regexprep(subject, ' ', '_');
-
+%% **************Select Directory***********************************
 % Read in the data from the selected trial
 %[traj_num, trial_txt, trial_raw 
 traj_num = proc_table_struct.(trial_name).trajectory_data_table;
@@ -191,6 +177,7 @@ end
 nn=1;
 for ll = rheez_max_frame:(length(rheez)-1)
     if rheez(ll,1) > rheez((ll+1),1)
+
         rheez_down(nn,:) = rheez(ll+1);
         rheez_min = min(rheez_down);
         nn = nn+1;
