@@ -59,9 +59,9 @@ r01.gui.subject_list_select = uicontrol(r01.gui.subject_list_panel, "Style","pus
 r01.gui.trial_list_select = uicontrol(r01.gui.file_list_panel, "Style","pushbutton","String", "Select", "Callback", 'update_ondeck()');
 
 % Processing Panels %
-r01.gui.process_area = uipanel(r01.gui.fig_main, "Title", "Parsing and Processing", "Units", "normalized", "Scrollable","on");
+r01.gui.process_area = uipanel(r01.gui.fig_main, "Title", "Batch Processing", "Units", "normalized", "Scrollable","on");
 %r01.gui.process_area.Position = [.30 .5 .1 .1];
-r01.gui.process_area.Position = [.7 .5 .1 .1];
+r01.gui.process_area.Position = [.24 .05 .1 .1];
 
 % Trial Info Panel %
 r01.gui.info_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Trial Info", "Scrollable","on");
