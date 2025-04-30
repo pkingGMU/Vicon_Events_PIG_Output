@@ -36,6 +36,8 @@ function r01_process(selection, choice, fr)
         gait_force_exists = 1;
     else
         disp('Cannot run because gait events need to be detected by either Gait or Gait Force');
+        add2log(0,"Cannot run because gait events need to be detected by either Gait or Gait Force", 1,0,0,0,0,1);
+
         return;
     end
 

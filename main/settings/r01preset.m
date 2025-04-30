@@ -22,6 +22,7 @@ r01.data.events.N = 0;
 r01.files.ready_to_process = [];
 r01.files.master_file_list = [];
 r01.project_fr = [];
+r01.project_xy = [];
 
 r01.gui.overview.driver = [];
 r01.gui.overview.tonic_component = [];

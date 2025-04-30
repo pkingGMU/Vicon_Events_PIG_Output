@@ -5,9 +5,15 @@ function selection_routing(~, event, outcome_selection, ~)
     selected_folders = [];
 
     fr = r01.project_fr;
+    xy = r01.project_xy;
 
     if isempty(fr) == 1
         add2log(0,"Enter a FrameRate for your selected trials", 1,0,0,0,0,1);
+        return
+    end
+
+    if isempty(xy) == 1
+        add2log(0,"Enter a Direction XY for your selected trials", 1,0,0,0,0,1);
         return
     end
     
