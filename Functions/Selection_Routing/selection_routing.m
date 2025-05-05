@@ -46,26 +46,29 @@ function selection_routing(~, event, outcome_selection, ~)
                     'Select Gait Type ', ...
                     'Treadmill', 'Overground', 'Cancel', 'Treadmill');
 
-            
+                add2log(0,"Gait Events Started", 1,1,1,1,0,1);
                 ge_process(selected_folders, choice, fr)
+
+                
+
         case 'Gait Events & Clean Force Strikes'
 
                 choice = questdlg('Is this treadmill or overground walking?', ...
                     'Select Gait Type ', ...
                     'Treadmill', 'Overground', 'Cancel', 'Treadmill');
-            
+            add2log(0,"Gait Events and Force Strikes Started", 1,1,1,1,0,1);
                 ges_process(selected_folders, choice, fr)
         case 'R01 Analysis'
 
             choice = questdlg('Is this treadmill or overground walking?', ...
                     'Select Gait Type ', ...
                     'Treadmill', 'Overground', 'Cancel', 'Treadmill');
-  
+            add2log(0,"R01 Analysis Started", 1,1,1,1,0,1);
             r01_process(selected_folders, choice, fr)
             
 
         case 'Obstacle Crossing Outcomes'
-
+            add2log(0,"OBS Crossing Started", 1,1,1,1,0,1);
             obstacle_process(selected_folders, fr)
 
         case 'Margin Of Stability'
@@ -88,16 +91,9 @@ function selection_routing(~, event, outcome_selection, ~)
                     disp('No folders selected.');
                 end
             end
+            add2log(0,"MOS Started", 1,1,1,1,0,1);
 
-            mos_process(selectedFolders, selection, choice, fr)
-       
-        case 'Test Outcome'
-
-            test_outcome()
-
-        case 'DO NOT SELECT'
-
-            r01.selection_routing.cases = get_cases();    
+            mos_process(selectedFolders, selection, choice, fr)  
 
         
 
@@ -107,5 +103,10 @@ function selection_routing(~, event, outcome_selection, ~)
             
 
     end
+    
+    add2log(0,"Finished!", 1,1,1,1,0,1);
+
+
+
 end
 

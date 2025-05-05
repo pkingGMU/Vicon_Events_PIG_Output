@@ -61,104 +61,91 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
 
     
     
-    switch choice
-        case 'Overground'
-            %% Markers
-  
-            
-            if RHE(1,1)<0 && LHE(1,1)<0
-            
-            disp('Top')
-        
-            % left heel-sacrum distance
-            Lheel=LHE-OPSIS;
-            % left toe-sacrum distance
-            Ltoe=-1*(LTO-OPSIS); % inverted
-            
-            % right heel-sacrum distance
-            Rheel=RHE-OPSIS;
-            % right toe-sacrum distance
-            Rtoe=-1*(RTO-OPSIS); % inverted
-            
-            %findpeaks/valleys left leg Events
-            [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
-            % figure; findpeaks(Lheel);
-            % xlabel('frame');
-            % ylabel('left heel strike');
-            % Lhstimes=(flhs-1)/FR; % left heel strike times
-            
-            [Lvlys,flto]=findpeaks(Ltoe); %[valleys, Frames] left toe off
-            % figure; findpeaks(Ltoe);
-            % xlabel('frame');
-            % ylabel('left toe off');
-            % Ltofftimes=(flto-1)/FR; % left toe off times
-            
-            %findpeaks- right leg Events
-            [Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
-            % figure; findpeaks(Rheel);
-            % xlabel('frame');
-            % ylabel('right heel strike');
-            % Rhstimes=(frhs-1)/FR; % right heel strike times
-            
-            [Rvlys,frto]=findpeaks(Rtoe); %[valleys, Frames] right toe off
-            % figure; findpeaks(Rtoe);
-            % xlabel('frame');
-            % ylabel('right toe off');
-            % Rtofftimes=(frto-1)/FR; % right toe off times
-            
-            else
-            
-            disp('Bottom')
-        
-            % left heel-sacrum distance
-            Lheel=-(LHE-OPSIS);
-            % left toe-sacrum distance
-            Ltoe=(LTO-OPSIS); % inverted
-            
-            % right heel-sacrum distance
-            Rheel=-(RHE-OPSIS);
-            % right toe-sacrum distance
-            Rtoe=(RTO-OPSIS); % inverted
-            
-            %findpeaks/valleys left leg Events
-            [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
-            % figure; findpeaks(Lheel);
-            % xlabel('frame');
-            % ylabel('left heel strike');
-            % Lhstimes=(flhs-1)/FR; % left heel strike times
-            
-            [Lvlys,flto]=findpeaks(Ltoe); %[valleys, Frames] left toe off
-            % figure; findpeaks(Ltoe);
-            % xlabel('frame');
-            % ylabel('left toe off');
-            % Ltofftimes=(flto-1)/FR; % left toe off times
-            
-            % findpeaks- right leg Events
-            [Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
-            % figure; findpeaks(Rheel);
-            % xlabel('frame');
-            % ylabel('right heel strike');
-            % Rhstimes=(frhs-1)/FR; % right heel strike times
-            
-            [Rvlys,frto]=findpeaks(Rtoe); %[valleys, Frames] right toe off
-            % figure; findpeaks(Rtoe);
-            % xlabel('frame');
-            % ylabel('right toe off');
-            % Rtofftimes=(frto-1)/FR; % right toe off times
-            % 
-            end
-        case 'Treadmill'
+    %% Markers
 
-            l_force_plate = str2double(devices_table.("LeftPlateForce_Fz")); 
-            r_force_plate = str2double(devices_table.("RightPlateForce_Fz")); 
+    
+    if RHE(1,1)<0 && LHE(1,1)<0
+    
+    disp('Top')
 
-            % [~, rhs] = findpeaks(r_force_plate);
-            % [~, lhs] = findpeaks(l_force_plate);
+    % left heel-sacrum distance
+    Lheel=LHE-OPSIS;
+    % left toe-sacrum distance
+    Ltoe=-1*(LTO-OPSIS); % inverted
+    
+    % right heel-sacrum distance
+    Rheel=RHE-OPSIS;
+    % right toe-sacrum distance
+    Rtoe=-1*(RTO-OPSIS); % inverted
+    
+    %findpeaks/valleys left leg Events
+    [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
+    % figure; findpeaks(Lheel);
+    % xlabel('frame');
+    % ylabel('left heel strike');
+    % Lhstimes=(flhs-1)/FR; % left heel strike times
+    
+    [Lvlys,flto]=findpeaks(Ltoe); %[valleys, Frames] left toe off
+    % figure; findpeaks(Ltoe);
+    % xlabel('frame');
+    % ylabel('left toe off');
+    % Ltofftimes=(flto-1)/FR; % left toe off times
+    
+    %findpeaks- right leg Events
+    [Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
+    % figure; findpeaks(Rheel);
+    % xlabel('frame');
+    % ylabel('right heel strike');
+    % Rhstimes=(frhs-1)/FR; % right heel strike times
+    
+    [Rvlys,frto]=findpeaks(Rtoe); %[valleys, Frames] right toe off
+    % figure; findpeaks(Rtoe);
+    % xlabel('frame');
+    % ylabel('right toe off');
+    % Rtofftimes=(frto-1)/FR; % right toe off times
+    
+    else
+    
+    disp('Bottom')
 
-            [flhs, flto] = max_grf_search(l_force_plate);
-            [frhs, frto] = max_grf_search(r_force_plate);
-
+    % left heel-sacrum distance
+    Lheel=-(LHE-OPSIS);
+    % left toe-sacrum distance
+    Ltoe=(LTO-OPSIS); % inverted
+    
+    % right heel-sacrum distance
+    Rheel=-(RHE-OPSIS);
+    % right toe-sacrum distance
+    Rtoe=(RTO-OPSIS); % inverted
+    
+    %findpeaks/valleys left leg Events
+    [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
+    % figure; findpeaks(Lheel);
+    % xlabel('frame');
+    % ylabel('left heel strike');
+    % Lhstimes=(flhs-1)/FR; % left heel strike times
+    
+    [Lvlys,flto]=findpeaks(Ltoe); %[valleys, Frames] left toe off
+    % figure; findpeaks(Ltoe);
+    % xlabel('frame');
+    % ylabel('left toe off');
+    % Ltofftimes=(flto-1)/FR; % left toe off times
+    
+    % findpeaks- right leg Events
+    [Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
+    % figure; findpeaks(Rheel);
+    % xlabel('frame');
+    % ylabel('right heel strike');
+    % Rhstimes=(frhs-1)/FR; % right heel strike times
+    
+    [Rvlys,frto]=findpeaks(Rtoe); %[valleys, Frames] right toe off
+    % figure; findpeaks(Rtoe);
+    % xlabel('frame');
+    % ylabel('right toe off');
+    % Rtofftimes=(frto-1)/FR; % right toe off times
+    % 
     end
+        
             
 
     %%% After detecting events, ensure first event is a heel strike
