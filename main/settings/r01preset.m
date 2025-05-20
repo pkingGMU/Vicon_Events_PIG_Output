@@ -45,59 +45,52 @@ r01.set.sigPeak = .001;
 r01.set.d0Autoupdate = 1;
 r01.set.tonicIsConst = 0;
 r01.set.tonicSlowIncrease = 0;
-r01.set.tau0 = [.50 30];     %see Benedek & Kaernbach, 2010, Psychophysiology
-
-%SDECO
+r01.set.tau0 = [.50 30];  
 r01.set.tonicGridSize_sdeco = 10;
-r01.set.tau0_sdeco = [1 3.75];  %see Benedek & Kaernbach, 2010, J Neurosc Meth
+r01.set.tau0_sdeco = [1 3.75];  
 r01.set.d0Autoupdate_sdeco = 0;
 r01.set.smoothwin_sdeco = .2;
 
 
-% get peaks
 r01.set.initVal.hannWinWidth = .5;
 r01.set.initVal.signHeight = .01;
-r01.set.initVal.groundInterp = 'spline'; %'pchip' keeps only S(x)' continuous
-r01.set.tauMin = .001; %.1
+r01.set.initVal.groundInterp = 'spline'; 
+r01.set.tauMin = .001; 
 r01.set.tauMax = 100;
 r01.set.tauMinDiff = .01;
 r01.set.dist0_min = .001;
 
-% %Export (ERA)
-r01.set.export.SCRstart = 1.00; %sec
-r01.set.export.SCRend   = 4.00; %sec
-r01.set.export.SCRmin   = .01; %muS
+
+r01.set.export.SCRstart = 1.00; 
+r01.set.export.SCRend   = 4.00; 
+r01.set.export.SCRmin   = .01; 
 r01.set.export.savetype = 1;
 r01.set.export.zscale = 0;
 
 
-% settings for leda_split.m
-r01.set.split.start = -1;   % sec
-r01.set.split.end = 5;        % sec
-r01.set.split.variables = {'driver','phasicData'}; % possible variables, 2012-03-13 only one by now.
-r01.set.split.var = 1;        % index for VARIABLES
+
+r01.set.split.start = -1;   
+r01.set.split.end = 5;        
+r01.set.split.variables = {'driver','phasicData'}; 
+r01.set.split.var = 1;        
 r01.set.split.stderr = 0;
-%r01.set.split.variable = 'phasicData';
-%r01.set.split.selectedconditions = [];
-%r01.set.split.plot = 1;
 
 
-%Ledapref
+
+
 r01.pref.showSmoothData = 0;
 r01.pref.showMinMax = 0;
 r01.pref.showOvershoot = 1;
-%not settable inside of Ledalab
+
 r01.pref.eventWindow = [5, 15];
 r01.pref.oldfile_maxn = 5;
-r01.pref.scalewidth_min = .6; %muS
+r01.pref.scalewidth_min = .6; 
 r01.gui.col.fig = [.8 .8 .8];
 r01.gui.col.frame1 = [.85 .85 .85];
 
 
-%Save defaults
 r01mem = save_r01mem('default');
 
-%Apply custom settings if available
 if isfield(r01mem.set,'custom') && isstruct(r01mem.set.custom)
     r01.set = mergestructs(r01mem.set.custom, r01mem.set.default);
 end

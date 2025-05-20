@@ -6,7 +6,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     global r01
 
     frame_list = r01.gui.user_frame.String;
-    num_plates = r01.gui.user_num_plates.String;
+    num_plates = str2double(r01.gui.user_num_plates.String);
     plate_prefix = r01.gui.user_prefix_plates.String;
 
     % Sort gait_events_tables by cycle
@@ -14,17 +14,18 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
     % Get relevant columns
     frames = str2double(devices_data_table.Frame);  % Convert frames to numeric
-    z1 = str2double(devices_data_table.("FP1Force_Fz"));    
-    z2 = str2double(devices_data_table.("FP2Force_Fz"));      
-    z3 = str2double(devices_data_table.("FP3Force_Fz")); 
-    z4 = str2double(devices_data_table.("FP4Force_Fz"));  % Fourth force plate
-
+    z = cell(1, num_plates);  % Preallocate
+    for i = 1:num_plates
+        colName = sprintf('%s%dForce_Fz', plate_prefix, i);  % e.g., 'FP1Force_Fz'
+        z{i} = str2double(devices_data_table.(colName));
+    end
 
     %%% Find Clean Foot Strikes %%%
-    clean_foot_strike.z1 = gen_search(z1, 'z1');
-    clean_foot_strike.z2 = gen_search(z2, 'z2');
-    clean_foot_strike.z3 = gen_search(z3, 'z3');
-    clean_foot_strike.z4 = gen_search(z4, 'z4');
+    clean_foot_strike = struct();
+    for i = 1:num_plates
+        plate_name = sprintf('z%d', i);
+        clean_foot_strike.(plate_name) = gen_search(z{i}, plate_name);
+    end
 
     
 

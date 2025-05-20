@@ -69,9 +69,7 @@ function r01_process(selection, choice, fr)
     % Unique list of subjects
     subject_names = unique(selection(:, 2));
     
-    choice = questdlg('Which axis is anterioposterior for your lab?', ...
-        'Select Axis ', ...
-        'X', 'Y', 'Cancel', 'Y');
+    choice = r01.project_xy;
     
     % Handle the response
     switch choice
