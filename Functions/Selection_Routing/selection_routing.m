@@ -95,6 +95,12 @@ function selection_routing(~, event, outcome_selection, ~)
 
             mos_process(selectedFolders, selection, choice, fr)  
 
+        case 'COP'
+
+
+            disp('test_cop')
+            cop_process(selected_folders, fr)
+
         
 
         otherwise
