@@ -30,9 +30,9 @@ function r01_process(selection, choice, fr)
     gait_force_exists = 0;
 
     % Check GUI flags
-    if strcmp(r01.gui.trial_panel_gait_check.String, 'Gait: Run')
+    if strcmp(r01.gui.trial_panel_gait_check.String, 'Gait Events: Run')
         gait_exists = 1;
-    elseif strcmp(r01.gui.trial_panel_gait_check.String, 'Gait Force: Run')
+    elseif strcmp(r01.gui.trial_panel_gait_check.String, 'Gait Events & Force: Run')
         gait_force_exists = 1;
     else
         disp('Cannot run because gait events need to be detected by either Gait or Gait Force');
@@ -190,10 +190,12 @@ function r01_process(selection, choice, fr)
             coordata=active_data(coordataline:coordatalineend,:);%Select coordinate data
             coortext = active_text(coordataline - 2,:);
             frame_number=coordata(:,1);
-    
+            
             gaitcycles = getGaitCycles(frame_number,all_events,lhs,rhs);
 
             if isempty(gaitcycles)
+                disp(strcat('Need more than 1 gait cycle', sub_name));
+                add2log(0,strcat('Need more than 1 gait cycle', sub_name), 1,0,0,0,0,1);
                 continue
             end
     

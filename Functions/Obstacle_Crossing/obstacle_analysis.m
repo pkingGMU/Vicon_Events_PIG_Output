@@ -89,6 +89,12 @@ catch
             obs1y_pos = mean(traj_num.OBS1_Y);
             obs1z_pos = mean(traj_num.OBS1_Z);
         catch
+
+            try
+                obs1y_pos = mean(traj_num.ObjectTop_Y);
+                obs1z_pos = mean(traj_num.ObjectTop_Z);
+            catch
+            end
         end
 
     end
