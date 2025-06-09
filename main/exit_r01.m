@@ -8,5 +8,12 @@ delete(gcf)
 
 save_r01mem('custom');
 
+
+
 add2log(0,['<<<< ',datestr(now,31), ' Session closed'],1);
 add2log(0,' ',1);
+
+
+
+
+end

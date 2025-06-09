@@ -5,9 +5,63 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     
     global r01
 
-    frame_list = r01.gui.user_frame.String;
-    num_plates = str2double(r01.gui.user_num_plates.String);
+    frame_list = strtrim(split(r01.gui.user_frame.String, ','));
     plate_prefix = r01.gui.user_prefix_plates.String;
+    
+    grid = r01.data.force_plate_labels;
+
+    
+    [rows, cols] = size(grid);
+
+    % Define relative offsets for 4-connected neighbors (orthogonal)
+    neighbor_offsets = [ -1  0;  % up
+                          1  0;  % down
+                          0 -1;  % left
+                          0  1]; % right
+
+    force_data = devices_data_table;
+
+    force_data = convertvars(force_data, @iscell, 'string');
+    force_data = convertvars(force_data, @isstring, 'double');
+    
+    for r = 1:rows
+        for c = 1:cols
+            current_label = grid{r, c};
+            if isempty(current_label) || ~contains(frame_list, current_label, 'IgnoreCase',true)
+                continue;  % Skip empty cells
+            end
+    
+            fprintf("Checking plate (%d,%d): %s\n", r, c, current_label);
+
+            current_data = abs(force_data.(current_label));
+            for k = 1:size(neighbor_offsets, 1)
+                nr = r + neighbor_offsets(k, 1);
+                nc = c + neighbor_offsets(k, 2);
+    
+                if nr >= 1 && nr <= rows && nc >= 1 && nc <= cols
+                    neighbor_label = grid{nr, nc};
+                    if ~isempty(neighbor_label)
+                        fprintf("  Neighbor at (%d,%d): %s\n", nr, nc, neighbor_label);
+
+                        neighbor_data = abs(force_data.(neighbor_label));
+                        
+                        overlap = intersect(current_data(current_data > 100),neighbor_data(neighbor_data > 100));
+
+                        if ~isempty(overlap)
+                            fprintf("    Overlap > 100 found: %s\n", mat2str(overlap));
+                        end
+                        % Example: Compare force plate data
+                        % data_current = getPlateData(current_label);
+                        % data_neighbor = getPlateData(neighbor_label);
+                        % similarity = comparePlates(data_current, data_neighbor);
+                    end
+                end
+            end
+        end
+    end
+
+
+
 
     % Sort gait_events_tables by cycle
     gait_events_tables = sortrows(gait_events_tables, 'Time (s)');

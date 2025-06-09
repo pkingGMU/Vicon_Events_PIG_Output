@@ -7,6 +7,19 @@ r01.gui.fig_main = figure('Units','normalized','Position',[.00 .03 1 .92],'Name'
     'MenuBar','none','NumberTitle','off','Color',r01.gui.col.fig,'CloseRequestFcn','exit_r01');  %,'outerposition',[0 0 1 1]
 
 
+% On App Close
+% Close request
+r01.gui.fig_main.CloseRequestFcn = @onAppClose;
+function onAppClose(~, ~)
+    % Save force plate layout and user inputs to file
+    force_data.labels = r01.data.force_plate_labels;
+    force_data.prefix = get(r01.gui.user_prefix_plates, 'String');
+    force_data.frame_info = get(r01.gui.user_frame, 'String');
+    
+    save(fullfile(pwd, 'configs', 'force_plate_config.mat'), 'force_data');
+    exit_r01;
+end
+
 
 r01.gui.menu.menu_1  = uimenu(r01.gui.fig_main,'Label','File');
 r01.gui.menu.menu_1a = uimenu(r01.gui.menu.menu_1,'Label','Open','Callback','open_r01file;','Accelerator','o');   %
@@ -253,44 +266,105 @@ r01.gui.process_button = uicontrol(r01.gui.process_area, "Style","pushbutton", "
 
 % Force Plate Input Panel
 r01.gui.force_input = uipanel(r01.gui.fig_main, "Title", "Force Plate Input", "Units", "normalized", "Scrollable", "on");
-r01.gui.force_input.Position = [.24 .38 .2 .22];
+r01.gui.force_input.Position = [.24 .2 .2 .3];
 
 % Text & Input for Prefix
 r01.gui.txt_prefix_plates = uicontrol(r01.gui.force_input, ...
     "Style", "text", "Units", "normalized", ...
     "String", "Force Plate Prefix (f_, force, etc.)", ...
     "HorizontalAlignment", "left", ...
-    "Position", [.1 .8 .8 .1]);
+    "Position", [.1 .9 .8 .05]);
 
 r01.gui.user_prefix_plates = uicontrol(r01.gui.force_input, ...
     "Style", "edit", "Units", "normalized", ...
     "String", "", ...
-    "Position", [.1 .7 .8 .1]);
-
-% Text & Input for Number of Plates
-r01.gui.txt_num_plates = uicontrol(r01.gui.force_input, ...
-    "Style", "text", "Units", "normalized", ...
-    "String", "Enter Number of Plates", ...
-    "HorizontalAlignment", "left", ...
-    "Position", [.1 .55 .8 .1]);
-
-r01.gui.user_num_plates = uicontrol(r01.gui.force_input, ...
-    "Style", "edit", "Units", "normalized", ...
-    "String", "", ...
-    "Position", [.1 .45 .8 .1]);
+    "Position", [.1 .85 .8 .05]);
 
 % Text & Input for Frame Foot Strikes
 r01.gui.txt_user_frame = uicontrol(r01.gui.force_input, ...
     "Style", "text", "Units", "normalized", ...
     "String", "Enter Potential Clean Foot Strikes (Frame, Foot, Frame, Foot)", ...
     "HorizontalAlignment", "left", ...
-    "Position", [.1 .3 .8 .1]);
+    "Position", [.1 .7 .8 .05]);
 
 r01.gui.user_frame = uicontrol(r01.gui.force_input, ...
     "Style", "edit", "Units", "normalized", ...
     "String", "", ...
-    "Position", [.1 .2 .8 .1]);
+    "Position", [.1 .65 .8 .05]);
+% === Force Plate Grid Setup ===
+gridRows = 10;
+gridCols = 10;
+gridHeightFraction = 0.6;
+btnHeight = gridHeightFraction / gridRows;
+btnWidth = 1 / gridCols;
 
+% Initialize matrix to hold force plate labels
+r01.data.force_plate_labels = cell(gridRows, gridCols);
+
+% Create grid of buttons inside force_input panel
+for row = 1:gridRows
+    for col = 1:gridCols
+        % Compute button position in normalized units
+        x = (col-1) * btnWidth(1);
+        y = (row - 1) * btnHeight;  
+
+
+        % Create the button
+        r01.gui.force_grid_buttons(row, col) = uicontrol(r01.gui.force_input, ...
+            "Style", "pushbutton", ...
+            "Units", "normalized", ...
+            "Position", [x, y, btnWidth, btnHeight * .95], ...
+            "String", "", ...
+            "BackgroundColor", [0.9 0.9 0.9], ...
+            "Callback", @(btn,~) onGridCellClicked(btn, row, col));
+    end
+end
+
+% === Callback function for grid cell click ===
+function onGridCellClicked(btn, row, col)
+    prompt = sprintf("Enter label for force plate at (%d,%d):", row, col);
+    default = btn.String;
+    answer = inputdlg(prompt, 'Label Force Plate', 1, {default});
+    
+    if ~isempty(answer)
+        label = strtrim(answer{1});
+        if isempty(label)
+            btn.String = "";
+            btn.BackgroundColor = [0.9 0.9 0.9];
+        else
+            btn.String = label;
+            btn.BackgroundColor = [0.6 0.8 1];  % Highlight color
+        end
+        r01.data.force_plate_labels{row, col} = label;
+    end
+end
+
+% Load potential Force Plate info
+if isfile(fullfile(pwd, 'configs', 'force_plate_config.mat'))
+    load(fullfile(pwd, 'configs', 'force_plate_config.mat'), 'force_data');
+
+    % Set stored values into fields
+    set(r01.gui.user_prefix_plates, 'String', force_data.prefix);
+    set(r01.gui.user_frame, 'String', force_data.frame_info);
+    r01.data.force_plate_labels = force_data.labels;
+
+    % Populate the grid UI with stored labels
+    for row = 1:10
+        for col = 1:10
+            label = r01.data.force_plate_labels{row, col};
+            btn = r01.gui.force_grid_buttons(row, col);
+            if ~isempty(label)
+                btn.String = label;
+                btn.BackgroundColor = [0.6 0.8 1];
+            else
+                btn.String = '';
+                btn.BackgroundColor = [0.9 0.9 0.9];
+            end
+        end
+    end
+else
+    r01.data.force_plate_labels = cell(10,10); % Init empty
+end
 
 % %% Tag Editor Panel %%
 % r01.gui.tag_panel = uipanel(r01.gui.fig_main, "Units", "Normalized", "Title", "Tag Editor", "Scrollable", "on");
@@ -391,6 +465,7 @@ dx1 = .75; dx2 = dx1+ .03; dx3 = dx2 + .08;
 % 
 % %Session History Display
 r01.gui.infobox = uicontrol('Units','normalized','Style','listbox','Position',[x3 y8 x4-x3 y7-y8],'Max',2,'String','','HorizontalAlignment','left','FontSize',7);
+
 
 %Maximize Figure (Version 7.4+ only)
 m_version = version;
