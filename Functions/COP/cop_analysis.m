@@ -18,7 +18,10 @@ COPx_vel_rereg = []; COPy_vel_rereg = [];
 
 trajectory = proc_table_struct.(trial_name).trajectory_data_table;
 
-frame_values = str2double(trajectory.("Frame"));
+trajectory = convertvars(trajectory, @iscell, 'string');
+trajectory = convertvars(trajectory, @isstring, 'double');
+
+frame_values = trajectory.("Frame");
 frame_start = frame_values(1);
 
 FR = fr;
@@ -29,84 +32,60 @@ xy = r01.project_xy;
 
 if strcmp(xy, 'Y') == 1
 
-    LASIS = str2double(table2array(trajectory(:, {'LASI_X', 'LASI_Y', 'LASI_Z'})));
-    RASIS = str2double(table2array(trajectory(:, {'RASI_X', 'RASI_Y', 'RASI_Z'})));
-    LPSIS= str2double(table2array(trajectory(:, {'LPSI_X', 'LPSI_Y', 'LPSI_Z'})));
-    y_LPSIS = str2double(trajectory.("LPSI_Y"));
-    RPSIS= str2double(table2array(trajectory(:, {'RPSI_X', 'RPSI_Y', 'RPSI_Z'})));
-    y_RPSIS = str2double(trajectory.("RPSI_Y")); 
+    LASIS = trajectory(:, {'LASI_X', 'LASI_Y', 'LASI_Z'});
+    RASIS = trajectory(:, {'RASI_X', 'RASI_Y', 'RASI_Z'});
+    LPSIS= trajectory(:, {'LPSI_X', 'LPSI_Y', 'LPSI_Z'});
+    y_LPSIS = trajectory.("LPSI_Y");
+    RPSIS= trajectory(:, {'RPSI_X', 'RPSI_Y', 'RPSI_Z'});
+    y_RPSIS = trajectory.("RPSI_Y"); 
 
-    OPSIS=0.5*(RPSIS+LPSIS); 
+    OPSIS=0.5*(table2array(RPSIS)+table2array(LPSIS)); 
     y_OPSIS=0.5*(y_LPSIS+y_RPSIS);
 
-    LHE = str2double(table2array(trajectory(:, {'LHEE_X', 'LHEE_Y', 'LHEE_Z'})));
-    LTO = str2double(table2array(trajectory(:, {'LTOE_X', 'LTOE_Y', 'LTOE_Z'})));
+    LHE = trajectory(:, {'LHEE_X', 'LHEE_Y', 'LHEE_Z'});
+    LTO = trajectory(:, {'LTOE_X', 'LTOE_Y', 'LTOE_Z'});
     
-    y_LHE=str2double(trajectory.("LHEE_Y"));
-    z_LHE=str2double(trajectory.("LHEE_Z"));
+    y_LHE=trajectory.("LHEE_Y");
+    z_LHE=trajectory.("LHEE_Z");
     
-    y_LTO=str2double(trajectory.("LTOE_Y"));
-    z_LTO=str2double(trajectory.("LTOE_Z"));
+    y_LTO=trajectory.("LTOE_Y");
+    z_LTO=trajectory.("LTOE_Z");
     
  
-    y_RHE=str2double(trajectory.("RHEE_Y"));
-    z_RHE=str2double(trajectory.("RHEE_Z"));
+    y_RHE=trajectory.("RHEE_Y");
+    z_RHE=trajectory.("RHEE_Z");
     
-    y_RTO=str2double(trajectory.("RTOE_Y"));
-    z_RTO=str2double(trajectory.("RTOE_Z"));
+    y_RTO=trajectory.("RTOE_Y");
+    z_RTO=trajectory.("RTOE_Z");
 
 elseif strcmp(xy, 'X') == 1
-    LASIS = str2double(table2array(trajectory(:, {'LASI_X', 'LASI_Y', 'LASI_Z'})));
-    RASIS = str2double(table2array(trajectory(:, {'RASI_X', 'RASI_Y', 'RASI_Z'})));
-    LPSIS= str2double(table2array(trajectory(:, {'LPSI_X', 'LPSI_Y', 'LPSI_Z'})));
-    y_LPSIS = str2double(trajectory.("LPSI_X"));
-    RPSIS= str2double(table2array(trajectory(:, {'RPSI_X', 'RPSI_Y', 'RPSI_Z'})));
-    y_RPSIS = str2double(trajectory.("RPSI_X")); 
+    LASIS = trajectory(:, {'LASI_X', 'LASI_Y', 'LASI_Z'});
+    RASIS = trajectory(:, {'RASI_X', 'RASI_Y', 'RASI_Z'});
+    LPSIS= trajectory(:, {'LPSI_X', 'LPSI_Y', 'LPSI_Z'});
+    y_LPSIS = (trajectory.("LPSI_X"));
+    RPSIS= trajectory(:, {'RPSI_X', 'RPSI_Y', 'RPSI_Z'});
+    y_RPSIS = (trajectory.("RPSI_X")); 
 
-    OPSIS=0.5*(RPSIS+LPSIS); 
+    OPSIS=0.5*(table2array(RPSIS)+table2array(LPSIS)); 
     y_OPSIS=0.5*(y_LPSIS+y_RPSIS);
 
-    LHE = str2double(table2array(trajectory(:, {'LHEE_X', 'LHEE_Y', 'LHEE_Z'})));
-    LTO = str2double(table2array(trajectory(:, {'LTOE_X', 'LTOE_Y', 'LTOE_Z'})));
+    LHE = trajectory(:, {'LHEE_X', 'LHEE_Y', 'LHEE_Z'});
+    LTO = trajectory(:, {'LTOE_X', 'LTOE_Y', 'LTOE_Z'});
     
-    y_LHE=str2double(trajectory.("LHEE_X"));
-    z_LHE=str2double(trajectory.("LHEE_Z"));
+    y_LHE=trajectory.("LHEE_X");
+    z_LHE=trajectory.("LHEE_Z");
     
-    y_LTO=str2double(trajectory.("LTOE_X"));
-    z_LTO=str2double(trajectory.("LTOE_Z"));
+    y_LTO=trajectory.("LTOE_X");
+    z_LTO=trajectory.("LTOE_Z");
     
  
-    y_RHE=str2double(trajectory.("RHEE_X"));
-    z_RHE=str2double(trajectory.("RHEE_Z"));
+    y_RHE=trajectory.("RHEE_X");
+    z_RHE=trajectory.("RHEE_Z");
     
-    y_RTO=str2double(trajectory.("RTOE_X"));
-    z_RTO=str2double(trajectory.("RTOE_Z"));
+    y_RTO=trajectory.("RTOE_X");
+    z_RTO=trajectory.("RTOE_Z");
 
 end
-
-%% Markers
-% pelvis markers, meters
-
-% foot markers
-% LHE=0.001*data(:,96:98);
-% x_LHE=0.001*data(:,96);
-% y_LHE=0.001*data(:,97);
-% z_LHE=0.001*data(:,98);
-% 
-% LTO=0.001*data(:,99:101);
-% x_LTO=0.001*data(:,99);
-% y_LTO=0.001*data(:,100);
-% z_LTO=0.001*data(:,101);
-% 
-% RHE=0.001*data(:,114:116);
-% x_RHE=0.001*data(:,114);
-% y_RHE=0.001*data(:,115);
-% z_RHE=0.001*data(:,116);
-% 
-% RTO=0.001*data(:,117:119);
-% x_RTO=0.001*data(:,117);
-% y_RTO=0.001*data(:,118);
-% z_RTO=0.001*data(:,119);
 
 z_lfocent= 0.5*(z_LHE+z_LTO); % z left foot centre
 z_rfocent= 0.5*(z_RHE+z_RTO); % z right foot centre
@@ -140,77 +119,264 @@ end
 
 %findpeaks/valleys left leg Events
 [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
-%figure; findpeaks(Lheel);
-% xlabel('frame');
-% ylabel('left heel strike');
 Lhstimes=(flhs-1)/FR; % left heel strike times
 
 [Lvlys,flto]=findpeaks(Ltoe); %[valleys, Frames] left toe off
-%figure; findpeaks(Ltoe);
-% xlabel('frame');
-% ylabel('left toe off');
 Ltofftimes=(flto-1)/FR; % left toe off times
 
 %findpeaks- right leg Events
 [Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
-%figure; findpeaks(Rheel);
-% xlabel('frame');
-% ylabel('right heel strike');
 Rhstimes=(frhs-1)/FR; % right heel strike times
 
 [Rvlys,frto]=findpeaks(Rtoe); %[valleys, Frames] right toe off
-%figure; findpeaks(Rtoe);
-% xlabel('frame');
-% ylabel('right toe off');
 Rtofftimes=(frto-1)/FR; % right toe off times
 
 %% load force data
-Forcedata=xlsread([path_n filename],2);
 
-COP1x= Forcedata(:,9);
-COP1y= Forcedata(:,10);
-COP2x= Forcedata(:,18);
-COP2y= Forcedata(:,19);
-COP3x= Forcedata(:,27);
-COP3y= Forcedata(:,28);
+ForceData = proc_table_struct.(trial_name).devices_data_table;
+
+ForceData = convertvars(ForceData, @iscell, 'string');
+ForceData = convertvars(ForceData, @isstring, 'double');
 
 
-% Generate a Butterworth low-pass filter
+temp = table();
+i = 1;
+num_plates = 0;
+Forcedata = ForceData;
+
+
+% Constants
+n = height(trajectory);
+index=10:10:10*n;
+G=[0 0 -9.81];
+filtered_COPx = {};
+filtered_COPy = {};
+filtered_Fy = {};
+force_z = {};
+force_y = {};
+Fz_downsampled = {};
+stance = {};
+heelstrikes = {};
+
 Fs= 1000;
 Fc= 10;
 order= 4;
 [b, a] = butter(order, Fc / (Fs / 2), 'low');
-filtered_COP1x = filtfilt(b, a, COP1x); % Zero-phase filtering for no lag
-filtered_COP1y = filtfilt(b, a, COP1y);
-filtered_COP2x = filtfilt(b, a, COP2x);
-filtered_COP2y = filtfilt(b, a, COP2y);
-filtered_COP3x = filtfilt(b, a, COP3x);
-filtered_COP3y = filtfilt(b, a, COP3y);
 
-F1z = -filtfilt(b, a, Forcedata(:,5));
-F2z = -filtfilt(b, a, Forcedata(:,14));
-% F3z = -filtfilt(b, a, Forcedata(:,23));
-F1yy = filtfilt(b, a, Forcedata(:,4));
-F2yy = filtfilt(b, a, Forcedata(:,13));
-% F3yy = filtfilt(b, a, Forcedata(:,22));
+i = 1;
+plate = 1;
+fCOPx_count = 1;
+fCOPy_count = 1;
+Fy_count = 1;
+Fz_count = 1;
+Fy_count = 1;
+while i <= width(Forcedata)
+    if i+2 > width(Forcedata)
+        break
+    end
+    varName = string(Forcedata.Properties.VariableNames{i});
+
+    col = table2array(Forcedata(:,i));
+    
+    if ~contains(varName, 'Combined') && (contains(varName, 'CoP_') || contains(varName, 'Force_Fy') || contains(varName, 'Force_Fz'))
+        filtered = filtfilt(b,a, col);
+
+        if contains(varName, 'CoP_Cx')
+            filtered_COPx{fCOPx_count} = filtered;
+            fCOPx_count = fCOPx_count +1;
+            num_plates = num_plates + 1;
+
+        elseif contains(varName, 'CoP_Cy')
+            filtered_COPy{fCOPy_count} = filtered;
+            fCOPy_count = fCOPy_count + 1;
+
+        elseif contains(varName, 'Force_Fy')
+            filtered_Fy{Fy_count} = filtered;
+            
+
+            if y_RHE(1,1) < 0 || y_LHE(1,1) < 0
+                force_y{Fy_count} = -col;
+            else
+                force_y{Fy_count} = col;
+            end
+
+            Fy_count = Fy_count + 1;
+        elseif contains(varName, 'Force_Fz')
+            force_z{Fz_count} = -col;
+            Fz_downsampled{Fz_count} = col(index, :);
+            stance{Fz_count} = find(force_z{Fz_count} > 30);
+            Fz_count = Fz_count + 1;
+        end
+    end
+    i = i+1;
+end
 
 
-index=10:10:10*n;
-F1z_downsampled= F1z(index,:);
-F2z_downsampled= F2z(index,:);
-% F3z_downsampled= F3z(index,:);
+AP_GRF = {};
+propulsive = {};
+footcontact = {};
+heelstrike = {};
+toeoff = {};
+frto_plate = {};
+flto_plate = {};
+frhs_plate = {};
+flhs_plate = {};
+LCOPx_fullst = {};
+LCOPy_fullst = {};
+LPAPF = {};
+d_Lcopx = {};
+d_Lcopy = {};
+Lsstime = {};
+v_Lcopx = {};
+v_Lcopy = {};
+Lstep_length = {};
+Lstep_time = {};
+Lstep_speed = {};
+Lstep_width = {};
+Ldstime = {};
+RCOPx_fullst = {};
+RCOPy_fullst = {};
+RPAPF = {};
+d_Rcopx = {};
+d_Rcopy = {};
+Rsstime = {};
+v_Rcopx = {};
+v_Rcopy = {};
+Rstep_length = {};
+Rstep_time = {};
+Rstep_speed = {};
+Rstep_width = {};
+Rdstime = {};
 
-% M1_downsampled=Fdata(:,6:8); M1x_downsampled=M1_downsampled(:,1); M1y_downsampled=M1_downsampled(:,2); M1z_downsampled=M1_downsampled(:,3);
-% M2_downsampled=Fdata(:,15:17); M2x_downsampled=M2_downsampled(:,1); M2y_downsampled=M2_downsampled(:,2); M2z_downsampled=M2_downsampled(:,3);
+for plate = 1:num_plates
+    % Extract AP-GRF during the stance phase
+    AP_GRF{plate} = force_y{plate}(stance{plate});
+    propulsive{plate}= AP_GRF{plate} > 0; % Use only the positive values of AP-GRF (indicating propulsion)
+    footcontact{plate} = 10 * find(abs(Fz_downsampled{plate}) > 30);
+    %footcontact_test = round(stance{plate}); %alternative
+    if ~isempty(footcontact{plate})
+        heelstrike{plate} = footcontact{plate}(1);
+        toeoff = footcontact{plate}(end);
+        frto_plate{plate} = intersect(frto, footcontact{plate} / 10);
+        frhs_plate{plate} = intersect(frhs, footcontact{plate} / 10);
+        flto_plate{plate} = intersect(flto, footcontact{plate} / 10);
+        flhs_plate{plate} = intersect(flhs, footcontact{plate} / 10);
+    else
+        heelstrike{plate} = [];
+        toeoff{plate} = [];
+        frto{plate} = [];
+        frhs{plate} = [];
+        flto{plate} = [];
+        flhs{plate} = [];
+    end
+
+    if y_RHE(1,1) < 0 || y_LHE(1,1) < 0
+
+        if ~isempty(heelstrike{plate}) && (y_LHE((heelstrike{plate})/10) > -2) && (y_LTO((heelstrike{plate})/10) < 2)
+            LCOPx_fullst{plate} = filtered_COPx{plate}(stance{plate}); % COPx during stance time
+            LCOPy_fullst{plate} = filtered_COPy{plate}(stance{plate});
+            LPAPF{plate} = max(AP_GRF{plate}(propulsive{plate})); % Peak anterior propulsive force
+            d_Lcopx{plate} = abs(filtered_COPx{plate}(10*frto_plate{plate}) - filtered_COPx{plate}(10*frhs_plate{plate})); % Left ML-COP displacement
+            d_Lcopy{plate} = abs(filtered_COPy{plate}(10*frto_plate{plate}) - filtered_COPy{plate}(10*frhs_plate{plate})); % Left AP-COP displacement
+            Lsstime{plate} = abs(frto_plate{plate} - frhs_plate{plate}) / FR; % Left single stance time
+            v_Lcopx{plate} = d_Lcopx{plate} / Lsstime{plate}; % Left ML-COP velocity
+            v_Lcopy{plate} = d_Lcopy{plate} / Lsstime{plate}; % Left AP-COP velocity
+            Lstep_length{plate} = abs(y_LHE(heelstrike{plate} / 10) - y_RHE(frhs_plate{plate}));
+            Lstep_time{plate}= abs((heelstrike{plate} / 10) - frhs_plate{plate}) / FR;
+            Lstep_speed{plate}= Lstep_length{plate}/ Lstep_time{plate};
+            Lstep_width{plate} = abs(x_LHE(heelstrike{plate} / 10) - x_RHE(frhs_plate{plate}));
+            Ldstime{plate} = abs((heelstrike{plate} / 10) - frto_plate{plate}) / FR; % Left double stance time
+        end
+
+        if ~isempty(heelstrike{plate}) && (y_RHE((heelstrike{plate})/10) > -2) && (y_RTO((heelstrike{plate})/10) < 2)
+            RCOPx_fullst{plate} = filtered_COPx{plate}(stance{plate}); % COPx during stance time
+            RCOPy_fullst{plate} = filtered_COPy{plate}(stance{plate});
+            RPAPF{plate} = max(AP_GRF{plate}(propulsive{plate})); % Peak anterior propulsive force
+            d_Rcopx{plate} = abs(filtered_COPx{plate}(10*flto_plate{plate}) - filtered_COPx{plate}(10*flhs_plate{plate})); % Left ML-COP displacement
+            d_Rcopy{plate} = abs(filtered_COPy{plate}(10*flto_plate{plate}) - filtered_COPy{plate}(10*flhs_plate{plate})); % Left AP-COP displacement
+            Rsstime{plate} = abs(flto_plate{plate} - flhs_plate{plate}) / FR; % Left single stance time
+            v_Rcopx{plate} = d_Rcopx{plate} / Lsstime{plate}; % Left ML-COP velocity
+            v_Rcopy{plate} = d_Rcopy{plate} / Lsstime{plate}; % Left AP-COP velocity
+            Rstep_length{plate} = abs(y_RHE(heelstrike{plate} / 10) - y_RHE(flhs_plate{plate}));
+            Rstep_time{plate}= abs((heelstrike{plate} / 10) - flhs_plate{plate}) / FR;
+            Rstep_speed{plate}= Rstep_length{plate}/ Lstep_time{plate};
+            Rstep_width{plate} = abs(x_RHE(heelstrike{plate} / 10) - x_RHE(flhs_plate{plate}));
+            Rdstime{plate} = abs((heelstrike{plate} / 10) - flto_plate{plate}) / FR; % Left double stance time
+            
+        end
+
+    else
+
+        if ~isempty(heelstrike{plate}) && (y_LHE((heelstrike{plate})/10) > -2) && (y_LTO((heelstrike{plate})/10) < 2)
+            LCOPx_fullst{plate} = 400 - filtered_COPx{plate}(stance{plate}); % COPx during stance time
+            LCOPy_fullst{plate} = 600 -filtered_COPy{plate}(stance{plate});
+            LPAPF{plate} = max(AP_GRF{plate}(propulsive{plate})); % Peak anterior propulsive force
+            d_Lcopx{plate} = abs(filtered_COPx{plate}(10*frto_plate{plate}) - filtered_COPx{plate}(10*frhs_plate{plate})); % Left ML-COP displacement
+            d_Lcopy{plate} = abs(filtered_COPy{plate}(10*frto_plate{plate}) - filtered_COPy{plate}(10*frhs_plate{plate})); % Left AP-COP displacement
+            Lsstime{plate} = abs(frto_plate{plate} - frhs_plate{plate}) / FR; % Left single stance time
+            v_Lcopx{plate} = d_Lcopx{plate} / Lsstime{plate}; % Left ML-COP velocity
+            v_Lcopy{plate} = d_Lcopy{plate} / Lsstime{plate}; % Left AP-COP velocity
+            Lstep_length{plate} = abs(y_LHE(heelstrike{plate} / 10) - y_RHE(frhs_plate{plate}));
+            Lstep_time{plate}= abs((heelstrike{plate} / 10) - frhs_plate{plate}) / FR;
+            Lstep_speed{plate}= Lstep_length{plate}/ Lstep_time{plate};
+            Lstep_width{plate} = abs(x_LHE(heelstrike{plate} / 10) - x_RHE(frhs_plate{plate}));
+            Ldstime{plate} = abs((heelstrike{plate} / 10) - frto_plate{plate}) / FR; % Left double stance time
+        end
+
+        if ~isempty(heelstrike{plate}) && (y_RHE((heelstrike{plate})/10) > -2) && (y_RTO((heelstrike{plate})/10) < 2)
+            RCOPx_fullst{plate} = 400 - filtered_COPx{plate}(stance{plate}); % COPx during stance time
+            RCOPy_fullst{plate} = 600 -filtered_COPy{plate}(stance{plate});
+            RPAPF{plate} = max(AP_GRF{plate}(propulsive{plate})); % Peak anterior propulsive force
+            d_Rcopx{plate} = abs(filtered_COPx{plate}(10*flto_plate{plate}) - filtered_COPx{plate}(10*flhs_plate{plate})); % Left ML-COP displacement
+            d_Rcopy{plate} = abs(filtered_COPy{plate}(10*flto_plate{plate}) - filtered_COPy{plate}(10*flhs_plate{plate})); % Left AP-COP displacement
+            Rsstime{plate} = abs(flto_plate{plate} - flhs_plate{plate}) / FR; % Left single stance time
+            v_Rcopx{plate} = d_Rcopx{plate} / Lsstime{plate}; % Left ML-COP velocity
+            v_Rcopy{plate} = d_Rcopy{plate} / Lsstime{plate}; % Left AP-COP velocity
+            Rstep_length{plate} = abs(y_RHE(heelstrike{plate} / 10) - y_RHE(flhs_plate{plate}));
+            Rstep_time{plate}= abs((heelstrike{plate} / 10) - flhs_plate{plate}) / FR;
+            Rstep_speed{plate}= Rstep_length{plate}/ Lstep_time{plate};
+            Rstep_width{plate} = abs(x_RHE(heelstrike{plate} / 10) - x_RHE(flhs_plate{plate}));
+            Rdstime{plate} = abs((heelstrike{plate} / 10) - flto_plate{plate}) / FR; % Left double stance time
+            
+        end
+
+        
+
+    end
+end
+
+
+% filtered_COP1x = filtfilt(b, a, COP1x); % Zero-phase filtering for no lag
+% filtered_COP1y = filtfilt(b, a, COP1y);
+% filtered_COP2x = filtfilt(b, a, COP2x);
+% filtered_COP2y = filtfilt(b, a, COP2y);
+% filtered_COP3x = filtfilt(b, a, COP3x);
+% filtered_COP3y = filtfilt(b, a, COP3y);
 % 
-% one_COPx=filtered_COP1x(index,:);
-% one_COPy=filtered_COP1y(index,:);
-% two_COPx=filtered_COP2x(index,:);
-% two_COPy=filtered_COP2y(index,:);
-% three_COPx=filtered_COP3x(index,:);
-% three_COPy=filtered_COP3y(index,:);
+% F1z = -filtfilt(b, a, Forcedata(:,5));
+% F2z = -filtfilt(b, a, Forcedata(:,14));
+% % F3z = -filtfilt(b, a, Forcedata(:,23));
+% F1yy = filtfilt(b, a, Forcedata(:,4));
+% F2yy = filtfilt(b, a, Forcedata(:,13));
+% % F3yy = filtfilt(b, a, Forcedata(:,22));
+% 
+% 
+% index=10:10:10*n;
+% F1z_downsampled= F1z(index,:);
+% F2z_downsampled= F2z(index,:);
+% % F3z_downsampled= F3z(index,:);
+% 
+% % M1_downsampled=Fdata(:,6:8); M1x_downsampled=M1_downsampled(:,1); M1y_downsampled=M1_downsampled(:,2); M1z_downsampled=M1_downsampled(:,3);
+% % M2_downsampled=Fdata(:,15:17); M2x_downsampled=M2_downsampled(:,1); M2y_downsampled=M2_downsampled(:,2); M2z_downsampled=M2_downsampled(:,3);
+% % 
+% % one_COPx=filtered_COP1x(index,:);
+% % one_COPy=filtered_COP1y(index,:);
+% % two_COPx=filtered_COP2x(index,:);
+% % two_COPy=filtered_COP2y(index,:);
+% % three_COPx=filtered_COP3x(index,:);
+% % three_COPy=filtered_COP3y(index,:);
 
-G=[0 0 -9.81];
+
 
 % figure;
 % plot(COP1x);
@@ -230,8 +396,8 @@ F2_footcontact = 10*find(abs(F2z_downsampled) > 30); %foot contact frames
 % copth= Forcedata(two_fr_hs_tof,9:10); hs to toe-off
 F2_heelstrike= F2_footcontact(1); %first frame of foot contact- force plate two
 
-        if y_RHE(1,1)<0 || y_LHE(1,1)<0
-                    if y_LTO((F1_heelstrike)/10)>0
+if y_RHE(1,1)<0 || y_LHE(1,1)<0
+if y_LTO((F1_heelstrike)/10)>0
 
 one_frto_indices=find(10*frto > F1_heelstrike, 1, 'first');
 one_frto_first = 10*frto(one_frto_indices);
@@ -249,7 +415,7 @@ two_flhs_first = 10*flhs(two_flhs_indices);
 right_copthsst_x = filtered_COP2x(two_flto_first:two_flhs_first); % Right ML cop path during single stance time
 right_copthsst_y = filtered_COP2y(two_flto_first:two_flhs_first)-603; % Right AP cop path during single stance time
 
-                    else
+else
 
 one_flto_indices=find(10*flto > F1_heelstrike, 1, 'first');
 one_flto_first = 10*flto(one_flto_indices);
@@ -267,9 +433,9 @@ two_frhs_first = 10*frhs(two_frhs_indices);
 left_copthsst_x = filtered_COP2x(two_frto_first:two_frhs_first); % during single stance time
 left_copthsst_y = filtered_COP2y(two_frto_first:two_frhs_first)-603; % during single stance time
 
-                    end
-        else
-                                if y_LTO((F2_heelstrike)/10)>1.203
+end
+else
+if y_LTO((F2_heelstrike)/10)>1.203
 
 two_flto_indices=find(10*flto > F2_heelstrike, 1, 'first');
 two_flto_first = 10*flto(two_flto_indices);
@@ -287,7 +453,7 @@ one_frhs_first = 10*frhs(one_frhs_indices);
 left_copthsst_x = 400-(filtered_COP1x(one_frto_first:one_frhs_first)); % during single stance time
 left_copthsst_y = 600-(filtered_COP1y(one_frto_first:one_frhs_first)); % during single stance time
 
-                                else
+else
 
 two_frto_indices=find(10*frto > F2_heelstrike, 1, 'first');
 two_frto_first = 10*frto(two_frto_indices);
@@ -304,8 +470,8 @@ one_flhs_first = 10*flhs(one_flhs_indices);
 
 right_copthsst_x = 400-(filtered_COP1x(one_flto_first:one_flhs_first)); % during single stance time
 right_copthsst_y = 600-(filtered_COP1y(one_flto_first:one_flhs_first)); % during single stance time
-                                end
-        end
+end
+end
 
 %% 101 gait frames
 nFrames = 101; % normalize to 101 frames
