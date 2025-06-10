@@ -1,0 +1,7 @@
+All Rights Reserved.
+
+This code is part of ongoing academic research by [Tiphanie Raffegeau and Patrick King / George Mason University].
+No permission is granted to use, modify, or redistribute any part of this code,
+in whole or in part, without explicit written consent from the author.
+
+© [2025] [Patrick King]
