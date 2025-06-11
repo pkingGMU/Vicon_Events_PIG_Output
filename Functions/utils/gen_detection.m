@@ -95,7 +95,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
                         clean = false;
                         continue
                     else 
-                        clean = true
+                        clean = true;
                         fprintf("Clean Foot Strike Found at given Force Plate")
                     end
 

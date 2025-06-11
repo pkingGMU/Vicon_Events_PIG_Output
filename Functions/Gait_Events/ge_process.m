@@ -4,7 +4,7 @@ function [subjects] = ge_process(selection, choice, fr)
 % the struct 'subjects' for each subject for each file.
 
     
-        [proc_tables] = ge_arrange_tables(selection, choice, fr);
+         ge_arrange_tables(selection, choice, fr);
 
          add2log(0,['>>>> ', 'Found Gait Events for Selected Trials'],1,1);
 

@@ -1,4 +1,4 @@
-function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
+function [event_table] = ge_arrange_tables(files, choice, fr)
     %%%
     % Function specifically designed for ONLY looking for Gait Events. We
     % take in a folder which is generally the data folder. It will parse
@@ -24,6 +24,8 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
     % The second pass file = 2
     % Etc.....
     for file = 1:height(files)
+
+        
 
         % % Set temp variable to the nth file in our list of files
         % file_name = fullfile(folder, files(file).name);
@@ -76,29 +78,32 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
 
         % Create new data table for devices
         
-        proc_tables.(file_name_short).devices_data_table = table_processing('Devices', full_data_table);
+        devices_data_table = table_processing('Devices', full_data_table);
         
         % Create new data table for Model Ouputs
         
-        proc_tables.(file_name_short).model_data_table = table_processing('Model Outputs', full_data_table);
+        model_data_table = table_processing('Model Outputs', full_data_table);
         
         % Create new data table for Trajectories
         
-        proc_tables.(file_name_short).trajectory_data_table = table_processing('Trajectories', full_data_table);
+        trajectory_data_table = table_processing('Trajectories', full_data_table);
         
-        
-        
+        clear full_data_table;
+        drawnow;
 
         %%% GAIT EVENTS
 
-        [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).model_data_table, proc_tables.(file_name_short).devices_data_table, choice, fr);
+        [lhs,lto,rhs,rto, frame_start, FR, failed] = gait_detection(trajectory_data_table, model_data_table, devices_data_table, choice, fr);
+
+        clear trajectory_data_table
+        drawnow;
 
         if failed == true
                 add2log(0,['>>>> ', strcat(file_name_short_prefix, ' Failed due to not enough gait events')],1,1);
             continue
         end
        
-        clear full_data_table;
+        
         
 
         % Define the subject
@@ -170,10 +175,6 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
             event_table = [save_gesture; event_table];
         end
         
-        % Add event table to proc tables
-        proc_tables.(file_name_short).event_data_table = event_table;
-        
-
         %%% Sorting for R01 Analyis
 
         % Sort the event_table by Context and then by Name
@@ -182,32 +183,61 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
         event_table.("Time (s)") = round(event_table.("Time (s)"), 3);
 
         fprintf("Add new info to old csv")
+
+        clearvars -except event_table choice subject_id csv_name fr file_name_short_prefix files r01
         
         
         %%% Create Excel
         % Existing data
-        existing_data = readcell(csv_name);
-        
-        fprintf("Debug 1")
 
-        % Convert the event_table to cell
+        % Convert event_table to cell
         new_data = table2cell(event_table);
         
-        % Get the number of columns in the existing data (to handle padding)
-        num_existing_cols = size(existing_data, 2);
+        % Open file for streaming read
+        fid = fopen(csv_name, 'r');
         
-        % Pad the new data with empty columns if necessary
-        empty_row = repmat({''}, 1, num_existing_cols);  % Empty row with the same number of columns
-        new_data_padded = [new_data, repmat({''}, size(new_data, 1), max(0, num_existing_cols - size(new_data, 2)))];
+        % Preallocate small cell array to store existing data line-by-line
+        existing_data = {};
         
-        % Create the combined data by starting with the padded new data and adding an empty row
-        combined_data = [new_data_padded; empty_row; existing_data];
+        while ~feof(fid)
+            % Read one line
+            line = fgetl(fid);
+            if ischar(line)
+                % Split by commas into cell array (handle arbitrary column widths)
+                split_line = regexp(line, ',', 'split');
+                existing_data{end+1, 1} = split_line;  % store as cell of cells
+            end
+        end
+        fclose(fid);
         
-        clear existing_data new_data_padded empty_row event_table gen_data gen_frames gen_table lhs lto rhs rto new_data output_data;
-        fprintf("Debug 2")
+        % Find max width (variable columns per row)
+        max_cols = max(cellfun(@length, existing_data));
         
-
-        % %% Rearrange Data
+        % Normalize into full cell array with consistent width
+        existing_data_matrix = cell(size(existing_data,1), max_cols);
+        for i = 1:size(existing_data,1)
+            row = existing_data{i};
+            existing_data_matrix(i,1:length(row)) = row;
+            if length(row) < max_cols
+                existing_data_matrix(i,length(row)+1:end) = {''}; % pad missing columns
+            end
+        end
+        
+        % Get number of columns for later padding
+        num_existing_cols = size(existing_data_matrix, 2);
+        
+        % Pad new event data to match width
+        new_data_padded = [new_data, repmat({''}, size(new_data,1), num_existing_cols - size(new_data,2))];
+        
+        % Combine: insert event data above existing file
+        empty_row = repmat({''}, 1, num_existing_cols);
+        combined_data = [new_data_padded; empty_row; existing_data_matrix];
+        
+        clear existing_data existing_data_matrix new_data new_data_padded empty_row;
+        
+        fprintf("Debug 2\n");
+        
+        %%% Rearrange Data (same logic as your original)
         
         % Logical indexing to locate 'Events' and 'Devices' rows
         events_idx = find(strcmp(combined_data(:, 1), 'Events'), 1);
@@ -215,79 +245,57 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
         
         % Only remove rows if 'Events' and 'Devices' are found in the correct order
         if ~isempty(events_idx) && ~isempty(devices_idx) && devices_idx > events_idx
-            combined_data(events_idx + 3 : devices_idx - 1, :) = [];  % Remove rows between 'Events' and 'Devices'
+            combined_data(events_idx + 3 : devices_idx - 1, :) = [];  
         end
         
         % Move 'Events' and associated rows to the top if 'Events' is found
         if ~isempty(events_idx)
-            % Extract and move 'Events' and related rows (up to label_row) to the top
             events_data = combined_data(events_idx : events_idx + 2, :);
-            combined_data(events_idx : events_idx + 2, :) = [];  % Remove these rows
-            combined_data = [events_data; combined_data];        % Prepend to the top
+            combined_data(events_idx : events_idx + 2, :) = [];
+            combined_data = [events_data; combined_data];
         else
-            % Create custom 'events_data' if 'Events' row is not found
             events_data = {'Events', [], [], [], []; fr, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};
             events_data = [events_data, repmat({''}, size(events_data, 1), num_existing_cols - size(events_data, 2))];
-            combined_data = [events_data; combined_data];  % Prepend custom 'events_data' to the top
+            combined_data = [events_data; combined_data];
         end
         
-        clear events_data 
-
+        clear events_data;
         
-        % Replace any missing values (using `isa` with `cellfun` for efficiency)
+        %%% Replace missing cells (defensive, but should rarely trigger)
         combined_data(cellfun(@(x) isa(x, 'missing'), combined_data)) = {[]};
         
-        %%% Define Folder and Save Excel
+        %%% Define Folder and Save Excel (keep your original chunk system below)
         
         % Define root folder based on 'choice' variable
         root_folder = pwd;
         excel_folder = fullfile(root_folder, 'Output', 'Gait_Events', choice, subject_id);
-        
-        % Create directory if it doesn't exist
         if ~exist(excel_folder, 'dir')
             mkdir(excel_folder);
         end
-
-        % Determine File Name
+        
         new_excel_filename = strcat(file_name_short_prefix, '_events', '.xlsx');
         new_full_file_path = fullfile(excel_folder, new_excel_filename);
-        
-        % Check if the file already exists
-        if exist(new_full_file_path, 'file') == 2  % '2' means the file exists
-            % Delete the existing file
+        if exist(new_full_file_path, 'file') == 2
             delete(new_full_file_path);
         end
-
-        %% Define chunk size and number of rows
-        chunk_size = 5000;  % Chunk size of 1000 rows
-        num_rows = size(combined_data, 1);  % Total number of rows
-        num_chunks = ceil(num_rows / chunk_size);  % Number of chunks needed
         
-        % Precompute chunk indices based on the total number of rows
-        chunk_indices = 1:chunk_size:num_rows;  % Start indices for each chunk
+        % Chunk write (your original chunk writer exactly preserved)
+        chunk_size = 5000;
+        num_rows = size(combined_data, 1);
+        num_chunks = ceil(num_rows / chunk_size);
+        chunk_indices = 1:chunk_size:num_rows;
         
-        % Specify the temporary output folder (e.g., a folder named 'tmp' in the current directory)
         tmp_folder = fullfile(pwd, 'my_temp_folder');
         if ~exist(tmp_folder, 'dir')
-            mkdir(tmp_folder);  % Create the temporary folder if it doesn't exist
+            mkdir(tmp_folder);
         end
         
-        % Process each chunk
         for i = 1:num_chunks
-            % Calculate the start and end rows for the current chunk
             chunk_start = chunk_indices(i);
-            chunk_end = min(chunk_start + chunk_size - 1, num_rows);  % Ensure it doesn't exceed num_rows
-            
-            % Extract the chunk of data for this chunk
+            chunk_end = min(chunk_start + chunk_size - 1, num_rows);
             chunk = combined_data(chunk_start:chunk_end, :);
-            
-            % Specify the Excel filename for this chunk (each chunk gets a unique file)
             file_name = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
-            
-            % Display progress
             fprintf('Writing rows %d to %d to file %s\n', chunk_start, chunk_end, file_name);
-            
-            % Write the chunk to an Excel file
             try
                 writecell(chunk, file_name);
                 fprintf('Successfully wrote to %s\n', file_name);
@@ -296,38 +304,164 @@ function [proc_tables, event_table] = ge_arrange_tables(files, choice, fr)
             end
         end
         
-        %% After all chunks are written, merge the files into a single Excel file
-        % Define the combined Excel file path (where the final data will be saved)
         combined_file = new_full_file_path;
-        
-        % Create or open the combined Excel file
         for i = 1:num_chunks
-            % Specify the individual file created for the current chunk
             worker_file = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
-            
-            % Read the chunk of data from the worker's file
             chunk_data = readcell(worker_file);
-            
-            % Optionally, remove 'missing' entries and replace them with empty cells
             chunk_data(cellfun(@(x) isa(x, 'missing'), chunk_data)) = {[]};
-            
-            % Specify the range to write the data in the combined file
             if i == 1
-                % For the first chunk, write to the beginning of the file
                 writecell(chunk_data, combined_file);
             else
-                % For subsequent chunks, append to the file
                 writecell(chunk_data, combined_file, 'WriteMode', 'append');
             end
-            
-            % Optionally, delete the worker file after merging
             delete(worker_file);
         end
         
         fprintf('All worker files have been merged into %s.\n', combined_file);
-        
-        %% Delete the temporary folder and its contents
         rmdir(tmp_folder, 's');
         fprintf('Temporary files and folder have been deleted.\n');
+        % existing_data = readcell(csv_name);
+        % 
+        % fprintf("Debug 1")
+        % 
+        % % Convert the event_table to cell
+        % new_data = table2cell(event_table);
+        % 
+        % % Get the number of columns in the existing data (to handle padding)
+        % num_existing_cols = size(existing_data, 2);
+        % 
+        % % Pad the new data with empty columns if necessary
+        % empty_row = repmat({''}, 1, num_existing_cols);  % Empty row with the same number of columns
+        % new_data_padded = [new_data, repmat({''}, size(new_data, 1), max(0, num_existing_cols - size(new_data, 2)))];
+        % 
+        % % Create the combined data by starting with the padded new data and adding an empty row
+        % combined_data = [new_data_padded; empty_row; existing_data];
+        % 
+        % clear existing_data new_data_padded empty_row event_table gen_data gen_frames gen_table lhs lto rhs rto new_data output_data;
+        % fprintf("Debug 2")
+        % 
+        % 
+        % % %% Rearrange Data
+        % 
+        % % Logical indexing to locate 'Events' and 'Devices' rows
+        % events_idx = find(strcmp(combined_data(:, 1), 'Events'), 1);
+        % devices_idx = find(strcmp(combined_data(:, 1), 'Devices'), 1);
+        % 
+        % % Only remove rows if 'Events' and 'Devices' are found in the correct order
+        % if ~isempty(events_idx) && ~isempty(devices_idx) && devices_idx > events_idx
+        %     combined_data(events_idx + 3 : devices_idx - 1, :) = [];  % Remove rows between 'Events' and 'Devices'
+        % end
+        % 
+        % % Move 'Events' and associated rows to the top if 'Events' is found
+        % if ~isempty(events_idx)
+        %     % Extract and move 'Events' and related rows (up to label_row) to the top
+        %     events_data = combined_data(events_idx : events_idx + 2, :);
+        %     combined_data(events_idx : events_idx + 2, :) = [];  % Remove these rows
+        %     combined_data = [events_data; combined_data];        % Prepend to the top
+        % else
+        %     % Create custom 'events_data' if 'Events' row is not found
+        %     events_data = {'Events', [], [], [], []; fr, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};
+        %     events_data = [events_data, repmat({''}, size(events_data, 1), num_existing_cols - size(events_data, 2))];
+        %     combined_data = [events_data; combined_data];  % Prepend custom 'events_data' to the top
+        % end
+        % 
+        % clear events_data 
+        % 
+        % 
+        % % Replace any missing values (using `isa` with `cellfun` for efficiency)
+        % combined_data(cellfun(@(x) isa(x, 'missing'), combined_data)) = {[]};
+        % 
+        % %%% Define Folder and Save Excel
+        % 
+        % % Define root folder based on 'choice' variable
+        % root_folder = pwd;
+        % excel_folder = fullfile(root_folder, 'Output', 'Gait_Events', choice, subject_id);
+        % 
+        % % Create directory if it doesn't exist
+        % if ~exist(excel_folder, 'dir')
+        %     mkdir(excel_folder);
+        % end
+        % 
+        % % Determine File Name
+        % new_excel_filename = strcat(file_name_short_prefix, '_events', '.xlsx');
+        % new_full_file_path = fullfile(excel_folder, new_excel_filename);
+        % 
+        % % Check if the file already exists
+        % if exist(new_full_file_path, 'file') == 2  % '2' means the file exists
+        %     % Delete the existing file
+        %     delete(new_full_file_path);
+        % end
+        % 
+        % %% Define chunk size and number of rows
+        % chunk_size = 5000;  % Chunk size of 1000 rows
+        % num_rows = size(combined_data, 1);  % Total number of rows
+        % num_chunks = ceil(num_rows / chunk_size);  % Number of chunks needed
+        % 
+        % % Precompute chunk indices based on the total number of rows
+        % chunk_indices = 1:chunk_size:num_rows;  % Start indices for each chunk
+        % 
+        % % Specify the temporary output folder (e.g., a folder named 'tmp' in the current directory)
+        % tmp_folder = fullfile(pwd, 'my_temp_folder');
+        % if ~exist(tmp_folder, 'dir')
+        %     mkdir(tmp_folder);  % Create the temporary folder if it doesn't exist
+        % end
+        % 
+        % % Process each chunk
+        % for i = 1:num_chunks
+        %     % Calculate the start and end rows for the current chunk
+        %     chunk_start = chunk_indices(i);
+        %     chunk_end = min(chunk_start + chunk_size - 1, num_rows);  % Ensure it doesn't exceed num_rows
+        % 
+        %     % Extract the chunk of data for this chunk
+        %     chunk = combined_data(chunk_start:chunk_end, :);
+        % 
+        %     % Specify the Excel filename for this chunk (each chunk gets a unique file)
+        %     file_name = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
+        % 
+        %     % Display progress
+        %     fprintf('Writing rows %d to %d to file %s\n', chunk_start, chunk_end, file_name);
+        % 
+        %     % Write the chunk to an Excel file
+        %     try
+        %         writecell(chunk, file_name);
+        %         fprintf('Successfully wrote to %s\n', file_name);
+        %     catch ME
+        %         fprintf('Error writing to %s: %s\n', file_name, ME.message);
+        %     end
+        % end
+        % 
+        % %% After all chunks are written, merge the files into a single Excel file
+        % % Define the combined Excel file path (where the final data will be saved)
+        % combined_file = new_full_file_path;
+        % 
+        % % Create or open the combined Excel file
+        % for i = 1:num_chunks
+        %     % Specify the individual file created for the current chunk
+        %     worker_file = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
+        % 
+        %     % Read the chunk of data from the worker's file
+        %     chunk_data = readcell(worker_file);
+        % 
+        %     % Optionally, remove 'missing' entries and replace them with empty cells
+        %     chunk_data(cellfun(@(x) isa(x, 'missing'), chunk_data)) = {[]};
+        % 
+        %     % Specify the range to write the data in the combined file
+        %     if i == 1
+        %         % For the first chunk, write to the beginning of the file
+        %         writecell(chunk_data, combined_file);
+        %     else
+        %         % For subsequent chunks, append to the file
+        %         writecell(chunk_data, combined_file, 'WriteMode', 'append');
+        %     end
+        % 
+        %     % Optionally, delete the worker file after merging
+        %     delete(worker_file);
+        % end
+        % 
+        % fprintf('All worker files have been merged into %s.\n', combined_file);
+        % 
+        % %% Delete the temporary folder and its contents
+        % rmdir(tmp_folder, 's');
+        % fprintf('Temporary files and folder have been deleted.\n');
 
 end
