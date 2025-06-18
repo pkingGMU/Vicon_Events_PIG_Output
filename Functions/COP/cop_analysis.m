@@ -1,4 +1,4 @@
-function cop_analysis(proc_table_struct, file, fr, trial_name, subject)
+function cop_analysis(proc_table_struct, gen, fr, trial_name)
 
 global r01
 
@@ -28,108 +28,6 @@ FR = fr;
 
 xy = r01.project_xy;
 
-
-
-if strcmp(xy, 'Y') == 1
-
-    LASIS = trajectory(:, {'LASI_X', 'LASI_Y', 'LASI_Z'});
-    RASIS = trajectory(:, {'RASI_X', 'RASI_Y', 'RASI_Z'});
-    LPSIS= trajectory(:, {'LPSI_X', 'LPSI_Y', 'LPSI_Z'});
-    y_LPSIS = trajectory.("LPSI_Y");
-    RPSIS= trajectory(:, {'RPSI_X', 'RPSI_Y', 'RPSI_Z'});
-    y_RPSIS = trajectory.("RPSI_Y"); 
-
-    OPSIS=0.5*(table2array(RPSIS)+table2array(LPSIS)); 
-    y_OPSIS=0.5*(y_LPSIS+y_RPSIS);
-
-    LHE = trajectory(:, {'LHEE_X', 'LHEE_Y', 'LHEE_Z'});
-    LTO = trajectory(:, {'LTOE_X', 'LTOE_Y', 'LTOE_Z'});
-    
-    y_LHE=trajectory.("LHEE_Y");
-    z_LHE=trajectory.("LHEE_Z");
-    
-    y_LTO=trajectory.("LTOE_Y");
-    z_LTO=trajectory.("LTOE_Z");
-    
- 
-    y_RHE=trajectory.("RHEE_Y");
-    z_RHE=trajectory.("RHEE_Z");
-    
-    y_RTO=trajectory.("RTOE_Y");
-    z_RTO=trajectory.("RTOE_Z");
-
-elseif strcmp(xy, 'X') == 1
-    LASIS = trajectory(:, {'LASI_X', 'LASI_Y', 'LASI_Z'});
-    RASIS = trajectory(:, {'RASI_X', 'RASI_Y', 'RASI_Z'});
-    LPSIS= trajectory(:, {'LPSI_X', 'LPSI_Y', 'LPSI_Z'});
-    y_LPSIS = (trajectory.("LPSI_X"));
-    RPSIS= trajectory(:, {'RPSI_X', 'RPSI_Y', 'RPSI_Z'});
-    y_RPSIS = (trajectory.("RPSI_X")); 
-
-    OPSIS=0.5*(table2array(RPSIS)+table2array(LPSIS)); 
-    y_OPSIS=0.5*(y_LPSIS+y_RPSIS);
-
-    LHE = trajectory(:, {'LHEE_X', 'LHEE_Y', 'LHEE_Z'});
-    LTO = trajectory(:, {'LTOE_X', 'LTOE_Y', 'LTOE_Z'});
-    
-    y_LHE=trajectory.("LHEE_X");
-    z_LHE=trajectory.("LHEE_Z");
-    
-    y_LTO=trajectory.("LTOE_X");
-    z_LTO=trajectory.("LTOE_Z");
-    
- 
-    y_RHE=trajectory.("RHEE_X");
-    z_RHE=trajectory.("RHEE_Z");
-    
-    y_RTO=trajectory.("RTOE_X");
-    z_RTO=trajectory.("RTOE_Z");
-
-end
-
-z_lfocent= 0.5*(z_LHE+z_LTO); % z left foot centre
-z_rfocent= 0.5*(z_RHE+z_RTO); % z right foot centre
-
-%% Coordinate-Based Treadmill Algorithm_ EVENTS
-if y_RHE(1,1)<0 || y_LHE(1,1)<0
-  
-% left heel-sacrum distance
-Lheel=y_LHE-y_OPSIS;
-% left toe-sacrum distance
-Ltoe=-1*(y_LTO-y_OPSIS); % inverted
-
-% right heel-sacrum distance
-Rheel=y_RHE-y_OPSIS;
-% right toe-sacrum distance
-Rtoe=-1*(y_RTO-y_OPSIS); % inverted
-
-else
-
-% left heel-sacrum distance
-Lheel=-(y_LHE-y_OPSIS);
-% left toe-sacrum distance
-Ltoe=(y_LTO-y_OPSIS); % inverted
-
-% right heel-sacrum distance
-Rheel=-(y_RHE-y_OPSIS);
-% right toe-sacrum distance
-Rtoe=(y_RTO-y_OPSIS); % inverted
-
-end
-
-%findpeaks/valleys left leg Events
-[Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
-Lhstimes=(flhs-1)/FR; % left heel strike times
-
-[Lvlys,flto]=findpeaks(Ltoe); %[valleys, Frames] left toe off
-Ltofftimes=(flto-1)/FR; % left toe off times
-
-%findpeaks- right leg Events
-[Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
-Rhstimes=(frhs-1)/FR; % right heel strike times
-
-[Rvlys,frto]=findpeaks(Rtoe); %[valleys, Frames] right toe off
-Rtofftimes=(frto-1)/FR; % right toe off times
 
 %% load force data
 
@@ -210,6 +108,11 @@ while i <= width(Forcedata)
     end
     i = i+1;
 end
+
+
+
+
+
 
 
 AP_GRF = {};

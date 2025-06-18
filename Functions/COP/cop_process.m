@@ -1,5 +1,5 @@
 
-function [subjects] = cop_process(selection, fr)
+function [subjects] = cop_process(selection, choice, fr)
 % Takes in the list of subjects and arranges the data for each one. Returns
 % the struct 'subjects' for each subject for each file.
 
@@ -14,7 +14,7 @@ function [subjects] = cop_process(selection, fr)
         
         % Get subject data for subject folder
         
-        [proc_tables] = cop_arrange_tables(trials, fr);
+        [proc_tables] = cop_arrange_tables(trials, choice, fr);
        
 
         subject = strcat('sub_', subject{1});

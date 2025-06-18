@@ -339,7 +339,8 @@ function r01_process(selection, choice, fr)
                     jointAngs(g,:) = OvergroundJointAngs(subID,frames,model_text,model_data(mod_rows,:),all_events,APcol,direction);
     
                     mos(g,:)= MarginOfStability(subID,frames,camrate,model_text,model_data(mod_rows,:),coordata(mod_rows,:),coortext, all_events,APcol);
-    
+                    
+                    cop(g, :) = cop_analysis(subID, frames, camrate, model_text)
     
                     if gen(:,1)~=0
                         all_events_nogen = all_events(all_events(:, 2) ~= 5, :);

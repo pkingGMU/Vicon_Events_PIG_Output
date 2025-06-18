@@ -96,10 +96,12 @@ function selection_routing(~, event, outcome_selection, ~)
             mos_process(selectedFolders, selection, choice, fr)  
 
         case 'COP'
-
+            choice = questdlg('Is this treadmill or overground walking?', ...
+                    'Select Gait Type ', ...
+                    'Treadmill', 'Overground', 'Cancel', 'Treadmill');
 
             disp('test_cop')
-            cop_process(selected_folders, fr)
+            cop_process(selected_folders, choice, fr)
 
         
 
