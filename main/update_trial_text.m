@@ -128,6 +128,29 @@ function update_trial_text(src, ~)
         r01.gui.trial_panel_obs_crossing.String = 'Obstacle Crossing: Not Run';
     end
 
+    % COP Check %
+
+    cop_path = '';
+    cop_fld_search = {fullfile(pwd, 'Output', 'COP', idx{2}, idx{3}, strcat(idx{3}, '.xlsx'))};
+    for i = 1:length(cop_fld_search)
+        cop_candidate = cop_fld_search{i};
+        if isfile(cop_candidate)
+            cop_path = cop_candidate;
+            break;
+        end
+    end
+    
+    if ~isempty(cop_path)
+        set(r01.gui.trial_panel_cop, 'BackgroundColor', 'green');
+        set(r01.gui.trial_panel_cop, 'ForegroundColor', 'Black');
+        r01.gui.trial_panel_obs_cop.String = 'COP: Run';
+
+    else
+        set(r01.gui.trial_panel_cop, 'BackgroundColor', 'red');
+        set(r01.gui.trial_panel_cop, 'ForegroundColor', 'Black');
+        r01.gui.trial_panel_cop.String = 'COP: Not Run';
+    end
+
 
 
 

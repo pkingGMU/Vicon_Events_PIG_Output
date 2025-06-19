@@ -5,7 +5,7 @@ function process_callback(src, event, fr)
     
 
     possible_outcomes = ["Gait Events", "Gait Events & Clean Force Strikes", "R01 Analysis", ...
-        "Obstacle Crossing Outcomes", "Margin Of Stability", "Test Outcome", "DO NOT SELECT"];
+        "Obstacle Crossing Outcomes", "Margin Of Stability", "COP"];
 
     % Get list of outcome measures
     [outcome_selection, ~] = listdlg('PromptString', 'Select Outcome:', ...
