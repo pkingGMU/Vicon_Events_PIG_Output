@@ -164,10 +164,10 @@ function [proc_tables, event_table] = ges_arrange_tables(files, choice, fr)
 
         switch choice
             case 'Treadmill'
-                        [gen, gen_frames] = treadmill_gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, lhs, lto, rhs, rto, fr);
+                        [gen, gen_frames] = treadmill_gen_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, lhs, lto, rhs, rto, fr);
 
             case 'Overground'
-                        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, fr);
+                        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, fr);
 
         end
 

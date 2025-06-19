@@ -1,4 +1,4 @@
-function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gait_events_tables, fr)
+function [cleanEventsStruct, gen_frames] = gen_detection(trajectory, devices_data_table, gait_events_tables, fr)
     % Inputs:
     % devices_data_table: Table with force plate data (Force_Fz, CoP_Cx, CoP_Cy, Frame, etc)
     % gait_events_tables: Table with gait events including frame/time and event type
@@ -9,6 +9,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     plate_prefix = r01.gui.user_prefix_plates.String;  
     grid = r01.data.force_plate_labels;
     [rows, cols] = size(grid);
+    xy = r01.project_xy;
 
      % Sort gait events by time 
     gait_events_tables = sortrows(gait_events_tables, 'Time (s)');
@@ -28,6 +29,8 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     % Time thing
     time_vector = (0:height(force_data)-1)' / fr;
 
+    
+
     % Identify all plate labels in a list for easy access
     plate_labels = {};
     num_plates = 0;
@@ -43,8 +46,10 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     % Preload force Fz for all plates (as arrays for speed)
     force_Fz = zeros(height(force_data), num_plates);
     for i = 1:num_plates
-        temp = abs(force_data.(plate_labels{i}));
-        force_Fz(:, i) = temp - temp(1,1);
+        temp_z = abs(force_data.(strcat(plate_labels{i}, 'Force_Fz')));
+        force_Fx(:, i) = force_data.(strcat(plate_labels{i}, 'Force_Fx'));
+        force_Fy(:, i) = force_data.(strcat(plate_labels{i}, 'Force_Fy'));
+        force_Fz(:, i) = temp_z - temp_z(1,1);
     end
 
     % Rough BW threshold using 95th percentile of combined force
@@ -56,15 +61,12 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     % Initialize output variables
     gen_frames = [];
     cleanEventsStruct = struct( ...
-        'frame', [], ...
+        'hs_frame', [], ...
+        'to_frame', [], ...
         'time', [], ...
         'foot', [], ...
         'plate_label', [], ...
-        'max_force', [], ...
         'mean_COP_velocity_mm_per_s', [], ...
-        'clean', [], ...
-        'start_idx', [], ...
-        'end_idx', [], ...
         'displacement_x', [], ...
         'displacement_y', [], ...
         'propulsion', [], ...
@@ -119,8 +121,14 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
         [r_plate, c_plate] = find(strcmp(grid, dom_plate_label));
 
         
-        current_data = abs(force_data.(dom_plate_label) - force_data.(dom_plate_label)(1));        [max_z, max_z_idx] = max(current_data);
-        plate_force_window = current_data(hs_idx : to_idx);
+        Fz_plate = abs(force_data.(strcat(dom_plate_label, 'Force_Fz')) - force_data.(strcat(dom_plate_label, 'Force_Fz'))(1));        
+        [max_z, max_z_idx] = max(Fz_plate);
+        Fy_plate = force_data.(strcat(dom_plate_label, 'Force_Fy')) - force_data.(strcat(dom_plate_label, 'Force_Fy'))(1);        
+        [max_y, max_y_idx] = max(Fy_plate);
+        Fx_plate = force_data.(strcat(dom_plate_label, 'Force_Fx')) - force_data.(strcat(dom_plate_label, 'Force_Fx'))(1);        
+        [max_x, max_x_idx] = max(Fx_plate);
+
+        plate_force_window = Fz_plate(hs_idx : to_idx);
         plate_force_window = plate_force_window(plate_force_window > 0);
         
         if isempty(plate_force_window) || plate_force_window(1) > 100 || plate_force_window(end) > 100
@@ -139,7 +147,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
                     continue;
                 end
 
-                neighbor_data = abs(force_data.(neighbor_label) - force_data.(neighbor_label)(1));
+                neighbor_data = abs(force_data.(strcat(neighbor_label, 'Force_Fz')) - force_data.(strcat(neighbor_label, 'Force_Fz'))(1));
                 neighbor_force_window = neighbor_data(max_z_idx-10 : max_z_idx+10);
         
                 ratio = max(neighbor_force_window) / max(plate_force_window);
@@ -156,28 +164,32 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
         end
 
         % COP velocity check in window
-        cop_x_label = strcat(erase(dom_plate_label, "Force_Fz"), "CoP_Cx");
-        cop_y_label = strcat(erase(dom_plate_label, "Force_Fz"), "CoP_Cy");
+        cop_x_label = strcat(dom_plate_label, "CoP_Cx");
+        cop_y_label = strcat(dom_plate_label, "CoP_Cy");
 
         COPx_plate = force_data.(cop_x_label);
         COPy_plate = force_data.(cop_y_label);
 
-        Fz_plate = force_data.(dom_plate_label);
+        
+        
 
         % Zero baseline offset
-        COPx_plate = COPx_plate - COPx_plate(1);
-        COPy_plate = COPy_plate - COPy_plate(1);
+        % COPx_plate = COPx_plate - COPx_plate(1);
+        % COPy_plate = COPy_plate - COPy_plate(1);
 
-        Fz_plate = abs(Fz_plate - Fz_plate(1));
+        % Fz_plate = abs(Fz_plate - Fz_plate(1));
 
         COPx_win = COPx_plate(win_idx);
         COPy_win = COPy_plate(win_idx);
         time_win = time_vector(win_idx);
 
         Fz_plate = Fz_plate(win_idx);
+        Fy_plate = Fy_plate(win_idx);
+        Fx_plate = Fx_plate(win_idx);
 
         % Find indices where both COPx and COPy are non-zero
-        valid_idx = ~((COPx_win == 0) & (COPy_win == 0));
+        %valid_idx = ~((COPx_win == 0) & (COPy_win == 0));
+        valid_idx = abs(Fz_plate) > 20;
         
         % Filter COP data
         COPx_valid = COPx_win(valid_idx);
@@ -185,6 +197,8 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
         time_valid = time_win(valid_idx);
 
         Fz_plate = Fz_plate(valid_idx);
+        Fy_plate = Fy_plate(valid_idx);
+        Fx_plate = Fx_plate(valid_idx);
         
         % Check for force shape
         % Fz_smooth = sgolayfilt(Fz_plate, 3, 11);
@@ -193,11 +207,46 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
         %     continue
         % end
 
+        % Trajectory columns
+        if strcmp(xy, 'Y') == 1
+      
+            LHE=str2double(trajectory.("LHEE_Y"));
+            LHE_other = str2double(trajectory.("LHEE_X"));
+            LTO=str2double(trajectory.("LTOE_Y"));
+            LTO_other=str2double(trajectory.("LTOE_X"));
+            RHE=str2double(trajectory.("RHEE_Y"));
+            
+            foot_length = nanmean(sqrt((LHE-LTO).^2 + (LHE_other - LTO_other).^2));
+
+            
+           
+        elseif strcmp(xy, 'X') == 1
+            
+            LHE=str2double(trajectory.("LHEE_X"));
+            LHE_other = str2double(trajectory.("LHEE_Y"));
+            LTO=str2double(trajectory.("LTOE_X"));
+            LTO_other=str2double(trajectory.("LTOE_Y"));
+            RHE=str2double(trajectory.("RHEE_X"));
+            
+            foot_length = nanmean(sqrt((LHE-LTO).^2 + (LHE_other - LTO_other).^2));
+            
+            temp = Fy_plate;
+            Fy_plate = Fx_plate;
+            Fx_plate = temp;
+        end
+        
+        % Direction of travel
+        if RHE(1,1) < 0 || LHE(1,1) < 0
+            Fy_plate = -Fy_plate;
+        end
+
+        
+
         % Propulsion
-        propulsion = max(Fz_plate);
+        propulsion = abs(max(Fy_plate));
 
         % Breaking
-        breaking = min(Fz_plate);
+        breaking = abs(min(Fy_plate));
 
         % Interpolate
         num_points = 100;
@@ -210,30 +259,31 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
         
 
         path_length = sum( sqrt( diff(COPx_norm).^2 + diff(COPy_norm).^2 ) );
-        if path_length < 250
+        test = path_length / foot_length;
+        if path_length / foot_length < 1.2
             continue
         end
 
         % Get displacement ranges
-        range_x = max(COPx_norm) - min(COPx_norm);
-        range_y = max(COPy_norm) - min(COPy_norm);
-        
-        % Avoid divide-by-zero
-        if range_x == 0, range_x = eps; end
-        if range_y == 0, range_y = eps; end
-        
-        % Normalize spatially to [0, 1]
-        COPx_norm_spatial = (COPx_norm - min(COPx_norm)) / range_x;
-        COPy_norm_spatial = (COPy_norm - min(COPy_norm)) / range_y;
+        % range_x = max(COPx_norm) - min(COPx_norm);
+        % range_y = max(COPy_norm) - min(COPy_norm);
+        % 
+        % % Avoid divide-by-zero
+        % if range_x == 0, range_x = eps; end
+        % if range_y == 0, range_y = eps; end
+        % 
+        % % Normalize spatially to [0, 1]
+        % COPx_norm_spatial = (COPx_norm - min(COPx_norm)) / range_x;
+        % COPy_norm_spatial = (COPy_norm - min(COPy_norm)) / range_y;
                 
         % Displacement calculation
-        displacement_x = COPx_norm_spatial(end) - COPx_norm_spatial(1);
-        displacement_y = COPy_norm_spatial(end) - COPy_norm_spatial(1);
+        displacement_x = COPx_valid(end-1) - COPx_valid(1);
+        displacement_y = COPy_valid(end-1) - COPy_valid(1);
 
         % Calculate velocity only on valid rows
-        dx = diff(COPx_norm(10:end-10));
-        dy = diff(COPy_norm(10:end-10));
-        dt = diff(time_norm(10:end-10));
+        dx = diff(COPx_valid);
+        dy = diff(COPy_valid);
+        dt = diff(time_valid);
         dt(dt == 0) = eps;
         
         COP_velocity = sqrt(dx.^2 + dy.^2) ./ dt;
@@ -247,14 +297,11 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
 
         % Passed all checks, store event info
         gen_frames(end+1,1) = hs_frame;
-        cleanEventsStruct(end+1).frame = hs_frame;
+        cleanEventsStruct(end+1).hs_frame = hs_frame;
+        cleanEventsStruct(end).to_frame = to_frame;
         cleanEventsStruct(end).time = hs_frame / fr;
         cleanEventsStruct(end).plate_label = dom_plate_label;
-        %cleanEventsStruct(end).max_force = max_force;
         cleanEventsStruct(end).mean_COP_velocity_mm_per_s = mean(COP_velocity);
-        cleanEventsStruct(end).clean = true;
-        cleanEventsStruct(end).start_idx = win_idx(1);
-        cleanEventsStruct(end).end_idx = win_idx(end);
         cleanEventsStruct(end).displacement_x = abs(displacement_x);
         cleanEventsStruct(end).displacement_y = abs(displacement_y);
         cleanEventsStruct(end).propulsion = propulsion;
@@ -263,7 +310,7 @@ function [cleanEventsStruct, gen_frames] = gen_detection(devices_data_table, gai
     end
 
     % Remove first empty element from cleanEventsStruct (due to initialization)
-    if ~isempty(cleanEventsStruct) && isempty(cleanEventsStruct(1).frame)
+    if ~isempty(cleanEventsStruct) && isempty(cleanEventsStruct(1).hs_frame)
         cleanEventsStruct(1) = [];
     end
 

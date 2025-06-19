@@ -140,7 +140,7 @@ function [proc_tables] = cop_arrange_tables(files, choice, fr)
         % Add event table to proc tables
         proc_tables.(file_name_short).event_data_table = event_table;
 
-        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, fr);
+        [gen, gen_frames] = gen_detection(proc_tables.(file_name_short).trajectory_data_table, proc_tables.(file_name_short).devices_data_table, proc_tables.(file_name_short).event_data_table, fr);
         %cop_analysis(proc_tables, gen, fr, file_name_short);
         
         
