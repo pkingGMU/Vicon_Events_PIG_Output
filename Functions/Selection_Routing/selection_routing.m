@@ -38,7 +38,7 @@ function selection_routing(~, event, outcome_selection, ~)
 
     
 
-
+    
     switch outcome_selection
         case 'Gait Events'
            

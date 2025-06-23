@@ -26,7 +26,7 @@ function [event_table] = ge_arrange_tables(files, choice, fr)
     for file = 1:height(files)
 
         
-
+        try
         % % Set temp variable to the nth file in our list of files
         % file_name = fullfile(folder, files(file).name);
         % 
@@ -60,9 +60,10 @@ function [event_table] = ge_arrange_tables(files, choice, fr)
         
 
         full_data_table = readtable(csv_name, opts);
-
-        full_data_table.Properties.VariableNames{3} = 'Var3';
         
+        
+        full_data_table.Properties.VariableNames{3} = 'Var3';
+        full_data_table.Properties.VariableNames{1} = 'Var1';
         
         %%% Create new tables for each section (Note this uses a custom function table_processing.m
         % The tables will be added to the struct proc_tables at the file
@@ -463,5 +464,8 @@ function [event_table] = ge_arrange_tables(files, choice, fr)
         % %% Delete the temporary folder and its contents
         % rmdir(tmp_folder, 's');
         % fprintf('Temporary files and folder have been deleted.\n');
+        catch
+            disp('Failed')
+        end
 
 end

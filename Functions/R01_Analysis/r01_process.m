@@ -32,7 +32,7 @@ function r01_process(selection, choice, fr)
     % Check GUI flags
     if strcmp(r01.gui.trial_panel_gait_check.String, 'Gait Events: Run')
         gait_exists = 1;
-    elseif strcmp(r01.gui.trial_panel_gait_check.String, 'Gait Events & Force: Run')
+    elseif strcmp(r01.gui.trial_panel_gait_force_check.String, 'Gait Events & Force: Run')
         gait_force_exists = 1;
     else
         disp('Cannot run because gait events need to be detected by either Gait or Gait Force');
@@ -160,7 +160,7 @@ function r01_process(selection, choice, fr)
         for each_trial = 1:height(trials)
             % Construct the full path to the file
             %trial_file = [subject_path slash_dir trials{each_trial}];
-            trial_file = fullfile(subject_path, strcat(trials{each_trial}, '_events.xlsx'));
+            trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.xlsx'));
             % Load the trial data
     
             [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
@@ -340,7 +340,7 @@ function r01_process(selection, choice, fr)
     
                     mos(g,:)= MarginOfStability(subID,frames,camrate,model_text,model_data(mod_rows,:),coordata(mod_rows,:),coortext, all_events,APcol);
                     
-                    cop(g, :) = cop_analysis(subID, frames, camrate, model_text)
+                    
     
                     if gen(:,1)~=0
                         all_events_nogen = all_events(all_events(:, 2) ~= 5, :);
