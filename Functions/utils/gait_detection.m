@@ -9,6 +9,9 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     frame_start = frame_values(1);
 
     FR = fr;
+    
+    [b, a] = butter(4, 1/(FR/2)); % 4th order Butterworth at 6 Hz
+    
 
     xy = r01.project_xy;
 
@@ -63,22 +66,20 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     
     %% Markers
 
-    
-    if RHE(1,1)<0 && LHE(1,1)<0
-    
-    disp('Top')
+    if strcmp(choice, 'Treadmill')
 
-    % left heel-sacrum distance
-    Lheel=LHE-OPSIS;
+         % left heel-sacrum distance
+    Lheel=filtfilt(b, a, LHE-OPSIS);
     % left toe-sacrum distance
-    Ltoe=-1*(LTO-OPSIS); % inverted
+    Ltoe=filtfilt(b, a, -1*(LTO-OPSIS)); % inverted
     
     % right heel-sacrum distance
-    Rheel=RHE-OPSIS;
+    Rheel=filtfilt(b, a, RHE-OPSIS);
     % right toe-sacrum distance
-    Rtoe=-1*(RTO-OPSIS); % inverted
+    Rtoe=filtfilt(b, a, -1*(RTO-OPSIS)); % inverted
+
     
-    %findpeaks/valleys left leg Events
+        %findpeaks/valleys left leg Events
     [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
     % figure; findpeaks(Lheel);
     % xlabel('frame');
@@ -103,20 +104,67 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     % xlabel('frame');
     % ylabel('right toe off');
     % Rtofftimes=(frto-1)/FR; % right toe off times
+
+    else
+
+    
+    if RHE(1,1)<0 && LHE(1,1)<0
+    
+    disp('Top')
+
+    % left heel-sacrum distance
+    Lheel=filtfilt(b, a, LHE-OPSIS);
+    % left toe-sacrum distance
+    Ltoe=filtfilt(b, a, -1*(LTO-OPSIS)); % inverted
+    
+    % right heel-sacrum distance
+    Rheel=filtfilt(b, a, RHE-OPSIS);
+    % right toe-sacrum distance
+    Rtoe=filtfilt(b, a, -1*(RTO-OPSIS)); % inverted
+
+    
+        %findpeaks/valleys left leg Events
+    [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
+    % figure; findpeaks(Lheel);
+    % xlabel('frame');
+    % ylabel('left heel strike');
+    % Lhstimes=(flhs-1)/FR; % left heel strike times
+    
+    [Lvlys,flto]=findpeaks(Ltoe); %[valleys, Frames] left toe off
+    % figure; findpeaks(Ltoe);
+    % xlabel('frame');
+    % ylabel('left toe off');
+    % Ltofftimes=(flto-1)/FR; % left toe off times
+    
+    %findpeaks- right leg Events
+    [Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
+    % figure; findpeaks(Rheel);
+    % xlabel('frame');
+    % ylabel('right heel strike');
+    % Rhstimes=(frhs-1)/FR; % right heel strike times
+    
+    [Rvlys,frto]=findpeaks(Rtoe); %[valleys, Frames] right toe off
+    % figure; findpeaks(Rtoe);
+    % xlabel('frame');
+    % ylabel('right toe off');
+    % Rtofftimes=(frto-1)/FR; % right toe off times
+
+    
+    
     
     else
     
     disp('Bottom')
 
     % left heel-sacrum distance
-    Lheel=-(LHE-OPSIS);
+    Lheel=filtfilt(b, a, -(LHE-OPSIS));
     % left toe-sacrum distance
-    Ltoe=(LTO-OPSIS); % inverted
+    Ltoe=filtfilt(b, a, (LTO-OPSIS)); % inverted
     
     % right heel-sacrum distance
-    Rheel=-(RHE-OPSIS);
+    Rheel=filtfilt(b, a, -(RHE-OPSIS));
     % right toe-sacrum distance
-    Rtoe=(RTO-OPSIS); % inverted
+    Rtoe=filtfilt(b, a, (RTO-OPSIS)); % inverted
     
     %findpeaks/valleys left leg Events
     [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
@@ -130,7 +178,7 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     % xlabel('frame');
     % ylabel('left toe off');
     % Ltofftimes=(flto-1)/FR; % left toe off times
-    
+    % 
     % findpeaks- right leg Events
     [Rpks,frhs]=findpeaks(Rheel); %[peaks, Frames] right heel strike
     % figure; findpeaks(Rheel);
@@ -143,30 +191,12 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     % xlabel('frame');
     % ylabel('right toe off');
     % Rtofftimes=(frto-1)/FR; % right toe off times
-    % 
+
+
     end
-        
-            
 
-    %%% After detecting events, ensure first event is a heel strike
-    % Left leg: if the first event in the left leg is not a heel strike, rearrange
-    % if flhs(1) > flto(1)  % First event is a toe-off
-    %     disp('Rearranging left leg events to start with heel strike');
-    %     flto = flto(2:end);  % Skip first toe-off
-    %     toe_off_cut = 1;
-    % end
-    % 
-    % % Right leg: if the first event in the right leg is not a heel strike, rearrange
-    % if toe_off_cut ~= 1
-    %     if frhs(1) > frto(1)  % First event is a toe-off
-    %         disp('Rearranging right leg events to start with heel strike');
-    %         frto = frto(2:end);  % Skip first toe-off
-    %     end
-    % end
+    end
 
-    % Combine all events into a single array with identifiers for event type and side
-    
-    % Combine all events into a single array with identifiers for event type and side
     events = [
         num2cell(flhs(:)), repmat({"flhs"}, numel(flhs), 1);
         num2cell(flto(:)), repmat({"flto"}, numel(flto), 1);
@@ -192,30 +222,6 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     new_frto = [];
 
 
-
-    % New logic for patterns
-
-    % i = 1;
-    % while i <=size(events, 1) - 3
-    % 
-    %     % Gait pattern 1 hs, opposite to, opposite hs, to
-    %     if strcmp(events{i, 2}, 'flhs') && strcmp(events{i+1, 2}, 'frto') && strcmp(events{i+2, 2}, 'frhs') && strcmp(events{i+3, 2}, 'flto')
-    %         new_flhs(end+1) = events{i, 1};
-    %         new_frto(end+1) = events{i+1, 1};
-    %         new_frhs(end+1) = events{i+2, 1};
-    %         new_flto(end+1) = events{i+3, 1};
-    %         i = i + 4;  % Move to the next set of events
-    %     % Gait pattern 2 to, opposite hs, opposite to, hs
-    %     elseif strcmp(events{i, 2}, 'frhs') && strcmp(events{i+1, 2}, 'frto') && strcmp(events{i+2, 2}, 'flhs') && strcmp(events{i+3, 2}, 'flto')
-    %         new_frhs(end+1) = events{i, 1};
-    %         new_frto(end+1) = events{i+1, 1};
-    %         new_flhs(end+1) = events{i+2, 1};
-    %         new_flto(end+1) = events{i+3, 1};
-    %         i = i + 4;  % Move to the next set of events
-    %         else
-    %         i = i + 1;  % Skip this event if it doesn't fit the pattern
-    %     end
-    % end
 
     % Iterate through the sorted events and enforce the sequence
     i = 1;

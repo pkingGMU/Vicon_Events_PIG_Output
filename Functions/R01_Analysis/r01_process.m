@@ -163,10 +163,26 @@ function r01_process(selection, choice, fr)
             trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.xlsx'));
             % Load the trial data
     
-            [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
-    
-    
-            % define gait events
+            % [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
+            [active_data,active_text, raw] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
+            % active_data = readcell(trial_file);
+            % % Skip the first row
+            % active_data = active_data(2:end, :);
+            % 
+            % [nRows, nCols] = size(active_data);
+            % data_numeric = NaN(nRows, nCols);  % initialize output
+            % 
+            % for i = 1:nRows
+            %     for j = 1:nCols
+            %         val = active_data{i,j};
+            %         if isnumeric(val) && isscalar(val) && ~isempty(val)
+            %             data_numeric(i,j) = val;
+            %         end
+            %     end
+            % end
+            % 
+            % active_data = data_numeric;
+            % clear data_numeric
     
             % Find Gait Events & Extract Gait Event Data
             event_text_rows = find(strcmp(active_text,'Events')==1)+3: find(strcmp(active_text,'Devices')==1)-2;

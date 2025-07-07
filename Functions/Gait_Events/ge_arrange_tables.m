@@ -204,9 +204,9 @@ function [event_table] = ge_arrange_tables(files, choice, fr)
             % Read one line
             line = fgetl(fid);
             if ischar(line)
-                % Split by commas into cell array (handle arbitrary column widths)
                 split_line = regexp(line, ',', 'split');
-                existing_data{end+1, 1} = split_line;  % store as cell of cells
+                converted_line = cellfun(@(x) try_str2num_else_keep(x), split_line, 'UniformOutput', false);
+                existing_data{end+1, 1} = converted_line;
             end
         end
         fclose(fid);
@@ -264,6 +264,11 @@ function [event_table] = ge_arrange_tables(files, choice, fr)
         
         %%% Replace missing cells (defensive, but should rarely trigger)
         combined_data(cellfun(@(x) isa(x, 'missing'), combined_data)) = {[]};
+
+        
+
+        % combined_data = cellfun(@(x) try_str2num_else_keep(x), combined_data, 'UniformOutput', false);
+
         
         %%% Define Folder and Save Excel (keep your original chunk system below)
         
@@ -468,4 +473,23 @@ function [event_table] = ge_arrange_tables(files, choice, fr)
             disp('Failed')
         end
 
-end
+    end
+
+        
+
+    
+
+    function val = try_str2num_else_keep(x)
+            if ischar(x) || isstring(x)
+                num = str2double(x);
+                if ~isnan(num) && ~isempty(x)
+                    val = num;  % convert numeric strings like '3.14' to 3.14
+                else
+                    val = x;    % keep as string like 'Context' or empty
+                end
+            else
+                val = x;        % already numeric, empty, or a non-string type
+            end
+    end
+
+    end
