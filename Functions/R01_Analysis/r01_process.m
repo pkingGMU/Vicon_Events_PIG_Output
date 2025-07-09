@@ -24,6 +24,8 @@
 
 function r01_process(selection, choice, fr)
 
+   
+
     global r01
 
     gait_exists = 0;
@@ -206,8 +208,14 @@ function r01_process(selection, choice, fr)
             coordata=active_data(coordataline:coordatalineend,:);%Select coordinate data
             coortext = active_text(coordataline - 2,:);
             frame_number=coordata(:,1);
+
+            try
             
             gaitcycles = getGaitCycles(frame_number,all_events,lhs,rhs);
+
+            catch
+                continue
+            end
 
             if isempty(gaitcycles)
                 disp(strcat('Need more than 1 gait cycle', sub_name));
@@ -259,6 +267,8 @@ function r01_process(selection, choice, fr)
     
             % For each gait cycle:
             for g = 1:length(gaitcycles)
+
+                try
                 frames = gaitcycles{g};
                 [rowMatch,~]=ismember(coordata(:,1),frames,'rows');
                 traj_rows = find(rowMatch);
@@ -385,8 +395,17 @@ function r01_process(selection, choice, fr)
                         kinetics(g,:) = NaN(1,14);
                     end
                 end
+
+                catch
+
+                    disp("gait cycle failed")
+                    continue
+
+                end
     
             end
+
+            try
     
             % average across legs and save averages in a big subject
             [sub_LRsteps,sub_avs] = averages(spatiotemps,jointAngs,kinetics);
@@ -460,6 +479,9 @@ function r01_process(selection, choice, fr)
                 sub_list_num sub_loc sub_varTypes subID subject_path trial_file...
                 trial_list_num trials type sub_varNames av_varNames processed_data...
                 trial_nam sub_name selection 
+            catch
+                disp("Trial Failed")
+            end
     
         end % end trial loop
     
@@ -570,6 +592,8 @@ function r01_process(selection, choice, fr)
 
 
     cd(root_data_dir);
+
+    
 
 
 end
