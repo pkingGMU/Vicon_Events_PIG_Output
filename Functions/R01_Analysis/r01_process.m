@@ -160,31 +160,35 @@ function r01_process(selection, choice, fr)
     
         % Loop through each selected trial
         for each_trial = 1:height(trials)
+            clear active_data active_text coordataline coordatalineend event_data event_text event_text_rows frame_number 
             % Construct the full path to the file
             %trial_file = [subject_path slash_dir trials{each_trial}];
-            trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.xlsx'));
+            
+
             % Load the trial data
+            try
+
+                trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.xlsx'));
+            
+                mem_dir = dir(trial_file);
+                file_size = mem_dir.bytes / (1024^2);
+                limit = 200;
     
+                if file_size > 150
+                    clear active_data active_text
+                    disp("File To Big")
+                    continue
+                end
             % [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
-            [active_data,active_text, raw] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
-            % active_data = readcell(trial_file);
-            % % Skip the first row
-            % active_data = active_data(2:end, :);
-            % 
-            % [nRows, nCols] = size(active_data);
-            % data_numeric = NaN(nRows, nCols);  % initialize output
-            % 
-            % for i = 1:nRows
-            %     for j = 1:nCols
-            %         val = active_data{i,j};
-            %         if isnumeric(val) && isscalar(val) && ~isempty(val)
-            %             data_numeric(i,j) = val;
-            %         end
-            %     end
-            % end
-            % 
-            % active_data = data_numeric;
-            % clear data_numeric
+            [active_data,active_text, ~] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
+            catch
+                clear active_data active_text
+                disp("File not Found")
+                continue
+            end
+            
+            
+         
     
             % Find Gait Events & Extract Gait Event Data
             event_text_rows = find(strcmp(active_text,'Events')==1)+3: find(strcmp(active_text,'Devices')==1)-2;
@@ -193,9 +197,35 @@ function r01_process(selection, choice, fr)
             camrate = active_data(strcmp(active_text(:,1),'Events')==1,1); % in frames per second
     
             if strcmp(type{:},'Treadmill')==1
-                [rhs, rto, lhs, lto, all_events]= getGaitEvents(event_text, event_data,type,camrate);
+                [rhs, ~, lhs, ~, all_events]= getGaitEvents(event_text, event_data,type,camrate);
             elseif strcmp(type{:},'Overground')==1
-                [rhs,rto,lhs,lto,gen,all_events]= getGaitEvents(event_text, event_data,type,camrate);
+                [rhs,~,lhs,~,gen,all_events]= getGaitEvents(event_text, event_data,type,camrate);
+            end
+
+            event_col = all_events(:,2);
+            patterns = {[1 2 3 4], [3 4 1 2]};
+      
+            is_match = false;
+
+            for i = 1:length(patterns)
+                pattern = patterns{i};
+                len = length(pattern);
+                
+                % Repeat pattern to match length of col
+                repeated = repmat(pattern(:), ceil(length(event_col)/len), 1);
+                repeated = repeated(1:length(event_col));
+                
+                % Check if column matches the pattern
+                if isequal(event_col(:), repeated)
+                    is_match = true;
+                    disp(['Matches pattern: ', mat2str(pattern)]);
+                    break;
+                end
+            end
+            
+            if ~is_match
+                disp('No matching pattern found.');
+                continue
             end
     
             % Define Gait Cycles & extract trajectory data for those rose: lhs = 1 rto = 2 rhs = 3 lto = 4
@@ -258,10 +288,11 @@ function r01_process(selection, choice, fr)
             allnan = find(isnan(active_data(:,1)));
             moddatend = allnan(find(allnan>moddatstart,1))-1;
             model_data = active_data(moddatstart:moddatend,:);
-            sub_loc = find(strcmp(active_text(:,1),'Subject'));
+            %sub_loc = find(strcmp(active_text(:,1),'Subject'));
             subID = sub_name;
             % subID = string(active_text(sub_loc(1,1)+1,1));
-
+            clear active_data
+            clear active_text
             
     
     
@@ -491,8 +522,12 @@ function r01_process(selection, choice, fr)
         writetable(sub_tab,subject_names_output);
 
         clearvars sub_tab
+        clear active_data active_text coordate coordataline coordatalineend coortext event_data event_text event_text_rows frame_number 
+
     
     end % end subject loop
+
+    clear active_data active_text coordate coordataline coordatalineend coortext event_data event_text event_text_rows frame_number 
     
     % add each subject & trial averages to a big table
     

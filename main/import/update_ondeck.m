@@ -16,7 +16,7 @@ function update_ondeck
         elseif ismember(trial_list(value_num, 1), r01.files.ready_to_process(:, 1))
             disp('Exists')
         elseif height(r01.files.ready_to_process) >= 1
-            r01.files.ready_to_process(end+1, :) = trial_list(value_num, :);
+            r01.files.ready_to_process = [r01.files.ready_to_process; trial_list(value_num, :)];
         end
 
     
