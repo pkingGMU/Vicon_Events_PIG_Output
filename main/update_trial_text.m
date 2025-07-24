@@ -23,7 +23,7 @@ function update_trial_text(src, ~)
 
     r01.files.selected_trial = idx;
 
-    file_name = split(strcat(regexprep(idx{3}, ' ', '_'), '_events.xlsx'));
+    file_name = split(strcat(regexprep(idx{3}, ' ', '_'), '_events.csv'));
     
     % Gait Event Check %
     gait_path = '';

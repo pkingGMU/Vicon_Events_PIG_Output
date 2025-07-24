@@ -43,6 +43,8 @@ function r01_process(selection, choice, fr)
         return;
     end
 
+    
+
     % Directory setup
     root_data_dir = pwd;
     code_dir = fullfile(pwd, 'Functions', 'R01_Analysis');
@@ -262,6 +264,7 @@ function r01_process(selection, choice, fr)
             gaitcycles = getGaitCycles(frame_number,all_events,lhs,rhs);
 
             catch
+                disp("Gait Cycle Error")
                 continue
             end
 

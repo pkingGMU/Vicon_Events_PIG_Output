@@ -5,12 +5,23 @@ function [gaitcycles] = getGaitCycles(data,all_events,lhs,rhs)
 
 gaitcycles = {};
 
- if all_events(1,2) == 1
-           startleg = 1; % left
-           numcycles = length(lhs)-1;
-       elseif all_events(1,2) == 3
-           startleg = 2; % right
-           numcycles = length(rhs)-1;
+found = false;
+i = 1;
+while found == false
+
+     if all_events(i,2) == 1
+               startleg = 1; % left
+               numcycles = length(lhs)-1;
+               found = true;
+           elseif all_events(i,2) == 3
+               startleg = 2; % right
+               numcycles = length(rhs)-1;
+               found = true;
+     end
+    
+     all_events = all_events(i+4:end, :);
+     i = i + 4;
+
 end
 
 if startleg == 1 % left
