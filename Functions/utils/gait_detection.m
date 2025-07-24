@@ -1,4 +1,4 @@
-function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(trajectory, model_output, devices_table, choice, fr)
+function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(trajectory, ~, ~, choice, fr)
     
     global r01
 
@@ -215,47 +215,101 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
 
     
     
-    % Initialize arrays to store the corrected sequence
+    % Initialize new event arrays
     new_flhs = [];
-    new_flto = [];
-    new_frhs = [];
     new_frto = [];
-
-
-
-    % Iterate through the sorted events and enforce the sequence
+    new_frhs = [];
+    new_flto = [];
+    
+    % Decide on pattern direction
+    pattern = '';
     i = 1;
     while i <= size(events, 1) - 3
-        % Check for foot strike first (either left or right)
-        if strcmp(events{i, 2}, 'flhs') || strcmp(events{i, 2}, 'frhs')
-            % Check for opposite toe-off, opposite heel strike, and same toe-off
-            if strcmp(events{i+1, 2}, 'frto') && strcmp(events{i+2, 2}, 'frhs') && strcmp(events{i+3, 2}, 'flto') || ...
-               strcmp(events{i+1, 2}, 'flto') && strcmp(events{i+2, 2}, 'flhs') && strcmp(events{i+3, 2}, 'frto') 
-               
-                % Add the correct sequence to the new arrays
-                if strcmp(events{i, 2}, 'flhs')
-                    new_flhs(end+1) = events{i, 1};  % Left heel strike
-                    new_frto(end+1) = events{i+1, 1};  % Right toe off
-                    new_frhs(end+1) = events{i+2, 1};  % Right heel strike
-                    new_flto(end+1) = events{i+3, 1};  % Left toe off
-                else
-                    new_frhs(end+1) = events{i, 1};  % Right heel strike
-                    new_flto(end+1) = events{i+1, 1};  % Left toe off
-                    new_flhs(end+1) = events{i+2, 1};  % Left heel strike
-                    new_frto(end+1) = events{i+3, 1};  % Right toe off
-                end
-                
-                % Move to the next set of events
-                i = i + 4;
+        if strcmp(pattern, '')
+            % Detect initial valid pattern
+            if strcmp(events{i,2}, 'flhs') && ...
+               strcmp(events{i+1,2}, 'frto') && ...
+               strcmp(events{i+2,2}, 'frhs') && ...
+               strcmp(events{i+3,2}, 'flto')
+                pattern = 'left-first';
+            elseif strcmp(events{i,2}, 'frhs') && ...
+                   strcmp(events{i+1,2}, 'flto') && ...
+                   strcmp(events{i+2,2}, 'flhs') && ...
+                   strcmp(events{i+3,2}, 'frto')
+                pattern = 'right-first';
             else
-                % Sequence is incorrect, move to the next event
                 i = i + 1;
+                continue;
             end
+        end
+    
+        % Follow the detected pattern
+        if strcmp(pattern, 'left-first') && ...
+           strcmp(events{i,2}, 'flhs') && ...
+           strcmp(events{i+1,2}, 'frto') && ...
+           strcmp(events{i+2,2}, 'frhs') && ...
+           strcmp(events{i+3,2}, 'flto')
+    
+            new_flhs(end+1) = events{i,1};
+            new_frto(end+1) = events{i+1,1};
+            new_frhs(end+1) = events{i+2,1};
+            new_flto(end+1) = events{i+3,1};
+            i = i + 4;
+    
+        elseif strcmp(pattern, 'right-first') && ...
+               strcmp(events{i,2}, 'frhs') && ...
+               strcmp(events{i+1,2}, 'flto') && ...
+               strcmp(events{i+2,2}, 'flhs') && ...
+               strcmp(events{i+3,2}, 'frto')
+    
+            new_frhs(end+1) = events{i,1};
+            new_flto(end+1) = events{i+1,1};
+            new_flhs(end+1) = events{i+2,1};
+            new_frto(end+1) = events{i+3,1};
+            i = i + 4;
+    
         else
-            % If the first event is not a heel strike, move to the next event
+            % If the pattern doesn't match, skip to next event
             i = i + 1;
         end
     end
+
+
+
+
+    % % Iterate through the sorted events and enforce the sequence
+    % i = 1;
+    % while i <= size(events, 1) - 3
+    %     % Check for foot strike first (either left or right)
+    %     if strcmp(events{i, 2}, 'flhs') || strcmp(events{i, 2}, 'frhs')
+    %         % Check for opposite toe-off, opposite heel strike, and same toe-off
+    %         if strcmp(events{i+1, 2}, 'frto') && strcmp(events{i+2, 2}, 'frhs') && strcmp(events{i+3, 2}, 'flto') || ...
+    %            strcmp(events{i+1, 2}, 'flto') && strcmp(events{i+2, 2}, 'flhs') && strcmp(events{i+3, 2}, 'frto') 
+    % 
+    %             % Add the correct sequence to the new arrays
+    %             if strcmp(events{i, 2}, 'flhs')
+    %                 new_flhs(end+1) = events{i, 1};  % Left heel strike
+    %                 new_frto(end+1) = events{i+1, 1};  % Right toe off
+    %                 new_frhs(end+1) = events{i+2, 1};  % Right heel strike
+    %                 new_flto(end+1) = events{i+3, 1};  % Left toe off
+    %             else
+    %                 new_frhs(end+1) = events{i, 1};  % Right heel strike
+    %                 new_flto(end+1) = events{i+1, 1};  % Left toe off
+    %                 new_flhs(end+1) = events{i+2, 1};  % Left heel strike
+    %                 new_frto(end+1) = events{i+3, 1};  % Right toe off
+    %             end
+    % 
+    %             % Move to the next set of events
+    %             i = i + 4;
+    %         else
+    %             % Sequence is incorrect, move to the next event
+    %             i = i + 1;
+    %         end
+    %     else
+    %         % If the first event is not a heel strike, move to the next event
+    %         i = i + 1;
+    %     end
+    % end
 
     % Update the original arrays with the validated sequence
     flhs = new_flhs;

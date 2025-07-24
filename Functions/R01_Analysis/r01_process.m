@@ -168,7 +168,8 @@ function r01_process(selection, choice, fr)
             % Load the trial data
             try
 
-                trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.xlsx'));
+                % trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.xlsx'));
+                trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.csv'));
             
                 mem_dir = dir(trial_file);
                 file_size = mem_dir.bytes / (1024^2);
@@ -180,7 +181,24 @@ function r01_process(selection, choice, fr)
                     continue
                 end
             % [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
-            [active_data,active_text, ~] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
+            % [active_data,active_text, ~] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
+            
+            raw = readcell(trial_file);
+
+            % Logical masks
+            is_num = cellfun(@isnumeric, raw);
+            is_str = cellfun(@(x) ischar(x) || isstring(x), raw);
+
+            % Build outputs
+            active_data = NaN(size(raw));
+            active_data(is_num) = cell2mat(raw(is_num));
+            active_data = active_data(2:end, :);
+
+            active_text = strings(size(raw));
+            active_text(is_str) = string(raw(is_str));
+
+
+
             catch
                 clear active_data active_text
                 disp("File not Found")
@@ -202,31 +220,31 @@ function r01_process(selection, choice, fr)
                 [rhs,~,lhs,~,gen,all_events]= getGaitEvents(event_text, event_data,type,camrate);
             end
 
-            event_col = all_events(:,2);
-            patterns = {[1 2 3 4], [3 4 1 2]};
-      
-            is_match = false;
-
-            for i = 1:length(patterns)
-                pattern = patterns{i};
-                len = length(pattern);
-                
-                % Repeat pattern to match length of col
-                repeated = repmat(pattern(:), ceil(length(event_col)/len), 1);
-                repeated = repeated(1:length(event_col));
-                
-                % Check if column matches the pattern
-                if isequal(event_col(:), repeated)
-                    is_match = true;
-                    disp(['Matches pattern: ', mat2str(pattern)]);
-                    break;
-                end
-            end
-            
-            if ~is_match
-                disp('No matching pattern found.');
-                continue
-            end
+            % event_col = all_events(:,2);
+            % patterns = {[1 2 3 4], [3 4 1 2]};
+            % 
+            % is_match = false;
+            % 
+            % for i = 1:length(patterns)
+            %     pattern = patterns{i};
+            %     len = length(pattern);
+            % 
+            %     % Repeat pattern to match length of col
+            %     repeated = repmat(pattern(:), ceil(length(event_col)/len), 1);
+            %     repeated = repeated(1:length(event_col));
+            % 
+            %     % Check if column matches the pattern
+            %     if isequal(event_col(:), repeated)
+            %         is_match = true;
+            %         disp(['Matches pattern: ', mat2str(pattern)]);
+            %         break;
+            %     end
+            % end
+            % 
+            % if ~is_match
+            %     disp('No matching pattern found.');
+            %     continue
+            % end
     
             % Define Gait Cycles & extract trajectory data for those rose: lhs = 1 rto = 2 rhs = 3 lto = 4
             % find marker coordinate data

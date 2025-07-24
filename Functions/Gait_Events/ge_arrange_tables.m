@@ -25,15 +25,11 @@ function [event_table] = ge_arrange_tables(files, choice, fr)
     % Etc.....
     for file = 1:height(files)
 
+        log_file = fullfile(pwd, 'logs', 'error_log.csv');
+
         
         try
-        % % Set temp variable to the nth file in our list of files
-        % file_name = fullfile(folder, files(file).name);
-        % 
-        % % A shorted file name without the csv extension
-        % file_name_short = strrep(erase(files(file).name, ".csv"), ' ', '_');
-        % % Remove any unnecessary numbers
-        % file_name_short = regexprep(file_name_short, '^[^a-zA-Z]+', '');
+       
         
         csv_name = files{file, 1};
  
@@ -270,207 +266,73 @@ function [event_table] = ge_arrange_tables(files, choice, fr)
         % combined_data = cellfun(@(x) try_str2num_else_keep(x), combined_data, 'UniformOutput', false);
 
         
-        %%% Define Folder and Save Excel (keep your original chunk system below)
-        
-        % Define root folder based on 'choice' variable
+
+        %%% write to csv
+        % Create folder if it doesn't exist
         root_folder = pwd;
         excel_folder = fullfile(root_folder, 'Output', 'Gait_Events', choice, subject_id);
         if ~exist(excel_folder, 'dir')
             mkdir(excel_folder);
         end
         
-        new_excel_filename = strcat(file_name_short_prefix, '_events', '.xlsx');
-        new_full_file_path = fullfile(excel_folder, new_excel_filename);
+        % Define new CSV filename
+        new_csv_filename = strcat(file_name_short_prefix, '_events', '.csv');
+        new_full_file_path = fullfile(excel_folder, new_csv_filename);
+        
+        % Delete if it already exists
         if exist(new_full_file_path, 'file') == 2
             delete(new_full_file_path);
         end
         
-        % Chunk write (your original chunk writer exactly preserved)
-        chunk_size = 5000;
-        num_rows = size(combined_data, 1);
-        num_chunks = ceil(num_rows / chunk_size);
-        chunk_indices = 1:chunk_size:num_rows;
         
-        tmp_folder = fullfile(pwd, 'my_temp_folder');
-        if ~exist(tmp_folder, 'dir')
-            mkdir(tmp_folder);
-        end
+        %writecell(combined_data, new_full_file_path);
         
-        for i = 1:num_chunks
-            chunk_start = chunk_indices(i);
-            chunk_end = min(chunk_start + chunk_size - 1, num_rows);
-            chunk = combined_data(chunk_start:chunk_end, :);
-            file_name = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
-            fprintf('Writing rows %d to %d to file %s\n', chunk_start, chunk_end, file_name);
-            try
-                writecell(chunk, file_name);
-                fprintf('Successfully wrote to %s\n', file_name);
-            catch ME
-                fprintf('Error writing to %s: %s\n', file_name, ME.message);
+        fid = fopen(new_full_file_path, 'w');
+
+        for i = 1:size(combined_data, 1)
+            row = combined_data(i, :);
+            out = cell(1, numel(row));
+            for j = 1:numel(row)
+                value = row{j};
+                if (isscalar(value) && ismissing(value)) || isempty(value)
+                    out{j} = '';
+                elseif isnumeric(value) && isscalar(value)
+                    out{j} = num2str(value);
+                elseif ischar(value) || (isstring(value) && isscalar(value))
+                    out{j} = char(value);  % Convert string to char to avoid quotes
+                else
+                    out{j} = '[UNSUPPORTED]';  % Fallback for structs, arrays, etc.
+                end
             end
+            fprintf(fid, '%s\n', strjoin(out, ','));
         end
         
-        combined_file = new_full_file_path;
-        for i = 1:num_chunks
-            worker_file = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
-            chunk_data = readcell(worker_file);
-            chunk_data(cellfun(@(x) isa(x, 'missing'), chunk_data)) = {[]};
-            if i == 1
-                writecell(chunk_data, combined_file);
+        fclose(fid);
+
+
+        catch ME
+            failed_file = string(csv_name);  % or use your own file variable
+            error_msg  = string(ME.message);
+            timestamp  = string(datetime('now'));
+            log_row    = {timestamp, failed_file, error_msg};
+        
+            % Create folder if needed
+            [log_folder, ~, ~] = fileparts(log_file);
+            if ~exist(log_folder, 'dir')
+                mkdir(log_folder);
+            end
+        
+            % Append row to CSV
+            if ~isfile(log_file)
+                % write header if new file
+                header = {'Timestamp', 'File', 'ErrorMessage'};
+                writecell([header; log_row], log_file);
             else
-                writecell(chunk_data, combined_file, 'WriteMode', 'append');
+                % append to existing file
+                fid = fopen(log_file, 'a');
+                fprintf(fid, '"%s","%s","%s"\n', timestamp, failed_file, error_msg);
+                fclose(fid);
             end
-            delete(worker_file);
-        end
-        
-        fprintf('All worker files have been merged into %s.\n', combined_file);
-        rmdir(tmp_folder, 's');
-        fprintf('Temporary files and folder have been deleted.\n');
-        % existing_data = readcell(csv_name);
-        % 
-        % fprintf("Debug 1")
-        % 
-        % % Convert the event_table to cell
-        % new_data = table2cell(event_table);
-        % 
-        % % Get the number of columns in the existing data (to handle padding)
-        % num_existing_cols = size(existing_data, 2);
-        % 
-        % % Pad the new data with empty columns if necessary
-        % empty_row = repmat({''}, 1, num_existing_cols);  % Empty row with the same number of columns
-        % new_data_padded = [new_data, repmat({''}, size(new_data, 1), max(0, num_existing_cols - size(new_data, 2)))];
-        % 
-        % % Create the combined data by starting with the padded new data and adding an empty row
-        % combined_data = [new_data_padded; empty_row; existing_data];
-        % 
-        % clear existing_data new_data_padded empty_row event_table gen_data gen_frames gen_table lhs lto rhs rto new_data output_data;
-        % fprintf("Debug 2")
-        % 
-        % 
-        % % %% Rearrange Data
-        % 
-        % % Logical indexing to locate 'Events' and 'Devices' rows
-        % events_idx = find(strcmp(combined_data(:, 1), 'Events'), 1);
-        % devices_idx = find(strcmp(combined_data(:, 1), 'Devices'), 1);
-        % 
-        % % Only remove rows if 'Events' and 'Devices' are found in the correct order
-        % if ~isempty(events_idx) && ~isempty(devices_idx) && devices_idx > events_idx
-        %     combined_data(events_idx + 3 : devices_idx - 1, :) = [];  % Remove rows between 'Events' and 'Devices'
-        % end
-        % 
-        % % Move 'Events' and associated rows to the top if 'Events' is found
-        % if ~isempty(events_idx)
-        %     % Extract and move 'Events' and related rows (up to label_row) to the top
-        %     events_data = combined_data(events_idx : events_idx + 2, :);
-        %     combined_data(events_idx : events_idx + 2, :) = [];  % Remove these rows
-        %     combined_data = [events_data; combined_data];        % Prepend to the top
-        % else
-        %     % Create custom 'events_data' if 'Events' row is not found
-        %     events_data = {'Events', [], [], [], []; fr, [], [], [], []; 'Subject', 'Context', 'Name', 'Time (s)', 'Description'};
-        %     events_data = [events_data, repmat({''}, size(events_data, 1), num_existing_cols - size(events_data, 2))];
-        %     combined_data = [events_data; combined_data];  % Prepend custom 'events_data' to the top
-        % end
-        % 
-        % clear events_data 
-        % 
-        % 
-        % % Replace any missing values (using `isa` with `cellfun` for efficiency)
-        % combined_data(cellfun(@(x) isa(x, 'missing'), combined_data)) = {[]};
-        % 
-        % %%% Define Folder and Save Excel
-        % 
-        % % Define root folder based on 'choice' variable
-        % root_folder = pwd;
-        % excel_folder = fullfile(root_folder, 'Output', 'Gait_Events', choice, subject_id);
-        % 
-        % % Create directory if it doesn't exist
-        % if ~exist(excel_folder, 'dir')
-        %     mkdir(excel_folder);
-        % end
-        % 
-        % % Determine File Name
-        % new_excel_filename = strcat(file_name_short_prefix, '_events', '.xlsx');
-        % new_full_file_path = fullfile(excel_folder, new_excel_filename);
-        % 
-        % % Check if the file already exists
-        % if exist(new_full_file_path, 'file') == 2  % '2' means the file exists
-        %     % Delete the existing file
-        %     delete(new_full_file_path);
-        % end
-        % 
-        % %% Define chunk size and number of rows
-        % chunk_size = 5000;  % Chunk size of 1000 rows
-        % num_rows = size(combined_data, 1);  % Total number of rows
-        % num_chunks = ceil(num_rows / chunk_size);  % Number of chunks needed
-        % 
-        % % Precompute chunk indices based on the total number of rows
-        % chunk_indices = 1:chunk_size:num_rows;  % Start indices for each chunk
-        % 
-        % % Specify the temporary output folder (e.g., a folder named 'tmp' in the current directory)
-        % tmp_folder = fullfile(pwd, 'my_temp_folder');
-        % if ~exist(tmp_folder, 'dir')
-        %     mkdir(tmp_folder);  % Create the temporary folder if it doesn't exist
-        % end
-        % 
-        % % Process each chunk
-        % for i = 1:num_chunks
-        %     % Calculate the start and end rows for the current chunk
-        %     chunk_start = chunk_indices(i);
-        %     chunk_end = min(chunk_start + chunk_size - 1, num_rows);  % Ensure it doesn't exceed num_rows
-        % 
-        %     % Extract the chunk of data for this chunk
-        %     chunk = combined_data(chunk_start:chunk_end, :);
-        % 
-        %     % Specify the Excel filename for this chunk (each chunk gets a unique file)
-        %     file_name = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
-        % 
-        %     % Display progress
-        %     fprintf('Writing rows %d to %d to file %s\n', chunk_start, chunk_end, file_name);
-        % 
-        %     % Write the chunk to an Excel file
-        %     try
-        %         writecell(chunk, file_name);
-        %         fprintf('Successfully wrote to %s\n', file_name);
-        %     catch ME
-        %         fprintf('Error writing to %s: %s\n', file_name, ME.message);
-        %     end
-        % end
-        % 
-        % %% After all chunks are written, merge the files into a single Excel file
-        % % Define the combined Excel file path (where the final data will be saved)
-        % combined_file = new_full_file_path;
-        % 
-        % % Create or open the combined Excel file
-        % for i = 1:num_chunks
-        %     % Specify the individual file created for the current chunk
-        %     worker_file = sprintf('%s/worker_%d_data.xlsx', tmp_folder, i);
-        % 
-        %     % Read the chunk of data from the worker's file
-        %     chunk_data = readcell(worker_file);
-        % 
-        %     % Optionally, remove 'missing' entries and replace them with empty cells
-        %     chunk_data(cellfun(@(x) isa(x, 'missing'), chunk_data)) = {[]};
-        % 
-        %     % Specify the range to write the data in the combined file
-        %     if i == 1
-        %         % For the first chunk, write to the beginning of the file
-        %         writecell(chunk_data, combined_file);
-        %     else
-        %         % For subsequent chunks, append to the file
-        %         writecell(chunk_data, combined_file, 'WriteMode', 'append');
-        %     end
-        % 
-        %     % Optionally, delete the worker file after merging
-        %     delete(worker_file);
-        % end
-        % 
-        % fprintf('All worker files have been merged into %s.\n', combined_file);
-        % 
-        % %% Delete the temporary folder and its contents
-        % rmdir(tmp_folder, 's');
-        % fprintf('Temporary files and folder have been deleted.\n');
-        catch
-            disp('Failed')
         end
 
     end
