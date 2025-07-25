@@ -176,10 +176,35 @@ function r01_process(selection, choice, fr)
                 mem_dir = dir(trial_file);
                 file_size = mem_dir.bytes / (1024^2);
                 limit = 200;
-    
-                if file_size > 150
+
+                if file_size > limit
                     clear active_data active_text
                     disp("File To Big")
+
+                    log_file = fullfile(pwd, 'logs', 'big_log.csv');
+
+                    failed_file = string(csv_name);  % or use your own file variable
+                    error_msg  = 'File To Big';
+                    timestamp  = string(datetime('now'));
+                    log_row    = {timestamp, failed_file, error_msg};
+
+                     % Create folder if needed
+                    [log_folder, ~, ~] = fileparts(log_file);
+                    if ~exist(log_folder, 'dir')
+                        mkdir(log_folder);
+                    end
+                
+                    % Append row to CSV
+                    if ~isfile(log_file)
+                        % write header if new file
+                        header = {'Timestamp', 'File', 'ErrorMessage'};
+                        writecell([header; log_row], log_file);
+                    else
+                        % append to existing file
+                        fid = fopen(log_file, 'a');
+                        fprintf(fid, '"%s","%s","%s"\n', timestamp, failed_file, error_msg);
+                        fclose(fid);
+                    end
                     continue
                 end
             % [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
@@ -198,6 +223,8 @@ function r01_process(selection, choice, fr)
 
             active_text = strings(size(raw));
             active_text(is_str) = string(raw(is_str));
+
+            clear raw;
 
 
 
@@ -222,31 +249,7 @@ function r01_process(selection, choice, fr)
                 [rhs,~,lhs,~,gen,all_events]= getGaitEvents(event_text, event_data,type,camrate);
             end
 
-            % event_col = all_events(:,2);
-            % patterns = {[1 2 3 4], [3 4 1 2]};
-            % 
-            % is_match = false;
-            % 
-            % for i = 1:length(patterns)
-            %     pattern = patterns{i};
-            %     len = length(pattern);
-            % 
-            %     % Repeat pattern to match length of col
-            %     repeated = repmat(pattern(:), ceil(length(event_col)/len), 1);
-            %     repeated = repeated(1:length(event_col));
-            % 
-            %     % Check if column matches the pattern
-            %     if isequal(event_col(:), repeated)
-            %         is_match = true;
-            %         disp(['Matches pattern: ', mat2str(pattern)]);
-            %         break;
-            %     end
-            % end
-            % 
-            % if ~is_match
-            %     disp('No matching pattern found.');
-            %     continue
-            % end
+           
     
             % Define Gait Cycles & extract trajectory data for those rose: lhs = 1 rto = 2 rhs = 3 lto = 4
             % find marker coordinate data

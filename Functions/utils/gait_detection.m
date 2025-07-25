@@ -113,14 +113,14 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     disp('Top')
 
     % left heel-sacrum distance
-    Lheel=filtfilt(b, a, LHE-OPSIS);
+    Lheel=LHE-OPSIS;
     % left toe-sacrum distance
-    Ltoe=filtfilt(b, a, -1*(LTO-OPSIS)); % inverted
+    Ltoe=-1*(LTO-OPSIS); % inverted
     
     % right heel-sacrum distance
-    Rheel=filtfilt(b, a, RHE-OPSIS);
+    Rheel=RHE-OPSIS;
     % right toe-sacrum distance
-    Rtoe=filtfilt(b, a, -1*(RTO-OPSIS)); % inverted
+    Rtoe=-1*(RTO-OPSIS); % inverted
 
     
         %findpeaks/valleys left leg Events
@@ -157,14 +157,14 @@ function [flhs,flto,frhs,frto, frame_start, FR, failed] = gait_detection(traject
     disp('Bottom')
 
     % left heel-sacrum distance
-    Lheel=filtfilt(b, a, -(LHE-OPSIS));
+    Lheel=-(LHE-OPSIS);
     % left toe-sacrum distance
-    Ltoe=filtfilt(b, a, (LTO-OPSIS)); % inverted
+    Ltoe=(LTO-OPSIS); % inverted
     
     % right heel-sacrum distance
-    Rheel=filtfilt(b, a, -(RHE-OPSIS));
+    Rheel=-(RHE-OPSIS);
     % right toe-sacrum distance
-    Rtoe=filtfilt(b, a, (RTO-OPSIS)); % inverted
+    Rtoe=(RTO-OPSIS); % inverted
     
     %findpeaks/valleys left leg Events
     [Lpks,flhs]=findpeaks(Lheel); %[peaks, Frames] left heel strike
