@@ -181,36 +181,13 @@ function r01_process(selection, choice, fr)
                     clear active_data active_text
                     disp("File To Big")
 
-                    log_file = fullfile(pwd, 'logs', 'big_log.csv');
-
-                    failed_file = string(csv_name);  % or use your own file variable
-                    error_msg  = 'File To Big';
-                    timestamp  = string(datetime('now'));
-                    log_row    = {timestamp, failed_file, error_msg};
-
-                     % Create folder if needed
-                    [log_folder, ~, ~] = fileparts(log_file);
-                    if ~exist(log_folder, 'dir')
-                        mkdir(log_folder);
-                    end
-                
-                    % Append row to CSV
-                    if ~isfile(log_file)
-                        % write header if new file
-                        header = {'Timestamp', 'File', 'ErrorMessage'};
-                        writecell([header; log_row], log_file);
-                    else
-                        % append to existing file
-                        fid = fopen(log_file, 'a');
-                        fprintf(fid, '"%s","%s","%s"\n', timestamp, failed_file, error_msg);
-                        fclose(fid);
-                    end
+                    
                     continue
                 end
             % [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
             % [active_data,active_text, ~] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
             
-            raw = readcell(trial_file);
+            raw = readcell(trial_file, 'Delimiter', ',');
 
             % Logical masks
             is_num = cellfun(@isnumeric, raw);
@@ -451,9 +428,10 @@ function r01_process(selection, choice, fr)
                     end
                 end
 
-                catch
+                catch ME
 
                     disp("gait cycle failed")
+                    disp(ME.message)
                     continue
 
                 end
@@ -542,8 +520,19 @@ function r01_process(selection, choice, fr)
     
         % save averages across legs per trial in a subject table
         sub_fn = append(subID,'_EachStep.xlsx');
+        subject_names_output_dir = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID);
         subject_names_output = fullfile(root_data_dir, 'Output', 'R01_Analysis', type{1}, subID, sub_fn);
+
+        if ~exist(subject_names_output_dir, 'dir')
+            mkdir(subject_names_output_dir)
+        end
+        try
         writetable(sub_tab,subject_names_output);
+        catch
+        clearvars sub_tab
+        clear active_data active_text coordate coordataline coordatalineend coortext event_data event_text event_text_rows frame_number 
+        continue
+        end
 
         clearvars sub_tab
         clear active_data active_text coordate coordataline coordatalineend coortext event_data event_text event_text_rows frame_number 
