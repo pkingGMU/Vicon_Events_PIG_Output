@@ -18,7 +18,8 @@
 
 
 % SDSU LAB: X = ML, Y = AP, Z = UP
-% written by Frankie Wade, Ph.D. Fall 2024
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -170,23 +171,18 @@ function r01_process(selection, choice, fr)
             % Load the trial data
             try
 
-                % trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.xlsx'));
-                trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.csv'));
-            
-                mem_dir = dir(trial_file);
-                file_size = mem_dir.bytes / (1024^2);
-                limit = 200;
-
-                if file_size > limit
-                    clear active_data active_text
-                    disp("File To Big")
-
-                    
-                    continue
-                end
+            % trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.xlsx'));
+            trial_file = fullfile(subject_path, strcat(regexprep(trials{each_trial}, ' ', '_'), '_events.csv'));
+    
+            mem_dir = dir(trial_file);
+            file_size = mem_dir.bytes / (1024^2);
+            limit = 200;
+    
+            if file_size <= limit
+                
             % [active_data,active_text] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
             % [active_data,active_text, ~] = xlsread(trial_file); % rows are not the same between these two arrays so make sure you account for that in your indexing
-            
+
             raw = readcell(trial_file, 'Delimiter', ',');
 
             % Logical masks
@@ -203,13 +199,103 @@ function r01_process(selection, choice, fr)
 
             clear raw;
 
-
-
-            catch
+            
+            else
+        
+            % Open the file for reading
+            fid = fopen(trial_file, 'r');
+            if fid == -1
+                disp("File Not Found");
                 clear active_data active_text
-                disp("File not Found")
                 continue
             end
+        
+            data = {};
+            maxCols = 0;
+            % Read file line-by-line
+            while ~feof(fid)
+                line = fgetl(fid);
+                if ischar(line)
+                    % Split by comma delimiter
+                    parts = strsplit(line, ',');
+                    maxCols = max(maxCols, numel(parts));
+                    data{end+1, 1} = parts; %#ok<AGROW>
+                end
+            end
+            fclose(fid);
+        
+            % Pad all rows to have maxCols columns with empty strings
+            for i = 1:length(data)
+                nToAdd = maxCols - numel(data{i});
+                if nToAdd > 0
+                    data{i} = [data{i}, repmat({''}, 1, nToAdd)];
+                end
+            end
+        
+            % Convert cell array of cell arrays to a rectangular cell matrix
+            raw = vertcat(data{:});
+        
+            % Build logical masks for numeric and string cells
+            is_num = false(size(raw));
+            is_str = false(size(raw));
+            for r = 1:size(raw,1)
+                for c = 1:size(raw,2)
+                    val = raw{r,c};
+                    if isnumeric(val)
+                        is_num(r,c) = true;
+                    elseif ischar(val) || isstring(val)
+                        % Check if it can convert to a number
+                        numVal = str2double(val);
+                        if ~isnan(numVal) && ~isempty(val)
+                            is_num(r,c) = true;  % treat numeric strings as numeric
+                        else
+                            is_str(r,c) = true;
+                        end
+                    end
+                end
+            end
+        
+            % Build active_data numeric array filled with NaNs
+            active_data = NaN(size(raw));
+            % Convert numeric cells and numeric strings to doubles
+            for r = 1:size(raw,1)
+                for c = 1:size(raw,2)
+                    if is_num(r,c)
+                        val = raw{r,c};
+                        if isnumeric(val)
+                            active_data(r,c) = val;
+                        else
+                            active_data(r,c) = str2double(val);
+                        end
+                    end
+                end
+            end
+            % Remove header row for numeric data (like original)
+            active_data = active_data(2:end, :);
+        
+            % Build active_text string array for string cells
+            active_text = strings(size(raw));
+            for r = 1:size(raw,1)
+                for c = 1:size(raw,2)
+                    if is_str(r,c)
+                        active_text(r,c) = string(raw{r,c});
+                    end
+                end
+            end
+        
+            clear raw data
+
+            end
+        
+            catch
+                clear active_data active_text
+                disp("File Not Found or Unexpected Error")
+                continue
+            end
+
+
+
+            
             
             
          

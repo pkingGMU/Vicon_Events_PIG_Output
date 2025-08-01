@@ -1,3 +1,6 @@
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
+
 function [gaitcycles] = getGaitCycles(data,all_events,lhs,rhs)
 %getGaitCycles Reads in frames for marker coordinate data and gait events
 % spits out a cell array with start and end of each gait cycle based on

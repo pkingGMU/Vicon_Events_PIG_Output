@@ -1,3 +1,6 @@
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
+
 function [spatiotemps] = TreadmillSpatiotemporals(frames,lheeAP,lheeML,rheeAP,rheeML,all_events,camrate,direction)
 %TreadmillSpatiotemporals Calculates spatiotemporal parameters and returns
 %an array of the structure:

@@ -1,3 +1,6 @@
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
+
 function [MoS] = calc_MoS(CoM_vec,ank_vec, CoM, CoM_vel, BoS)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here

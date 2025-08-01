@@ -1,3 +1,6 @@
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
+
 function [peak_kinetics,varargout] = OvergroundKinetics(subID,frames,camrate,text,data,all_events,force_event,APcol)
 
 

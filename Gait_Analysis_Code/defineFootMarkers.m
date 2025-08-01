@@ -1,3 +1,6 @@
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
+
 function [varargout] = defineFootMarkers(text,data,APcol)
 %defineFootMarkers Assigns variables to marker trajectory data in order of up to 12 options:
 %   [direct, LHeel_AP] = defineFootMarkers(text,data)

@@ -1,3 +1,6 @@
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
+
 function [varargout] = TreadmillJointAngs(subID,frames,text,data,all_events,APcol,direction)
 %TreadmillJointAngs Spits out array of peak joint angles with optional array of joint angles across the gait cycle. 
 %   [jointAngs] = TreadmillJointAngs(subID,frames,text,data,all_events,APcol)

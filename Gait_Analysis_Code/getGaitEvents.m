@@ -1,3 +1,6 @@
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
+
 function [varargout] = getGaitEvents(text,data,type,camrate)
 %GetGaitEvents Send in text and data arrays from Vicon output, 
 % sends out arrays with the frame number of each gait event:

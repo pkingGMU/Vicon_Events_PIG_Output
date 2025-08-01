@@ -1,3 +1,6 @@
+% Originally written by Frankie Wade, Ph.D. Fall 2024
+% Edited by Patrick King GMU 2025
+
 function [mos] = MarginOfStability(subID,frames,camrate,text,data,coordata,coortext, all_events,APcol);
 
 %TreadmillMoS Calculates margin of stability (MoS)
